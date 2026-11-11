@@ -4,7 +4,7 @@
   "raylib_functions": 619,
   "wrapped": 493,
   "skipped": 126,
-  "helpers": 42
+  "helpers": 43
  },
  "conventions": {
   "handles": "Images, textures, models, sounds, cameras etc. are positive integers; 0 means invalid",
@@ -21,6 +21,7 @@
    "c_prototype": "void InitWindow(int width, int height, const char * title)",
    "status": "wrapped",
    "xt3d": "xt3d_InitWindow",
+   "needs_window": false,
    "signature": "2is",
    "returns": "",
    "params": [
@@ -49,6 +50,7 @@
    "c_prototype": "void CloseWindow(void)",
    "status": "wrapped",
    "xt3d": "xt3d_CloseWindow",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -61,6 +63,7 @@
    "c_prototype": "bool WindowShouldClose(void)",
    "status": "wrapped",
    "xt3d": "xt3d_WindowShouldClose",
+   "needs_window": true,
    "signature": "",
    "returns": "b",
    "params": [],
@@ -73,6 +76,7 @@
    "c_prototype": "bool IsWindowReady(void)",
    "status": "wrapped",
    "xt3d": "xt3d_IsWindowReady",
+   "needs_window": false,
    "signature": "",
    "returns": "b",
    "params": [],
@@ -85,6 +89,7 @@
    "c_prototype": "bool IsWindowFullscreen(void)",
    "status": "wrapped",
    "xt3d": "xt3d_IsWindowFullscreen",
+   "needs_window": true,
    "signature": "",
    "returns": "b",
    "params": [],
@@ -97,6 +102,7 @@
    "c_prototype": "bool IsWindowHidden(void)",
    "status": "wrapped",
    "xt3d": "xt3d_IsWindowHidden",
+   "needs_window": true,
    "signature": "",
    "returns": "b",
    "params": [],
@@ -109,6 +115,7 @@
    "c_prototype": "bool IsWindowMinimized(void)",
    "status": "wrapped",
    "xt3d": "xt3d_IsWindowMinimized",
+   "needs_window": true,
    "signature": "",
    "returns": "b",
    "params": [],
@@ -121,6 +128,7 @@
    "c_prototype": "bool IsWindowMaximized(void)",
    "status": "wrapped",
    "xt3d": "xt3d_IsWindowMaximized",
+   "needs_window": true,
    "signature": "",
    "returns": "b",
    "params": [],
@@ -133,6 +141,7 @@
    "c_prototype": "bool IsWindowFocused(void)",
    "status": "wrapped",
    "xt3d": "xt3d_IsWindowFocused",
+   "needs_window": true,
    "signature": "",
    "returns": "b",
    "params": [],
@@ -145,6 +154,7 @@
    "c_prototype": "bool IsWindowResized(void)",
    "status": "wrapped",
    "xt3d": "xt3d_IsWindowResized",
+   "needs_window": true,
    "signature": "",
    "returns": "b",
    "params": [],
@@ -157,6 +167,7 @@
    "c_prototype": "bool IsWindowState(unsigned int flag)",
    "status": "wrapped",
    "xt3d": "xt3d_IsWindowState",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -175,6 +186,7 @@
    "c_prototype": "void SetWindowState(unsigned int flags)",
    "status": "wrapped",
    "xt3d": "xt3d_SetWindowState",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -193,6 +205,7 @@
    "c_prototype": "void ClearWindowState(unsigned int flags)",
    "status": "wrapped",
    "xt3d": "xt3d_ClearWindowState",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -211,6 +224,7 @@
    "c_prototype": "void ToggleFullscreen(void)",
    "status": "wrapped",
    "xt3d": "xt3d_ToggleFullscreen",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -223,6 +237,7 @@
    "c_prototype": "void ToggleBorderlessWindowed(void)",
    "status": "wrapped",
    "xt3d": "xt3d_ToggleBorderlessWindowed",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -235,6 +250,7 @@
    "c_prototype": "void MaximizeWindow(void)",
    "status": "wrapped",
    "xt3d": "xt3d_MaximizeWindow",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -247,6 +263,7 @@
    "c_prototype": "void MinimizeWindow(void)",
    "status": "wrapped",
    "xt3d": "xt3d_MinimizeWindow",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -259,6 +276,7 @@
    "c_prototype": "void RestoreWindow(void)",
    "status": "wrapped",
    "xt3d": "xt3d_RestoreWindow",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -271,6 +289,7 @@
    "c_prototype": "void SetWindowIcon(Image image)",
    "status": "wrapped",
    "xt3d": "xt3d_SetWindowIcon",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -297,6 +316,7 @@
    "c_prototype": "void SetWindowTitle(const char * title)",
    "status": "wrapped",
    "xt3d": "xt3d_SetWindowTitle",
+   "needs_window": true,
    "signature": "s",
    "returns": "",
    "params": [
@@ -315,6 +335,7 @@
    "c_prototype": "void SetWindowPosition(int x, int y)",
    "status": "wrapped",
    "xt3d": "xt3d_SetWindowPosition",
+   "needs_window": true,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -338,6 +359,7 @@
    "c_prototype": "void SetWindowMonitor(int monitor)",
    "status": "wrapped",
    "xt3d": "xt3d_SetWindowMonitor",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -356,6 +378,7 @@
    "c_prototype": "void SetWindowMinSize(int width, int height)",
    "status": "wrapped",
    "xt3d": "xt3d_SetWindowMinSize",
+   "needs_window": true,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -379,6 +402,7 @@
    "c_prototype": "void SetWindowMaxSize(int width, int height)",
    "status": "wrapped",
    "xt3d": "xt3d_SetWindowMaxSize",
+   "needs_window": true,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -402,6 +426,7 @@
    "c_prototype": "void SetWindowSize(int width, int height)",
    "status": "wrapped",
    "xt3d": "xt3d_SetWindowSize",
+   "needs_window": true,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -425,6 +450,7 @@
    "c_prototype": "void SetWindowOpacity(float opacity)",
    "status": "wrapped",
    "xt3d": "xt3d_SetWindowOpacity",
+   "needs_window": true,
    "signature": "f",
    "returns": "",
    "params": [
@@ -443,6 +469,7 @@
    "c_prototype": "void SetWindowFocused(void)",
    "status": "wrapped",
    "xt3d": "xt3d_SetWindowFocused",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -455,6 +482,7 @@
    "c_prototype": "void * GetWindowHandle(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetWindowHandle",
+   "needs_window": true,
    "signature": "",
    "returns": "p",
    "params": [],
@@ -467,6 +495,7 @@
    "c_prototype": "int GetScreenWidth(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetScreenWidth",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -479,6 +508,7 @@
    "c_prototype": "int GetScreenHeight(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetScreenHeight",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -491,6 +521,7 @@
    "c_prototype": "int GetRenderWidth(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetRenderWidth",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -503,6 +534,7 @@
    "c_prototype": "int GetRenderHeight(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetRenderHeight",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -515,6 +547,7 @@
    "c_prototype": "int GetMonitorCount(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMonitorCount",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -527,6 +560,7 @@
    "c_prototype": "int GetCurrentMonitor(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetCurrentMonitor",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -539,6 +573,7 @@
    "c_prototype": "Vector2 GetMonitorPosition(int monitor)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMonitorPosition",
+   "needs_window": true,
    "signature": "i",
    "returns": "s",
    "params": [
@@ -557,6 +592,7 @@
    "c_prototype": "int GetMonitorWidth(int monitor)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMonitorWidth",
+   "needs_window": true,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -575,6 +611,7 @@
    "c_prototype": "int GetMonitorHeight(int monitor)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMonitorHeight",
+   "needs_window": true,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -593,6 +630,7 @@
    "c_prototype": "int GetMonitorPhysicalWidth(int monitor)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMonitorPhysicalWidth",
+   "needs_window": true,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -611,6 +649,7 @@
    "c_prototype": "int GetMonitorPhysicalHeight(int monitor)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMonitorPhysicalHeight",
+   "needs_window": true,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -629,6 +668,7 @@
    "c_prototype": "int GetMonitorRefreshRate(int monitor)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMonitorRefreshRate",
+   "needs_window": true,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -647,6 +687,7 @@
    "c_prototype": "Vector2 GetWindowPosition(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetWindowPosition",
+   "needs_window": true,
    "signature": "",
    "returns": "s",
    "params": [],
@@ -659,6 +700,7 @@
    "c_prototype": "Vector2 GetWindowScaleDPI(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetWindowScaleDPI",
+   "needs_window": true,
    "signature": "",
    "returns": "s",
    "params": [],
@@ -671,6 +713,7 @@
    "c_prototype": "const char * GetMonitorName(int monitor)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMonitorName",
+   "needs_window": true,
    "signature": "i",
    "returns": "s",
    "params": [
@@ -689,6 +732,7 @@
    "c_prototype": "void SetClipboardText(const char * text)",
    "status": "wrapped",
    "xt3d": "xt3d_SetClipboardText",
+   "needs_window": true,
    "signature": "s",
    "returns": "",
    "params": [
@@ -707,6 +751,7 @@
    "c_prototype": "const char * GetClipboardText(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetClipboardText",
+   "needs_window": true,
    "signature": "",
    "returns": "s",
    "params": [],
@@ -719,6 +764,7 @@
    "c_prototype": "Image GetClipboardImage(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetClipboardImage",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -731,6 +777,7 @@
    "c_prototype": "void EnableEventWaiting(void)",
    "status": "wrapped",
    "xt3d": "xt3d_EnableEventWaiting",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -743,6 +790,7 @@
    "c_prototype": "void DisableEventWaiting(void)",
    "status": "wrapped",
    "xt3d": "xt3d_DisableEventWaiting",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -755,6 +803,7 @@
    "c_prototype": "void ShowCursor(void)",
    "status": "wrapped",
    "xt3d": "xt3d_ShowCursor",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -767,6 +816,7 @@
    "c_prototype": "void HideCursor(void)",
    "status": "wrapped",
    "xt3d": "xt3d_HideCursor",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -779,6 +829,7 @@
    "c_prototype": "bool IsCursorHidden(void)",
    "status": "wrapped",
    "xt3d": "xt3d_IsCursorHidden",
+   "needs_window": true,
    "signature": "",
    "returns": "b",
    "params": [],
@@ -791,6 +842,7 @@
    "c_prototype": "void EnableCursor(void)",
    "status": "wrapped",
    "xt3d": "xt3d_EnableCursor",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -803,6 +855,7 @@
    "c_prototype": "void DisableCursor(void)",
    "status": "wrapped",
    "xt3d": "xt3d_DisableCursor",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -815,6 +868,7 @@
    "c_prototype": "bool IsCursorOnScreen(void)",
    "status": "wrapped",
    "xt3d": "xt3d_IsCursorOnScreen",
+   "needs_window": true,
    "signature": "",
    "returns": "b",
    "params": [],
@@ -827,6 +881,7 @@
    "c_prototype": "void ClearBackground(Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ClearBackground",
+   "needs_window": true,
    "signature": "4i",
    "returns": "",
    "params": [
@@ -860,6 +915,7 @@
    "c_prototype": "void BeginDrawing(void)",
    "status": "wrapped",
    "xt3d": "xt3d_BeginDrawing",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -872,6 +928,7 @@
    "c_prototype": "void EndDrawing(void)",
    "status": "wrapped",
    "xt3d": "xt3d_EndDrawing",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -884,6 +941,7 @@
    "c_prototype": "void BeginMode2D(Camera2D camera)",
    "status": "wrapped",
    "xt3d": "xt3d_BeginMode2D",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -902,6 +960,7 @@
    "c_prototype": "void EndMode2D(void)",
    "status": "wrapped",
    "xt3d": "xt3d_EndMode2D",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -914,6 +973,7 @@
    "c_prototype": "void BeginMode3D(Camera3D camera)",
    "status": "wrapped",
    "xt3d": "xt3d_BeginMode3D",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -932,6 +992,7 @@
    "c_prototype": "void EndMode3D(void)",
    "status": "wrapped",
    "xt3d": "xt3d_EndMode3D",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -944,6 +1005,7 @@
    "c_prototype": "void BeginTextureMode(RenderTexture2D target)",
    "status": "wrapped",
    "xt3d": "xt3d_BeginTextureMode",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -962,6 +1024,7 @@
    "c_prototype": "void EndTextureMode(void)",
    "status": "wrapped",
    "xt3d": "xt3d_EndTextureMode",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -974,6 +1037,7 @@
    "c_prototype": "void BeginShaderMode(Shader shader)",
    "status": "wrapped",
    "xt3d": "xt3d_BeginShaderMode",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -992,6 +1056,7 @@
    "c_prototype": "void EndShaderMode(void)",
    "status": "wrapped",
    "xt3d": "xt3d_EndShaderMode",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -1004,6 +1069,7 @@
    "c_prototype": "void BeginBlendMode(int mode)",
    "status": "wrapped",
    "xt3d": "xt3d_BeginBlendMode",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -1022,6 +1088,7 @@
    "c_prototype": "void EndBlendMode(void)",
    "status": "wrapped",
    "xt3d": "xt3d_EndBlendMode",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -1034,6 +1101,7 @@
    "c_prototype": "void BeginScissorMode(int x, int y, int width, int height)",
    "status": "wrapped",
    "xt3d": "xt3d_BeginScissorMode",
+   "needs_window": true,
    "signature": "4i",
    "returns": "",
    "params": [
@@ -1067,6 +1135,7 @@
    "c_prototype": "void EndScissorMode(void)",
    "status": "wrapped",
    "xt3d": "xt3d_EndScissorMode",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -1087,6 +1156,7 @@
    "c_prototype": "void EndVrStereoMode(void)",
    "status": "wrapped",
    "xt3d": "xt3d_EndVrStereoMode",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -1115,6 +1185,7 @@
    "c_prototype": "Shader LoadShader(const char * vsFileName, const char * fsFileName)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadShader",
+   "needs_window": true,
    "signature": "2s",
    "returns": "i",
    "params": [
@@ -1138,6 +1209,7 @@
    "c_prototype": "Shader LoadShaderFromMemory(const char * vsCode, const char * fsCode)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadShaderFromMemory",
+   "needs_window": true,
    "signature": "2s",
    "returns": "i",
    "params": [
@@ -1161,6 +1233,7 @@
    "c_prototype": "bool IsShaderValid(Shader shader)",
    "status": "wrapped",
    "xt3d": "xt3d_IsShaderValid",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -1179,6 +1252,7 @@
    "c_prototype": "int GetShaderLocation(Shader shader, const char * uniformName)",
    "status": "wrapped",
    "xt3d": "xt3d_GetShaderLocation",
+   "needs_window": true,
    "signature": "is",
    "returns": "i",
    "params": [
@@ -1202,6 +1276,7 @@
    "c_prototype": "int GetShaderLocationAttrib(Shader shader, const char * attribName)",
    "status": "wrapped",
    "xt3d": "xt3d_GetShaderLocationAttrib",
+   "needs_window": true,
    "signature": "is",
    "returns": "i",
    "params": [
@@ -1241,6 +1316,7 @@
    "c_prototype": "void SetShaderValueMatrix(Shader shader, int locIndex, Matrix mat)",
    "status": "wrapped",
    "xt3d": "xt3d_SetShaderValueMatrix",
+   "needs_window": true,
    "signature": "2i16f",
    "returns": "",
    "params": [
@@ -1344,6 +1420,7 @@
    "c_prototype": "void SetShaderValueTexture(Shader shader, int locIndex, Texture2D texture)",
    "status": "wrapped",
    "xt3d": "xt3d_SetShaderValueTexture",
+   "needs_window": true,
    "signature": "3i",
    "returns": "",
    "params": [
@@ -1372,6 +1449,7 @@
    "c_prototype": "void UnloadShader(Shader shader)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadShader",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -1390,6 +1468,7 @@
    "c_prototype": "Ray GetScreenToWorldRay(Vector2 position, Camera camera)",
    "status": "wrapped",
    "xt3d": "xt3d_GetScreenToWorldRay",
+   "needs_window": true,
    "signature": "2fi",
    "returns": "s",
    "params": [
@@ -1418,6 +1497,7 @@
    "c_prototype": "Ray GetScreenToWorldRayEx(Vector2 position, Camera camera, int width, int height)",
    "status": "wrapped",
    "xt3d": "xt3d_GetScreenToWorldRayEx",
+   "needs_window": true,
    "signature": "2f3i",
    "returns": "s",
    "params": [
@@ -1456,6 +1536,7 @@
    "c_prototype": "Vector2 GetWorldToScreen(Vector3 position, Camera camera)",
    "status": "wrapped",
    "xt3d": "xt3d_GetWorldToScreen",
+   "needs_window": true,
    "signature": "3fi",
    "returns": "s",
    "params": [
@@ -1489,6 +1570,7 @@
    "c_prototype": "Vector2 GetWorldToScreenEx(Vector3 position, Camera camera, int width, int height)",
    "status": "wrapped",
    "xt3d": "xt3d_GetWorldToScreenEx",
+   "needs_window": true,
    "signature": "3f3i",
    "returns": "s",
    "params": [
@@ -1532,6 +1614,7 @@
    "c_prototype": "Vector2 GetWorldToScreen2D(Vector2 position, Camera2D camera)",
    "status": "wrapped",
    "xt3d": "xt3d_GetWorldToScreen2D",
+   "needs_window": true,
    "signature": "2fi",
    "returns": "s",
    "params": [
@@ -1560,6 +1643,7 @@
    "c_prototype": "Vector2 GetScreenToWorld2D(Vector2 position, Camera2D camera)",
    "status": "wrapped",
    "xt3d": "xt3d_GetScreenToWorld2D",
+   "needs_window": true,
    "signature": "2fi",
    "returns": "s",
    "params": [
@@ -1588,6 +1672,7 @@
    "c_prototype": "Matrix GetCameraMatrix(Camera camera)",
    "status": "wrapped",
    "xt3d": "xt3d_GetCameraMatrix",
+   "needs_window": true,
    "signature": "i",
    "returns": "s",
    "params": [
@@ -1606,6 +1691,7 @@
    "c_prototype": "Matrix GetCameraMatrix2D(Camera2D camera)",
    "status": "wrapped",
    "xt3d": "xt3d_GetCameraMatrix2D",
+   "needs_window": true,
    "signature": "i",
    "returns": "s",
    "params": [
@@ -1624,6 +1710,7 @@
    "c_prototype": "void SetTargetFPS(int fps)",
    "status": "wrapped",
    "xt3d": "xt3d_SetTargetFPS",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -1642,6 +1729,7 @@
    "c_prototype": "float GetFrameTime(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetFrameTime",
+   "needs_window": true,
    "signature": "",
    "returns": "f",
    "params": [],
@@ -1654,6 +1742,7 @@
    "c_prototype": "double GetTime(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetTime",
+   "needs_window": true,
    "signature": "",
    "returns": "f",
    "params": [],
@@ -1666,6 +1755,7 @@
    "c_prototype": "int GetFPS(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetFPS",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -1678,6 +1768,7 @@
    "c_prototype": "void SwapScreenBuffer(void)",
    "status": "wrapped",
    "xt3d": "xt3d_SwapScreenBuffer",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -1690,6 +1781,7 @@
    "c_prototype": "void PollInputEvents(void)",
    "status": "wrapped",
    "xt3d": "xt3d_PollInputEvents",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -1702,6 +1794,7 @@
    "c_prototype": "void WaitTime(double seconds)",
    "status": "wrapped",
    "xt3d": "xt3d_WaitTime",
+   "needs_window": false,
    "signature": "f",
    "returns": "",
    "params": [
@@ -1720,6 +1813,7 @@
    "c_prototype": "void SetRandomSeed(unsigned int seed)",
    "status": "wrapped",
    "xt3d": "xt3d_SetRandomSeed",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -1738,6 +1832,7 @@
    "c_prototype": "int GetRandomValue(int min, int max)",
    "status": "wrapped",
    "xt3d": "xt3d_GetRandomValue",
+   "needs_window": false,
    "signature": "2i",
    "returns": "i",
    "params": [
@@ -1777,6 +1872,7 @@
    "c_prototype": "void TakeScreenshot(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_TakeScreenshot",
+   "needs_window": true,
    "signature": "s",
    "returns": "",
    "params": [
@@ -1795,6 +1891,7 @@
    "c_prototype": "void SetConfigFlags(unsigned int flags)",
    "status": "wrapped",
    "xt3d": "xt3d_SetConfigFlags",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -1813,6 +1910,7 @@
    "c_prototype": "void OpenURL(const char * url)",
    "status": "wrapped",
    "xt3d": "xt3d_OpenURL",
+   "needs_window": false,
    "signature": "s",
    "returns": "",
    "params": [
@@ -1831,6 +1929,7 @@
    "c_prototype": "void SetTraceLogLevel(int logLevel)",
    "status": "wrapped",
    "xt3d": "xt3d_SetTraceLogLevel",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -1937,6 +2036,7 @@
    "c_prototype": "bool SaveFileText(const char * fileName, const char * text)",
    "status": "wrapped",
    "xt3d": "xt3d_SaveFileText",
+   "needs_window": false,
    "signature": "2s",
    "returns": "b",
    "params": [
@@ -1992,6 +2092,7 @@
    "c_prototype": "int FileRename(const char * fileName, const char * fileRename)",
    "status": "wrapped",
    "xt3d": "xt3d_FileRename",
+   "needs_window": false,
    "signature": "2s",
    "returns": "i",
    "params": [
@@ -2015,6 +2116,7 @@
    "c_prototype": "int FileRemove(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_FileRemove",
+   "needs_window": false,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -2033,6 +2135,7 @@
    "c_prototype": "int FileCopy(const char * srcPath, const char * dstPath)",
    "status": "wrapped",
    "xt3d": "xt3d_FileCopy",
+   "needs_window": false,
    "signature": "2s",
    "returns": "i",
    "params": [
@@ -2056,6 +2159,7 @@
    "c_prototype": "int FileMove(const char * srcPath, const char * dstPath)",
    "status": "wrapped",
    "xt3d": "xt3d_FileMove",
+   "needs_window": false,
    "signature": "2s",
    "returns": "i",
    "params": [
@@ -2079,6 +2183,7 @@
    "c_prototype": "int FileTextReplace(const char * fileName, const char * search, const char * replacement)",
    "status": "wrapped",
    "xt3d": "xt3d_FileTextReplace",
+   "needs_window": false,
    "signature": "3s",
    "returns": "i",
    "params": [
@@ -2107,6 +2212,7 @@
    "c_prototype": "int FileTextFindIndex(const char * fileName, const char * search)",
    "status": "wrapped",
    "xt3d": "xt3d_FileTextFindIndex",
+   "needs_window": false,
    "signature": "2s",
    "returns": "i",
    "params": [
@@ -2130,6 +2236,7 @@
    "c_prototype": "bool FileExists(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_FileExists",
+   "needs_window": false,
    "signature": "s",
    "returns": "b",
    "params": [
@@ -2148,6 +2255,7 @@
    "c_prototype": "bool DirectoryExists(const char * dirPath)",
    "status": "wrapped",
    "xt3d": "xt3d_DirectoryExists",
+   "needs_window": false,
    "signature": "s",
    "returns": "b",
    "params": [
@@ -2166,6 +2274,7 @@
    "c_prototype": "bool IsFileExtension(const char * fileName, const char * ext)",
    "status": "wrapped",
    "xt3d": "xt3d_IsFileExtension",
+   "needs_window": false,
    "signature": "2s",
    "returns": "b",
    "params": [
@@ -2189,6 +2298,7 @@
    "c_prototype": "bool IsFileHidden(const char * filePath)",
    "status": "wrapped",
    "xt3d": "xt3d_IsFileHidden",
+   "needs_window": false,
    "signature": "s",
    "returns": "b",
    "params": [
@@ -2207,6 +2317,7 @@
    "c_prototype": "int GetFileLength(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_GetFileLength",
+   "needs_window": false,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -2225,6 +2336,7 @@
    "c_prototype": "long GetFileModTime(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_GetFileModTime",
+   "needs_window": false,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -2243,6 +2355,7 @@
    "c_prototype": "const char * GetFileExtension(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_GetFileExtension",
+   "needs_window": false,
    "signature": "s",
    "returns": "s",
    "params": [
@@ -2261,6 +2374,7 @@
    "c_prototype": "const char * GetFileName(const char * filePath)",
    "status": "wrapped",
    "xt3d": "xt3d_GetFileName",
+   "needs_window": false,
    "signature": "s",
    "returns": "s",
    "params": [
@@ -2279,6 +2393,7 @@
    "c_prototype": "const char * GetFileNameWithoutExt(const char * filePath)",
    "status": "wrapped",
    "xt3d": "xt3d_GetFileNameWithoutExt",
+   "needs_window": false,
    "signature": "s",
    "returns": "s",
    "params": [
@@ -2297,6 +2412,7 @@
    "c_prototype": "const char * GetDirectoryPath(const char * filePath)",
    "status": "wrapped",
    "xt3d": "xt3d_GetDirectoryPath",
+   "needs_window": false,
    "signature": "s",
    "returns": "s",
    "params": [
@@ -2315,6 +2431,7 @@
    "c_prototype": "const char * GetPrevDirectoryPath(const char * dirPath)",
    "status": "wrapped",
    "xt3d": "xt3d_GetPrevDirectoryPath",
+   "needs_window": false,
    "signature": "s",
    "returns": "s",
    "params": [
@@ -2333,6 +2450,7 @@
    "c_prototype": "const char * GetWorkingDirectory(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetWorkingDirectory",
+   "needs_window": false,
    "signature": "",
    "returns": "s",
    "params": [],
@@ -2345,6 +2463,7 @@
    "c_prototype": "const char * GetApplicationDirectory(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetApplicationDirectory",
+   "needs_window": false,
    "signature": "",
    "returns": "s",
    "params": [],
@@ -2357,6 +2476,7 @@
    "c_prototype": "int MakeDirectory(const char * dirPath)",
    "status": "wrapped",
    "xt3d": "xt3d_MakeDirectory",
+   "needs_window": false,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -2375,6 +2495,7 @@
    "c_prototype": "int ChangeDirectory(const char * dirPath)",
    "status": "wrapped",
    "xt3d": "xt3d_ChangeDirectory",
+   "needs_window": false,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -2393,6 +2514,7 @@
    "c_prototype": "bool IsPathFile(const char * path)",
    "status": "wrapped",
    "xt3d": "xt3d_IsPathFile",
+   "needs_window": false,
    "signature": "s",
    "returns": "b",
    "params": [
@@ -2411,6 +2533,7 @@
    "c_prototype": "bool IsPathDirectory(const char * path)",
    "status": "wrapped",
    "xt3d": "xt3d_IsPathDirectory",
+   "needs_window": false,
    "signature": "s",
    "returns": "b",
    "params": [
@@ -2429,6 +2552,7 @@
    "c_prototype": "bool IsPathAbsolute(const char * path)",
    "status": "wrapped",
    "xt3d": "xt3d_IsPathAbsolute",
+   "needs_window": false,
    "signature": "s",
    "returns": "b",
    "params": [
@@ -2447,6 +2571,7 @@
    "c_prototype": "bool IsFileNameValid(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_IsFileNameValid",
+   "needs_window": false,
    "signature": "s",
    "returns": "b",
    "params": [
@@ -2489,6 +2614,7 @@
    "c_prototype": "bool IsFileDropped(void)",
    "status": "wrapped",
    "xt3d": "xt3d_IsFileDropped",
+   "needs_window": true,
    "signature": "",
    "returns": "b",
    "params": [],
@@ -2517,6 +2643,7 @@
    "c_prototype": "unsigned int GetDirectoryFileCount(const char * dirPath)",
    "status": "wrapped",
    "xt3d": "xt3d_GetDirectoryFileCount",
+   "needs_window": false,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -2535,6 +2662,7 @@
    "c_prototype": "unsigned int GetDirectoryFileCountEx(const char * basePath, const char * filter, bool scanSubdirs)",
    "status": "wrapped",
    "xt3d": "xt3d_GetDirectoryFileCountEx",
+   "needs_window": false,
    "signature": "2sb",
    "returns": "i",
    "params": [
@@ -2659,6 +2787,7 @@
    "c_prototype": "void SetAutomationEventBaseFrame(int frame)",
    "status": "wrapped",
    "xt3d": "xt3d_SetAutomationEventBaseFrame",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -2677,6 +2806,7 @@
    "c_prototype": "void StartAutomationEventRecording(void)",
    "status": "wrapped",
    "xt3d": "xt3d_StartAutomationEventRecording",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -2689,6 +2819,7 @@
    "c_prototype": "void StopAutomationEventRecording(void)",
    "status": "wrapped",
    "xt3d": "xt3d_StopAutomationEventRecording",
+   "needs_window": true,
    "signature": "",
    "returns": "",
    "params": [],
@@ -2709,6 +2840,7 @@
    "c_prototype": "bool IsKeyPressed(int key)",
    "status": "wrapped",
    "xt3d": "xt3d_IsKeyPressed",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -2727,6 +2859,7 @@
    "c_prototype": "bool IsKeyPressedRepeat(int key)",
    "status": "wrapped",
    "xt3d": "xt3d_IsKeyPressedRepeat",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -2745,6 +2878,7 @@
    "c_prototype": "bool IsKeyDown(int key)",
    "status": "wrapped",
    "xt3d": "xt3d_IsKeyDown",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -2763,6 +2897,7 @@
    "c_prototype": "bool IsKeyReleased(int key)",
    "status": "wrapped",
    "xt3d": "xt3d_IsKeyReleased",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -2781,6 +2916,7 @@
    "c_prototype": "bool IsKeyUp(int key)",
    "status": "wrapped",
    "xt3d": "xt3d_IsKeyUp",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -2799,6 +2935,7 @@
    "c_prototype": "int GetKeyPressed(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetKeyPressed",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -2811,6 +2948,7 @@
    "c_prototype": "int GetCharPressed(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetCharPressed",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -2823,6 +2961,7 @@
    "c_prototype": "const char * GetKeyName(int key)",
    "status": "wrapped",
    "xt3d": "xt3d_GetKeyName",
+   "needs_window": true,
    "signature": "i",
    "returns": "s",
    "params": [
@@ -2841,6 +2980,7 @@
    "c_prototype": "void SetExitKey(int key)",
    "status": "wrapped",
    "xt3d": "xt3d_SetExitKey",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -2859,6 +2999,7 @@
    "c_prototype": "bool IsGamepadAvailable(int gamepad)",
    "status": "wrapped",
    "xt3d": "xt3d_IsGamepadAvailable",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -2877,6 +3018,7 @@
    "c_prototype": "const char * GetGamepadName(int gamepad)",
    "status": "wrapped",
    "xt3d": "xt3d_GetGamepadName",
+   "needs_window": true,
    "signature": "i",
    "returns": "s",
    "params": [
@@ -2895,6 +3037,7 @@
    "c_prototype": "bool IsGamepadButtonPressed(int gamepad, int button)",
    "status": "wrapped",
    "xt3d": "xt3d_IsGamepadButtonPressed",
+   "needs_window": true,
    "signature": "2i",
    "returns": "b",
    "params": [
@@ -2918,6 +3061,7 @@
    "c_prototype": "bool IsGamepadButtonDown(int gamepad, int button)",
    "status": "wrapped",
    "xt3d": "xt3d_IsGamepadButtonDown",
+   "needs_window": true,
    "signature": "2i",
    "returns": "b",
    "params": [
@@ -2941,6 +3085,7 @@
    "c_prototype": "bool IsGamepadButtonReleased(int gamepad, int button)",
    "status": "wrapped",
    "xt3d": "xt3d_IsGamepadButtonReleased",
+   "needs_window": true,
    "signature": "2i",
    "returns": "b",
    "params": [
@@ -2964,6 +3109,7 @@
    "c_prototype": "bool IsGamepadButtonUp(int gamepad, int button)",
    "status": "wrapped",
    "xt3d": "xt3d_IsGamepadButtonUp",
+   "needs_window": true,
    "signature": "2i",
    "returns": "b",
    "params": [
@@ -2987,6 +3133,7 @@
    "c_prototype": "int GetGamepadButtonPressed(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetGamepadButtonPressed",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -2999,6 +3146,7 @@
    "c_prototype": "int GetGamepadAxisCount(int gamepad)",
    "status": "wrapped",
    "xt3d": "xt3d_GetGamepadAxisCount",
+   "needs_window": true,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -3017,6 +3165,7 @@
    "c_prototype": "float GetGamepadAxisMovement(int gamepad, int axis)",
    "status": "wrapped",
    "xt3d": "xt3d_GetGamepadAxisMovement",
+   "needs_window": true,
    "signature": "2i",
    "returns": "f",
    "params": [
@@ -3040,6 +3189,7 @@
    "c_prototype": "int SetGamepadMappings(const char * mappings)",
    "status": "wrapped",
    "xt3d": "xt3d_SetGamepadMappings",
+   "needs_window": true,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -3058,6 +3208,7 @@
    "c_prototype": "void SetGamepadVibration(int gamepad, float leftMotor, float rightMotor, float duration)",
    "status": "wrapped",
    "xt3d": "xt3d_SetGamepadVibration",
+   "needs_window": true,
    "signature": "i3f",
    "returns": "",
    "params": [
@@ -3091,6 +3242,7 @@
    "c_prototype": "bool IsMouseButtonPressed(int button)",
    "status": "wrapped",
    "xt3d": "xt3d_IsMouseButtonPressed",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -3109,6 +3261,7 @@
    "c_prototype": "bool IsMouseButtonDown(int button)",
    "status": "wrapped",
    "xt3d": "xt3d_IsMouseButtonDown",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -3127,6 +3280,7 @@
    "c_prototype": "bool IsMouseButtonReleased(int button)",
    "status": "wrapped",
    "xt3d": "xt3d_IsMouseButtonReleased",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -3145,6 +3299,7 @@
    "c_prototype": "bool IsMouseButtonUp(int button)",
    "status": "wrapped",
    "xt3d": "xt3d_IsMouseButtonUp",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -3163,6 +3318,7 @@
    "c_prototype": "int GetMouseX(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMouseX",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -3175,6 +3331,7 @@
    "c_prototype": "int GetMouseY(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMouseY",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -3187,6 +3344,7 @@
    "c_prototype": "Vector2 GetMousePosition(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMousePosition",
+   "needs_window": true,
    "signature": "",
    "returns": "s",
    "params": [],
@@ -3199,6 +3357,7 @@
    "c_prototype": "Vector2 GetMouseDelta(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMouseDelta",
+   "needs_window": true,
    "signature": "",
    "returns": "s",
    "params": [],
@@ -3211,6 +3370,7 @@
    "c_prototype": "void SetMousePosition(int x, int y)",
    "status": "wrapped",
    "xt3d": "xt3d_SetMousePosition",
+   "needs_window": true,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -3234,6 +3394,7 @@
    "c_prototype": "void SetMouseOffset(int offsetX, int offsetY)",
    "status": "wrapped",
    "xt3d": "xt3d_SetMouseOffset",
+   "needs_window": true,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -3257,6 +3418,7 @@
    "c_prototype": "void SetMouseScale(float scaleX, float scaleY)",
    "status": "wrapped",
    "xt3d": "xt3d_SetMouseScale",
+   "needs_window": true,
    "signature": "2f",
    "returns": "",
    "params": [
@@ -3280,6 +3442,7 @@
    "c_prototype": "float GetMouseWheelMove(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMouseWheelMove",
+   "needs_window": true,
    "signature": "",
    "returns": "f",
    "params": [],
@@ -3292,6 +3455,7 @@
    "c_prototype": "Vector2 GetMouseWheelMoveV(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMouseWheelMoveV",
+   "needs_window": true,
    "signature": "",
    "returns": "s",
    "params": [],
@@ -3304,6 +3468,7 @@
    "c_prototype": "void SetMouseCursor(int cursor)",
    "status": "wrapped",
    "xt3d": "xt3d_SetMouseCursor",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -3322,6 +3487,7 @@
    "c_prototype": "int GetTouchX(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetTouchX",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -3334,6 +3500,7 @@
    "c_prototype": "int GetTouchY(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetTouchY",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -3346,6 +3513,7 @@
    "c_prototype": "Vector2 GetTouchPosition(int index)",
    "status": "wrapped",
    "xt3d": "xt3d_GetTouchPosition",
+   "needs_window": true,
    "signature": "i",
    "returns": "s",
    "params": [
@@ -3364,6 +3532,7 @@
    "c_prototype": "int GetTouchPointId(int index)",
    "status": "wrapped",
    "xt3d": "xt3d_GetTouchPointId",
+   "needs_window": true,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -3382,6 +3551,7 @@
    "c_prototype": "int GetTouchPointCount(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetTouchPointCount",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -3394,6 +3564,7 @@
    "c_prototype": "void SetGesturesEnabled(unsigned int flags)",
    "status": "wrapped",
    "xt3d": "xt3d_SetGesturesEnabled",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -3412,6 +3583,7 @@
    "c_prototype": "bool IsGestureDetected(unsigned int gesture)",
    "status": "wrapped",
    "xt3d": "xt3d_IsGestureDetected",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -3430,6 +3602,7 @@
    "c_prototype": "int GetGestureDetected(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetGestureDetected",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -3442,6 +3615,7 @@
    "c_prototype": "float GetGestureHoldDuration(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetGestureHoldDuration",
+   "needs_window": true,
    "signature": "",
    "returns": "f",
    "params": [],
@@ -3454,6 +3628,7 @@
    "c_prototype": "Vector2 GetGestureDragVector(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetGestureDragVector",
+   "needs_window": true,
    "signature": "",
    "returns": "s",
    "params": [],
@@ -3466,6 +3641,7 @@
    "c_prototype": "float GetGestureDragAngle(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetGestureDragAngle",
+   "needs_window": true,
    "signature": "",
    "returns": "f",
    "params": [],
@@ -3478,6 +3654,7 @@
    "c_prototype": "Vector2 GetGesturePinchVector(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetGesturePinchVector",
+   "needs_window": true,
    "signature": "",
    "returns": "s",
    "params": [],
@@ -3490,6 +3667,7 @@
    "c_prototype": "float GetGesturePinchAngle(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetGesturePinchAngle",
+   "needs_window": true,
    "signature": "",
    "returns": "f",
    "params": [],
@@ -3502,6 +3680,7 @@
    "c_prototype": "void UpdateCamera(Camera * camera, int mode)",
    "status": "wrapped",
    "xt3d": "xt3d_UpdateCamera",
+   "needs_window": true,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -3525,6 +3704,7 @@
    "c_prototype": "void UpdateCameraPro(Camera * camera, Vector3 movement, Vector3 rotation, float zoom)",
    "status": "wrapped",
    "xt3d": "xt3d_UpdateCameraPro",
+   "needs_window": true,
    "signature": "i7f",
    "returns": "",
    "params": [
@@ -3578,6 +3758,7 @@
    "c_prototype": "void SetShapesTexture(Texture2D texture, Rectangle rec)",
    "status": "wrapped",
    "xt3d": "xt3d_SetShapesTexture",
+   "needs_window": true,
    "signature": "i4f",
    "returns": "",
    "params": [
@@ -3616,6 +3797,7 @@
    "c_prototype": "Texture2D GetShapesTexture(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetShapesTexture",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -3628,6 +3810,7 @@
    "c_prototype": "Rectangle GetShapesTextureRectangle(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetShapesTextureRectangle",
+   "needs_window": true,
    "signature": "",
    "returns": "s",
    "params": [],
@@ -3640,6 +3823,7 @@
    "c_prototype": "void DrawPixel(int posX, int posY, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawPixel",
+   "needs_window": true,
    "signature": "6i",
    "returns": "",
    "params": [
@@ -3683,6 +3867,7 @@
    "c_prototype": "void DrawPixelV(Vector2 position, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawPixelV",
+   "needs_window": true,
    "signature": "2f4i",
    "returns": "",
    "params": [
@@ -3726,6 +3911,7 @@
    "c_prototype": "void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawLine",
+   "needs_window": true,
    "signature": "8i",
    "returns": "",
    "params": [
@@ -3779,6 +3965,7 @@
    "c_prototype": "void DrawLineV(Vector2 startPos, Vector2 endPos, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawLineV",
+   "needs_window": true,
    "signature": "4f4i",
    "returns": "",
    "params": [
@@ -3832,6 +4019,7 @@
    "c_prototype": "void DrawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawLineEx",
+   "needs_window": true,
    "signature": "5f4i",
    "returns": "",
    "params": [
@@ -3898,6 +4086,7 @@
    "c_prototype": "void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawLineBezier",
+   "needs_window": true,
    "signature": "5f4i",
    "returns": "",
    "params": [
@@ -3956,6 +4145,7 @@
    "c_prototype": "void DrawLineDashed(Vector2 startPos, Vector2 endPos, int dashSize, int spaceSize, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawLineDashed",
+   "needs_window": true,
    "signature": "4f6i",
    "returns": "",
    "params": [
@@ -4019,6 +4209,7 @@
    "c_prototype": "void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTriangle",
+   "needs_window": true,
    "signature": "6f4i",
    "returns": "",
    "params": [
@@ -4082,6 +4273,7 @@
    "c_prototype": "void DrawTriangleGradient(Vector2 v1, Vector2 v2, Vector2 v3, Color c1, Color c2, Color c3)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTriangleGradient",
+   "needs_window": true,
    "signature": "6f12i",
    "returns": "",
    "params": [
@@ -4185,6 +4377,7 @@
    "c_prototype": "void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTriangleLines",
+   "needs_window": true,
    "signature": "6f4i",
    "returns": "",
    "params": [
@@ -4248,6 +4441,7 @@
    "c_prototype": "void DrawTriangleLinesEx(Vector2 v1, Vector2 v2, Vector2 v3, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTriangleLinesEx",
+   "needs_window": true,
    "signature": "7f4i",
    "returns": "",
    "params": [
@@ -4332,6 +4526,7 @@
    "c_prototype": "void DrawRectangle(int posX, int posY, int width, int height, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRectangle",
+   "needs_window": true,
    "signature": "8i",
    "returns": "",
    "params": [
@@ -4385,6 +4580,7 @@
    "c_prototype": "void DrawRectangleV(Vector2 position, Vector2 size, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRectangleV",
+   "needs_window": true,
    "signature": "4f4i",
    "returns": "",
    "params": [
@@ -4438,6 +4634,7 @@
    "c_prototype": "void DrawRectangleRec(Rectangle rec, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRectangleRec",
+   "needs_window": true,
    "signature": "4f4i",
    "returns": "",
    "params": [
@@ -4491,6 +4688,7 @@
    "c_prototype": "void DrawRectanglePro(Rectangle rec, Vector2 origin, float rotation, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRectanglePro",
+   "needs_window": true,
    "signature": "7f4i",
    "returns": "",
    "params": [
@@ -4559,6 +4757,7 @@
    "c_prototype": "void DrawRectangleGradientV(int posX, int posY, int width, int height, Color top, Color bottom)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRectangleGradientV",
+   "needs_window": true,
    "signature": "12i",
    "returns": "",
    "params": [
@@ -4632,6 +4831,7 @@
    "c_prototype": "void DrawRectangleGradientH(int posX, int posY, int width, int height, Color left, Color right)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRectangleGradientH",
+   "needs_window": true,
    "signature": "12i",
    "returns": "",
    "params": [
@@ -4705,6 +4905,7 @@
    "c_prototype": "void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRectangleGradientEx",
+   "needs_window": true,
    "signature": "4f16i",
    "returns": "",
    "params": [
@@ -4818,6 +5019,7 @@
    "c_prototype": "void DrawRectangleLines(int posX, int posY, int width, int height, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRectangleLines",
+   "needs_window": true,
    "signature": "8i",
    "returns": "",
    "params": [
@@ -4871,6 +5073,7 @@
    "c_prototype": "void DrawRectangleLinesEx(Rectangle rec, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRectangleLinesEx",
+   "needs_window": true,
    "signature": "5f4i",
    "returns": "",
    "params": [
@@ -4929,6 +5132,7 @@
    "c_prototype": "void DrawRectangleRounded(Rectangle rec, float roundness, int segments, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRectangleRounded",
+   "needs_window": true,
    "signature": "5f5i",
    "returns": "",
    "params": [
@@ -4992,6 +5196,7 @@
    "c_prototype": "void DrawRectangleRoundedLines(Rectangle rec, float roundness, int segments, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRectangleRoundedLines",
+   "needs_window": true,
    "signature": "5f5i",
    "returns": "",
    "params": [
@@ -5055,6 +5260,7 @@
    "c_prototype": "void DrawRectangleRoundedLinesEx(Rectangle rec, float roundness, int segments, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRectangleRoundedLinesEx",
+   "needs_window": true,
    "signature": "5fif4i",
    "returns": "",
    "params": [
@@ -5123,6 +5329,7 @@
    "c_prototype": "void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawPoly",
+   "needs_window": true,
    "signature": "2fi2f4i",
    "returns": "",
    "params": [
@@ -5181,6 +5388,7 @@
    "c_prototype": "void DrawPolyLines(Vector2 center, int sides, float radius, float rotation, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawPolyLines",
+   "needs_window": true,
    "signature": "2fi2f4i",
    "returns": "",
    "params": [
@@ -5239,6 +5447,7 @@
    "c_prototype": "void DrawPolyLinesEx(Vector2 center, int sides, float radius, float rotation, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawPolyLinesEx",
+   "needs_window": true,
    "signature": "2fi3f4i",
    "returns": "",
    "params": [
@@ -5302,6 +5511,7 @@
    "c_prototype": "void DrawCircle(int centerX, int centerY, float radius, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCircle",
+   "needs_window": true,
    "signature": "2if4i",
    "returns": "",
    "params": [
@@ -5350,6 +5560,7 @@
    "c_prototype": "void DrawCircleV(Vector2 center, float radius, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCircleV",
+   "needs_window": true,
    "signature": "3f4i",
    "returns": "",
    "params": [
@@ -5398,6 +5609,7 @@
    "c_prototype": "void DrawCircleGradient(Vector2 center, float radius, Color inner, Color outer)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCircleGradient",
+   "needs_window": true,
    "signature": "3f8i",
    "returns": "",
    "params": [
@@ -5466,6 +5678,7 @@
    "c_prototype": "void DrawCircleSector(Vector2 center, float radius, float startAngle, float endAngle, int segments, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCircleSector",
+   "needs_window": true,
    "signature": "5f5i",
    "returns": "",
    "params": [
@@ -5529,6 +5742,7 @@
    "c_prototype": "void DrawCircleSectorLines(Vector2 center, float radius, float startAngle, float endAngle, int segments, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCircleSectorLines",
+   "needs_window": true,
    "signature": "5f5i",
    "returns": "",
    "params": [
@@ -5592,6 +5806,7 @@
    "c_prototype": "void DrawCircleSectorLinesEx(Vector2 center, float radius, float startAngle, float endAngle, int segments, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCircleSectorLinesEx",
+   "needs_window": true,
    "signature": "5fif4i",
    "returns": "",
    "params": [
@@ -5660,6 +5875,7 @@
    "c_prototype": "void DrawCircleLines(int centerX, int centerY, float radius, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCircleLines",
+   "needs_window": true,
    "signature": "2if4i",
    "returns": "",
    "params": [
@@ -5708,6 +5924,7 @@
    "c_prototype": "void DrawCircleLinesV(Vector2 center, float radius, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCircleLinesV",
+   "needs_window": true,
    "signature": "3f4i",
    "returns": "",
    "params": [
@@ -5756,6 +5973,7 @@
    "c_prototype": "void DrawCircleLinesEx(Vector2 center, float radius, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCircleLinesEx",
+   "needs_window": true,
    "signature": "4f4i",
    "returns": "",
    "params": [
@@ -5809,6 +6027,7 @@
    "c_prototype": "void DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawEllipse",
+   "needs_window": true,
    "signature": "2i2f4i",
    "returns": "",
    "params": [
@@ -5862,6 +6081,7 @@
    "c_prototype": "void DrawEllipseV(Vector2 center, float radiusH, float radiusV, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawEllipseV",
+   "needs_window": true,
    "signature": "4f4i",
    "returns": "",
    "params": [
@@ -5915,6 +6135,7 @@
    "c_prototype": "void DrawEllipseLines(int centerX, int centerY, float radiusH, float radiusV, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawEllipseLines",
+   "needs_window": true,
    "signature": "2i2f4i",
    "returns": "",
    "params": [
@@ -5968,6 +6189,7 @@
    "c_prototype": "void DrawEllipseLinesV(Vector2 center, float radiusH, float radiusV, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawEllipseLinesV",
+   "needs_window": true,
    "signature": "4f4i",
    "returns": "",
    "params": [
@@ -6021,6 +6243,7 @@
    "c_prototype": "void DrawEllipseLinesEx(Vector2 center, float radiusH, float radiusV, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawEllipseLinesEx",
+   "needs_window": true,
    "signature": "5f4i",
    "returns": "",
    "params": [
@@ -6079,6 +6302,7 @@
    "c_prototype": "void DrawRing(Vector2 center, float innerRadius, float outerRadius, float startAngle, float endAngle, int segments, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRing",
+   "needs_window": true,
    "signature": "6f5i",
    "returns": "",
    "params": [
@@ -6147,6 +6371,7 @@
    "c_prototype": "void DrawRingLines(Vector2 center, float innerRadius, float outerRadius, float startAngle, float endAngle, int segments, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRingLines",
+   "needs_window": true,
    "signature": "6f5i",
    "returns": "",
    "params": [
@@ -6215,6 +6440,7 @@
    "c_prototype": "void DrawRingLinesEx(Vector2 center, float innerRadius, float outerRadius, float startAngle, float endAngle, int segments, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRingLinesEx",
+   "needs_window": true,
    "signature": "6fif4i",
    "returns": "",
    "params": [
@@ -6328,6 +6554,7 @@
    "c_prototype": "void DrawSplineSegmentLinear(Vector2 p1, Vector2 p2, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawSplineSegmentLinear",
+   "needs_window": true,
    "signature": "5f4i",
    "returns": "",
    "params": [
@@ -6386,6 +6613,7 @@
    "c_prototype": "void DrawSplineSegmentBasis(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawSplineSegmentBasis",
+   "needs_window": true,
    "signature": "9f4i",
    "returns": "",
    "params": [
@@ -6464,6 +6692,7 @@
    "c_prototype": "void DrawSplineSegmentCatmullRom(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawSplineSegmentCatmullRom",
+   "needs_window": true,
    "signature": "9f4i",
    "returns": "",
    "params": [
@@ -6542,6 +6771,7 @@
    "c_prototype": "void DrawSplineSegmentBezierQuadratic(Vector2 p1, Vector2 c2, Vector2 p3, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawSplineSegmentBezierQuadratic",
+   "needs_window": true,
    "signature": "7f4i",
    "returns": "",
    "params": [
@@ -6610,6 +6840,7 @@
    "c_prototype": "void DrawSplineSegmentBezierCubic(Vector2 p1, Vector2 c2, Vector2 c3, Vector2 p4, float thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawSplineSegmentBezierCubic",
+   "needs_window": true,
    "signature": "9f4i",
    "returns": "",
    "params": [
@@ -6688,6 +6919,7 @@
    "c_prototype": "Vector2 GetSplinePointLinear(Vector2 startPos, Vector2 endPos, float t)",
    "status": "wrapped",
    "xt3d": "xt3d_GetSplinePointLinear",
+   "needs_window": false,
    "signature": "5f",
    "returns": "s",
    "params": [
@@ -6726,6 +6958,7 @@
    "c_prototype": "Vector2 GetSplinePointBasis(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4, float t)",
    "status": "wrapped",
    "xt3d": "xt3d_GetSplinePointBasis",
+   "needs_window": false,
    "signature": "9f",
    "returns": "s",
    "params": [
@@ -6784,6 +7017,7 @@
    "c_prototype": "Vector2 GetSplinePointCatmullRom(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4, float t)",
    "status": "wrapped",
    "xt3d": "xt3d_GetSplinePointCatmullRom",
+   "needs_window": false,
    "signature": "9f",
    "returns": "s",
    "params": [
@@ -6842,6 +7076,7 @@
    "c_prototype": "Vector2 GetSplinePointBezierQuadratic(Vector2 p1, Vector2 c2, Vector2 p3, float t)",
    "status": "wrapped",
    "xt3d": "xt3d_GetSplinePointBezierQuadratic",
+   "needs_window": false,
    "signature": "7f",
    "returns": "s",
    "params": [
@@ -6890,6 +7125,7 @@
    "c_prototype": "Vector2 GetSplinePointBezierCubic(Vector2 p1, Vector2 c2, Vector2 c3, Vector2 p4, float t)",
    "status": "wrapped",
    "xt3d": "xt3d_GetSplinePointBezierCubic",
+   "needs_window": false,
    "signature": "9f",
    "returns": "s",
    "params": [
@@ -6948,6 +7184,7 @@
    "c_prototype": "bool CheckCollisionRecs(Rectangle rec1, Rectangle rec2)",
    "status": "wrapped",
    "xt3d": "xt3d_CheckCollisionRecs",
+   "needs_window": false,
    "signature": "8f",
    "returns": "b",
    "params": [
@@ -7001,6 +7238,7 @@
    "c_prototype": "bool CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2)",
    "status": "wrapped",
    "xt3d": "xt3d_CheckCollisionCircles",
+   "needs_window": false,
    "signature": "6f",
    "returns": "b",
    "params": [
@@ -7044,6 +7282,7 @@
    "c_prototype": "bool CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec)",
    "status": "wrapped",
    "xt3d": "xt3d_CheckCollisionCircleRec",
+   "needs_window": false,
    "signature": "7f",
    "returns": "b",
    "params": [
@@ -7092,6 +7331,7 @@
    "c_prototype": "bool CheckCollisionCircleLine(Vector2 center, float radius, Vector2 p1, Vector2 p2)",
    "status": "wrapped",
    "xt3d": "xt3d_CheckCollisionCircleLine",
+   "needs_window": false,
    "signature": "7f",
    "returns": "b",
    "params": [
@@ -7140,6 +7380,7 @@
    "c_prototype": "bool CheckCollisionPointRec(Vector2 point, Rectangle rec)",
    "status": "wrapped",
    "xt3d": "xt3d_CheckCollisionPointRec",
+   "needs_window": false,
    "signature": "6f",
    "returns": "b",
    "params": [
@@ -7183,6 +7424,7 @@
    "c_prototype": "bool CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius)",
    "status": "wrapped",
    "xt3d": "xt3d_CheckCollisionPointCircle",
+   "needs_window": false,
    "signature": "5f",
    "returns": "b",
    "params": [
@@ -7221,6 +7463,7 @@
    "c_prototype": "bool CheckCollisionPointTriangle(Vector2 point, Vector2 p1, Vector2 p2, Vector2 p3)",
    "status": "wrapped",
    "xt3d": "xt3d_CheckCollisionPointTriangle",
+   "needs_window": false,
    "signature": "8f",
    "returns": "b",
    "params": [
@@ -7274,6 +7517,7 @@
    "c_prototype": "bool CheckCollisionPointLine(Vector2 point, Vector2 p1, Vector2 p2, int threshold)",
    "status": "wrapped",
    "xt3d": "xt3d_CheckCollisionPointLine",
+   "needs_window": false,
    "signature": "6fi",
    "returns": "b",
    "params": [
@@ -7338,6 +7582,7 @@
    "c_prototype": "Rectangle GetCollisionRec(Rectangle rec1, Rectangle rec2)",
    "status": "wrapped",
    "xt3d": "xt3d_GetCollisionRec",
+   "needs_window": false,
    "signature": "8f",
    "returns": "s",
    "params": [
@@ -7391,6 +7636,7 @@
    "c_prototype": "Image LoadImage(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadImage",
+   "needs_window": false,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -7409,6 +7655,7 @@
    "c_prototype": "Image LoadImageRaw(const char * fileName, int width, int height, int format, int headerSize)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadImageRaw",
+   "needs_window": false,
    "signature": "s4i",
    "returns": "i",
    "params": [
@@ -7471,6 +7718,7 @@
    "c_prototype": "Image LoadImageFromTexture(Texture2D texture)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadImageFromTexture",
+   "needs_window": true,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -7489,6 +7737,7 @@
    "c_prototype": "Image LoadImageFromScreen(void)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadImageFromScreen",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -7501,6 +7750,7 @@
    "c_prototype": "bool IsImageValid(Image image)",
    "status": "wrapped",
    "xt3d": "xt3d_IsImageValid",
+   "needs_window": false,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -7519,6 +7769,7 @@
    "c_prototype": "void UnloadImage(Image image)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadImage",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -7537,6 +7788,7 @@
    "c_prototype": "bool ExportImage(Image image, const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_ExportImage",
+   "needs_window": false,
    "signature": "is",
    "returns": "b",
    "params": [
@@ -7568,6 +7820,7 @@
    "c_prototype": "bool ExportImageAsCode(Image image, const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_ExportImageAsCode",
+   "needs_window": false,
    "signature": "is",
    "returns": "b",
    "params": [
@@ -7591,6 +7844,7 @@
    "c_prototype": "Image GenImageColor(int width, int height, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_GenImageColor",
+   "needs_window": false,
    "signature": "6i",
    "returns": "i",
    "params": [
@@ -7634,6 +7888,7 @@
    "c_prototype": "Image GenImageGradientLinear(int width, int height, int direction, Color start, Color end)",
    "status": "wrapped",
    "xt3d": "xt3d_GenImageGradientLinear",
+   "needs_window": false,
    "signature": "11i",
    "returns": "i",
    "params": [
@@ -7702,6 +7957,7 @@
    "c_prototype": "Image GenImageGradientRadial(int width, int height, float density, Color inner, Color outer)",
    "status": "wrapped",
    "xt3d": "xt3d_GenImageGradientRadial",
+   "needs_window": false,
    "signature": "2if8i",
    "returns": "i",
    "params": [
@@ -7770,6 +8026,7 @@
    "c_prototype": "Image GenImageGradientSquare(int width, int height, float density, Color inner, Color outer)",
    "status": "wrapped",
    "xt3d": "xt3d_GenImageGradientSquare",
+   "needs_window": false,
    "signature": "2if8i",
    "returns": "i",
    "params": [
@@ -7838,6 +8095,7 @@
    "c_prototype": "Image GenImageChecked(int width, int height, int checksX, int checksY, Color col1, Color col2)",
    "status": "wrapped",
    "xt3d": "xt3d_GenImageChecked",
+   "needs_window": false,
    "signature": "12i",
    "returns": "i",
    "params": [
@@ -7911,6 +8169,7 @@
    "c_prototype": "Image GenImageWhiteNoise(int width, int height, float factor)",
    "status": "wrapped",
    "xt3d": "xt3d_GenImageWhiteNoise",
+   "needs_window": false,
    "signature": "2if",
    "returns": "i",
    "params": [
@@ -7939,6 +8198,7 @@
    "c_prototype": "Image GenImagePerlinNoise(int width, int height, int offsetX, int offsetY, float scale)",
    "status": "wrapped",
    "xt3d": "xt3d_GenImagePerlinNoise",
+   "needs_window": false,
    "signature": "4if",
    "returns": "i",
    "params": [
@@ -7977,6 +8237,7 @@
    "c_prototype": "Image GenImageCellular(int width, int height, int tileSize)",
    "status": "wrapped",
    "xt3d": "xt3d_GenImageCellular",
+   "needs_window": false,
    "signature": "3i",
    "returns": "i",
    "params": [
@@ -8005,6 +8266,7 @@
    "c_prototype": "Image GenImageText(int width, int height, const char * text)",
    "status": "wrapped",
    "xt3d": "xt3d_GenImageText",
+   "needs_window": false,
    "signature": "2is",
    "returns": "i",
    "params": [
@@ -8033,6 +8295,7 @@
    "c_prototype": "Image ImageCopy(Image image)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageCopy",
+   "needs_window": false,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -8051,6 +8314,7 @@
    "c_prototype": "Image ImageFromImage(Image image, Rectangle rec)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageFromImage",
+   "needs_window": false,
    "signature": "i4f",
    "returns": "i",
    "params": [
@@ -8089,6 +8353,7 @@
    "c_prototype": "Image ImageFromChannel(Image image, int selectedChannel)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageFromChannel",
+   "needs_window": false,
    "signature": "2i",
    "returns": "i",
    "params": [
@@ -8112,6 +8377,7 @@
    "c_prototype": "Image ImageText(const char * text, int fontSize, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageText",
+   "needs_window": true,
    "signature": "s5i",
    "returns": "i",
    "params": [
@@ -8155,6 +8421,7 @@
    "c_prototype": "Image ImageTextEx(Font font, const char * text, float fontSize, float spacing, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageTextEx",
+   "needs_window": true,
    "signature": "is2f4i",
    "returns": "i",
    "params": [
@@ -8208,6 +8475,7 @@
    "c_prototype": "void ImageFormat(Image * image, int newFormat)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageFormat",
+   "needs_window": false,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -8231,6 +8499,7 @@
    "c_prototype": "void ImageToPOT(Image * image, Color fill)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageToPOT",
+   "needs_window": false,
    "signature": "5i",
    "returns": "",
    "params": [
@@ -8269,6 +8538,7 @@
    "c_prototype": "void ImageCrop(Image * image, Rectangle crop)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageCrop",
+   "needs_window": false,
    "signature": "i4f",
    "returns": "",
    "params": [
@@ -8307,6 +8577,7 @@
    "c_prototype": "void ImageAlphaCrop(Image * image, float threshold)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageAlphaCrop",
+   "needs_window": false,
    "signature": "if",
    "returns": "",
    "params": [
@@ -8330,6 +8601,7 @@
    "c_prototype": "void ImageAlphaClear(Image * image, Color color, float threshold)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageAlphaClear",
+   "needs_window": false,
    "signature": "5if",
    "returns": "",
    "params": [
@@ -8373,6 +8645,7 @@
    "c_prototype": "void ImageAlphaMask(Image * image, Image alphaMask)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageAlphaMask",
+   "needs_window": false,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -8396,6 +8669,7 @@
    "c_prototype": "void ImageAlphaPremultiply(Image * image)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageAlphaPremultiply",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -8414,6 +8688,7 @@
    "c_prototype": "void ImageBlurGaussian(Image * image, int blurSize)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageBlurGaussian",
+   "needs_window": false,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -8445,6 +8720,7 @@
    "c_prototype": "void ImageResize(Image * image, int newWidth, int newHeight)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageResize",
+   "needs_window": false,
    "signature": "3i",
    "returns": "",
    "params": [
@@ -8473,6 +8749,7 @@
    "c_prototype": "void ImageResizeNN(Image * image, int newWidth, int newHeight)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageResizeNN",
+   "needs_window": false,
    "signature": "3i",
    "returns": "",
    "params": [
@@ -8501,6 +8778,7 @@
    "c_prototype": "void ImageResizeCanvas(Image * image, int newWidth, int newHeight, int offsetX, int offsetY, Color fill)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageResizeCanvas",
+   "needs_window": false,
    "signature": "9i",
    "returns": "",
    "params": [
@@ -8559,6 +8837,7 @@
    "c_prototype": "void ImageMipmaps(Image * image)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageMipmaps",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -8577,6 +8856,7 @@
    "c_prototype": "void ImageDither(Image * image, int rBpp, int gBpp, int bBpp, int aBpp)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDither",
+   "needs_window": false,
    "signature": "5i",
    "returns": "",
    "params": [
@@ -8615,6 +8895,7 @@
    "c_prototype": "void ImageFlipVertical(Image * image)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageFlipVertical",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -8633,6 +8914,7 @@
    "c_prototype": "void ImageFlipHorizontal(Image * image)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageFlipHorizontal",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -8651,6 +8933,7 @@
    "c_prototype": "void ImageRotate(Image * image, int degrees)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageRotate",
+   "needs_window": false,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -8674,6 +8957,7 @@
    "c_prototype": "void ImageRotateCW(Image * image)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageRotateCW",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -8692,6 +8976,7 @@
    "c_prototype": "void ImageRotateCCW(Image * image)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageRotateCCW",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -8710,6 +8995,7 @@
    "c_prototype": "void ImageColorTint(Image * image, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageColorTint",
+   "needs_window": false,
    "signature": "5i",
    "returns": "",
    "params": [
@@ -8748,6 +9034,7 @@
    "c_prototype": "void ImageColorInvert(Image * image)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageColorInvert",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -8766,6 +9053,7 @@
    "c_prototype": "void ImageColorGrayscale(Image * image)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageColorGrayscale",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -8784,6 +9072,7 @@
    "c_prototype": "void ImageColorContrast(Image * image, int contrast)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageColorContrast",
+   "needs_window": false,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -8807,6 +9096,7 @@
    "c_prototype": "void ImageColorBrightness(Image * image, int brightness)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageColorBrightness",
+   "needs_window": false,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -8830,6 +9120,7 @@
    "c_prototype": "void ImageColorReplace(Image * image, Color color, Color replace)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageColorReplace",
+   "needs_window": false,
    "signature": "9i",
    "returns": "",
    "params": [
@@ -8920,6 +9211,7 @@
    "c_prototype": "Rectangle GetImageAlphaBorder(Image image, float threshold)",
    "status": "wrapped",
    "xt3d": "xt3d_GetImageAlphaBorder",
+   "needs_window": false,
    "signature": "if",
    "returns": "s",
    "params": [
@@ -8943,6 +9235,7 @@
    "c_prototype": "Color GetImageColor(Image image, int x, int y)",
    "status": "wrapped",
    "xt3d": "xt3d_GetImageColor",
+   "needs_window": false,
    "signature": "3i",
    "returns": "s",
    "params": [
@@ -8971,6 +9264,7 @@
    "c_prototype": "void ImageClearBackground(Image * dst, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageClearBackground",
+   "needs_window": false,
    "signature": "5i",
    "returns": "",
    "params": [
@@ -9009,6 +9303,7 @@
    "c_prototype": "void ImageDrawPixel(Image * dst, int posX, int posY, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawPixel",
+   "needs_window": false,
    "signature": "7i",
    "returns": "",
    "params": [
@@ -9057,6 +9352,7 @@
    "c_prototype": "void ImageDrawPixelV(Image * dst, Vector2 position, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawPixelV",
+   "needs_window": false,
    "signature": "i2f4i",
    "returns": "",
    "params": [
@@ -9105,6 +9401,7 @@
    "c_prototype": "void ImageDrawLine(Image * dst, int startPosX, int startPosY, int endPosX, int endPosY, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawLine",
+   "needs_window": false,
    "signature": "9i",
    "returns": "",
    "params": [
@@ -9163,6 +9460,7 @@
    "c_prototype": "void ImageDrawLineV(Image * dst, Vector2 start, Vector2 end, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawLineV",
+   "needs_window": false,
    "signature": "i4f4i",
    "returns": "",
    "params": [
@@ -9221,6 +9519,7 @@
    "c_prototype": "void ImageDrawLineEx(Image * dst, Vector2 start, Vector2 end, int thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawLineEx",
+   "needs_window": false,
    "signature": "i4f5i",
    "returns": "",
    "params": [
@@ -9292,6 +9591,7 @@
    "c_prototype": "void ImageDrawTriangle(Image * dst, Vector2 v1, Vector2 v2, Vector2 v3, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawTriangle",
+   "needs_window": false,
    "signature": "i6f4i",
    "returns": "",
    "params": [
@@ -9360,6 +9660,7 @@
    "c_prototype": "void ImageDrawTriangleGradient(Image * dst, Vector2 v1, Vector2 v2, Vector2 v3, Color c1, Color c2, Color c3)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawTriangleGradient",
+   "needs_window": false,
    "signature": "i6f12i",
    "returns": "",
    "params": [
@@ -9468,6 +9769,7 @@
    "c_prototype": "void ImageDrawTriangleLines(Image * dst, Vector2 v1, Vector2 v2, Vector2 v3, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawTriangleLines",
+   "needs_window": false,
    "signature": "i6f4i",
    "returns": "",
    "params": [
@@ -9552,6 +9854,7 @@
    "c_prototype": "void ImageDrawRectangle(Image * dst, int posX, int posY, int width, int height, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawRectangle",
+   "needs_window": false,
    "signature": "9i",
    "returns": "",
    "params": [
@@ -9610,6 +9913,7 @@
    "c_prototype": "void ImageDrawRectangleV(Image * dst, Vector2 position, Vector2 size, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawRectangleV",
+   "needs_window": false,
    "signature": "i4f4i",
    "returns": "",
    "params": [
@@ -9668,6 +9972,7 @@
    "c_prototype": "void ImageDrawRectangleRec(Image * dst, Rectangle rec, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawRectangleRec",
+   "needs_window": false,
    "signature": "i4f4i",
    "returns": "",
    "params": [
@@ -9726,6 +10031,7 @@
    "c_prototype": "void ImageDrawRectanglePro(Image * dst, Rectangle rec, Vector2 origin, float rotation, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawRectanglePro",
+   "needs_window": false,
    "signature": "i7f4i",
    "returns": "",
    "params": [
@@ -9799,6 +10105,7 @@
    "c_prototype": "void ImageDrawRectangleLines(Image * dst, int posX, int posY, int width, int height, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawRectangleLines",
+   "needs_window": false,
    "signature": "9i",
    "returns": "",
    "params": [
@@ -9857,6 +10164,7 @@
    "c_prototype": "void ImageDrawRectangleLinesEx(Image * dst, Rectangle rec, int thick, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawRectangleLinesEx",
+   "needs_window": false,
    "signature": "i4f5i",
    "returns": "",
    "params": [
@@ -9920,6 +10228,7 @@
    "c_prototype": "void ImageDrawRectangleGradientEx(Image * dst, Rectangle rec, Color col1, Color col2, Color col3, Color col4)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawRectangleGradientEx",
+   "needs_window": false,
    "signature": "i4f16i",
    "returns": "",
    "params": [
@@ -10038,6 +10347,7 @@
    "c_prototype": "void ImageDrawCircle(Image * dst, int centerX, int centerY, int radius, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawCircle",
+   "needs_window": false,
    "signature": "8i",
    "returns": "",
    "params": [
@@ -10091,6 +10401,7 @@
    "c_prototype": "void ImageDrawCircleV(Image * dst, Vector2 center, int radius, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawCircleV",
+   "needs_window": false,
    "signature": "i2f5i",
    "returns": "",
    "params": [
@@ -10144,6 +10455,7 @@
    "c_prototype": "void ImageDrawCircleLines(Image * dst, int centerX, int centerY, int radius, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawCircleLines",
+   "needs_window": false,
    "signature": "8i",
    "returns": "",
    "params": [
@@ -10197,6 +10509,7 @@
    "c_prototype": "void ImageDrawCircleLinesV(Image * dst, Vector2 center, int radius, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawCircleLinesV",
+   "needs_window": false,
    "signature": "i2f5i",
    "returns": "",
    "params": [
@@ -10250,6 +10563,7 @@
    "c_prototype": "void ImageDrawCircleGradient(Image * dst, Vector2 center, float radius, Color inner, Color outer)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawCircleGradient",
+   "needs_window": false,
    "signature": "i3f8i",
    "returns": "",
    "params": [
@@ -10323,6 +10637,7 @@
    "c_prototype": "void ImageDrawImage(Image * dst, Image src, int posX, int posY, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawImage",
+   "needs_window": false,
    "signature": "8i",
    "returns": "",
    "params": [
@@ -10376,6 +10691,7 @@
    "c_prototype": "void ImageDrawImageEx(Image * dst, Image src, Vector2 position, float rotation, float scale, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawImageEx",
+   "needs_window": false,
    "signature": "2i4f4i",
    "returns": "",
    "params": [
@@ -10439,6 +10755,7 @@
    "c_prototype": "void ImageDrawImageRec(Image * dst, Image src, Rectangle srcRec, Vector2 position, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawImageRec",
+   "needs_window": false,
    "signature": "2i6f4i",
    "returns": "",
    "params": [
@@ -10512,6 +10829,7 @@
    "c_prototype": "void ImageDrawImagePro(Image * dst, Image src, Rectangle srcRec, Rectangle dstRec, Vector2 origin, float rotation, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawImagePro",
+   "needs_window": false,
    "signature": "2i11f4i",
    "returns": "",
    "params": [
@@ -10610,6 +10928,7 @@
    "c_prototype": "void ImageDrawText(Image * dst, const char * text, int posX, int posY, int fontSize, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawText",
+   "needs_window": true,
    "signature": "is7i",
    "returns": "",
    "params": [
@@ -10668,6 +10987,7 @@
    "c_prototype": "void ImageDrawTextEx(Image * dst, Font font, const char * text, Vector2 position, float fontSize, float spacing, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawTextEx",
+   "needs_window": true,
    "signature": "2is4f4i",
    "returns": "",
    "params": [
@@ -10736,6 +11056,7 @@
    "c_prototype": "void ImageDrawTextPro(Image * dst, Font font, const char * text, Vector2 position, Vector2 origin, float rotation, float fontSize, float spacing, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_ImageDrawTextPro",
+   "needs_window": true,
    "signature": "2is7f4i",
    "returns": "",
    "params": [
@@ -10819,6 +11140,7 @@
    "c_prototype": "Texture2D LoadTexture(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadTexture",
+   "needs_window": true,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -10837,6 +11159,7 @@
    "c_prototype": "Texture2D LoadTextureFromImage(Image image)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadTextureFromImage",
+   "needs_window": true,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -10855,6 +11178,7 @@
    "c_prototype": "TextureCubemap LoadTextureCubemap(Image image, int layout)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadTextureCubemap",
+   "needs_window": true,
    "signature": "2i",
    "returns": "i",
    "params": [
@@ -10878,6 +11202,7 @@
    "c_prototype": "RenderTexture2D LoadRenderTexture(int width, int height)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadRenderTexture",
+   "needs_window": true,
    "signature": "2i",
    "returns": "i",
    "params": [
@@ -10901,6 +11226,7 @@
    "c_prototype": "RenderTexture2D LoadRenderTextureEx(int width, int height, int format)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadRenderTextureEx",
+   "needs_window": true,
    "signature": "3i",
    "returns": "i",
    "params": [
@@ -10929,6 +11255,7 @@
    "c_prototype": "bool IsTextureValid(Texture2D texture)",
    "status": "wrapped",
    "xt3d": "xt3d_IsTextureValid",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -10947,6 +11274,7 @@
    "c_prototype": "void UnloadTexture(Texture2D texture)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadTexture",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -10965,6 +11293,7 @@
    "c_prototype": "bool IsRenderTextureValid(RenderTexture2D target)",
    "status": "wrapped",
    "xt3d": "xt3d_IsRenderTextureValid",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -10983,6 +11312,7 @@
    "c_prototype": "void UnloadRenderTexture(RenderTexture2D target)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadRenderTexture",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -11017,6 +11347,7 @@
    "c_prototype": "void GenTextureMipmaps(Texture2D * texture)",
    "status": "wrapped",
    "xt3d": "xt3d_GenTextureMipmaps",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -11035,6 +11366,7 @@
    "c_prototype": "void SetTextureFilter(Texture2D texture, int filter)",
    "status": "wrapped",
    "xt3d": "xt3d_SetTextureFilter",
+   "needs_window": true,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -11058,6 +11390,7 @@
    "c_prototype": "void SetTextureWrap(Texture2D texture, int wrap)",
    "status": "wrapped",
    "xt3d": "xt3d_SetTextureWrap",
+   "needs_window": true,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -11081,6 +11414,7 @@
    "c_prototype": "void DrawTexture(Texture2D texture, int posX, int posY, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTexture",
+   "needs_window": true,
    "signature": "7i",
    "returns": "",
    "params": [
@@ -11129,6 +11463,7 @@
    "c_prototype": "void DrawTextureV(Texture2D texture, Vector2 position, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTextureV",
+   "needs_window": true,
    "signature": "i2f4i",
    "returns": "",
    "params": [
@@ -11177,6 +11512,7 @@
    "c_prototype": "void DrawTextureEx(Texture2D texture, Vector2 position, float rotation, float scale, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTextureEx",
+   "needs_window": true,
    "signature": "i4f4i",
    "returns": "",
    "params": [
@@ -11235,6 +11571,7 @@
    "c_prototype": "void DrawTextureRec(Texture2D texture, Rectangle rec, Vector2 position, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTextureRec",
+   "needs_window": true,
    "signature": "i6f4i",
    "returns": "",
    "params": [
@@ -11303,6 +11640,7 @@
    "c_prototype": "void DrawTexturePro(Texture2D texture, Rectangle srcrec, Rectangle dstrec, Vector2 origin, float rotation, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTexturePro",
+   "needs_window": true,
    "signature": "i11f4i",
    "returns": "",
    "params": [
@@ -11396,6 +11734,7 @@
    "c_prototype": "void DrawTextureNPatch(Texture2D texture, NPatchInfo nPatchInfo, Rectangle dstrec, Vector2 origin, float rotation, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTextureNPatch",
+   "needs_window": true,
    "signature": "i4f5i7f4i",
    "returns": "",
    "params": [
@@ -11514,6 +11853,7 @@
    "c_prototype": "bool ColorIsEqual(Color col1, Color col2)",
    "status": "wrapped",
    "xt3d": "xt3d_ColorIsEqual",
+   "needs_window": false,
    "signature": "8i",
    "returns": "b",
    "params": [
@@ -11567,6 +11907,7 @@
    "c_prototype": "Color Fade(Color color, float alpha)",
    "status": "wrapped",
    "xt3d": "xt3d_Fade",
+   "needs_window": false,
    "signature": "4if",
    "returns": "s",
    "params": [
@@ -11605,6 +11946,7 @@
    "c_prototype": "int ColorToInt(Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ColorToInt",
+   "needs_window": false,
    "signature": "4i",
    "returns": "i",
    "params": [
@@ -11638,6 +11980,7 @@
    "c_prototype": "Vector4 ColorNormalize(Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ColorNormalize",
+   "needs_window": false,
    "signature": "4i",
    "returns": "s",
    "params": [
@@ -11671,6 +12014,7 @@
    "c_prototype": "Color ColorFromNormalized(Vector4 normalized)",
    "status": "wrapped",
    "xt3d": "xt3d_ColorFromNormalized",
+   "needs_window": false,
    "signature": "4f",
    "returns": "s",
    "params": [
@@ -11704,6 +12048,7 @@
    "c_prototype": "Vector3 ColorToHSV(Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_ColorToHSV",
+   "needs_window": false,
    "signature": "4i",
    "returns": "s",
    "params": [
@@ -11737,6 +12082,7 @@
    "c_prototype": "Color ColorFromHSV(float hue, float saturation, float value)",
    "status": "wrapped",
    "xt3d": "xt3d_ColorFromHSV",
+   "needs_window": false,
    "signature": "3f",
    "returns": "s",
    "params": [
@@ -11765,6 +12111,7 @@
    "c_prototype": "Color ColorTint(Color color, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_ColorTint",
+   "needs_window": false,
    "signature": "8i",
    "returns": "s",
    "params": [
@@ -11818,6 +12165,7 @@
    "c_prototype": "Color ColorBrightness(Color color, float factor)",
    "status": "wrapped",
    "xt3d": "xt3d_ColorBrightness",
+   "needs_window": false,
    "signature": "4if",
    "returns": "s",
    "params": [
@@ -11856,6 +12204,7 @@
    "c_prototype": "Color ColorContrast(Color color, float contrast)",
    "status": "wrapped",
    "xt3d": "xt3d_ColorContrast",
+   "needs_window": false,
    "signature": "4if",
    "returns": "s",
    "params": [
@@ -11894,6 +12243,7 @@
    "c_prototype": "Color ColorAlpha(Color color, float alpha)",
    "status": "wrapped",
    "xt3d": "xt3d_ColorAlpha",
+   "needs_window": false,
    "signature": "4if",
    "returns": "s",
    "params": [
@@ -11932,6 +12282,7 @@
    "c_prototype": "Color ColorAlphaBlend(Color dst, Color src, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_ColorAlphaBlend",
+   "needs_window": false,
    "signature": "12i",
    "returns": "s",
    "params": [
@@ -12005,6 +12356,7 @@
    "c_prototype": "Color ColorLerp(Color color1, Color color2, float factor)",
    "status": "wrapped",
    "xt3d": "xt3d_ColorLerp",
+   "needs_window": false,
    "signature": "8if",
    "returns": "s",
    "params": [
@@ -12063,6 +12415,7 @@
    "c_prototype": "Color GetColor(unsigned int hexValue)",
    "status": "wrapped",
    "xt3d": "xt3d_GetColor",
+   "needs_window": false,
    "signature": "i",
    "returns": "s",
    "params": [
@@ -12097,6 +12450,7 @@
    "c_prototype": "int GetPixelDataSize(int width, int height, int format)",
    "status": "wrapped",
    "xt3d": "xt3d_GetPixelDataSize",
+   "needs_window": false,
    "signature": "3i",
    "returns": "i",
    "params": [
@@ -12125,6 +12479,7 @@
    "c_prototype": "Font GetFontDefault(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetFontDefault",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -12137,6 +12492,7 @@
    "c_prototype": "Font LoadFont(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadFont",
+   "needs_window": true,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -12163,6 +12519,7 @@
    "c_prototype": "Font LoadFontFromImage(Image image, Color key, int firstChar)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadFontFromImage",
+   "needs_window": true,
    "signature": "6i",
    "returns": "i",
    "params": [
@@ -12214,6 +12571,7 @@
    "c_prototype": "bool IsFontValid(Font font)",
    "status": "wrapped",
    "xt3d": "xt3d_IsFontValid",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -12256,6 +12614,7 @@
    "c_prototype": "void UnloadFont(Font font)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadFont",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -12274,6 +12633,7 @@
    "c_prototype": "bool ExportFontAsCode(Font font, const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_ExportFontAsCode",
+   "needs_window": true,
    "signature": "is",
    "returns": "b",
    "params": [
@@ -12297,6 +12657,7 @@
    "c_prototype": "void DrawFPS(int posX, int posY)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawFPS",
+   "needs_window": true,
    "signature": "2i",
    "returns": "",
    "params": [
@@ -12320,6 +12681,7 @@
    "c_prototype": "void DrawText(const char * text, int posX, int posY, int fontSize, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawText",
+   "needs_window": true,
    "signature": "s7i",
    "returns": "",
    "params": [
@@ -12373,6 +12735,7 @@
    "c_prototype": "void DrawTextEx(Font font, const char * text, Vector2 position, float fontSize, float spacing, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTextEx",
+   "needs_window": true,
    "signature": "is4f4i",
    "returns": "",
    "params": [
@@ -12436,6 +12799,7 @@
    "c_prototype": "void DrawTextPro(Font font, const char * text, Vector2 position, Vector2 origin, float rotation, float fontSize, float spacing, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTextPro",
+   "needs_window": true,
    "signature": "is7f4i",
    "returns": "",
    "params": [
@@ -12514,6 +12878,7 @@
    "c_prototype": "void DrawTextCodepoint(Font font, int codepoint, Vector2 position, float fontSize, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTextCodepoint",
+   "needs_window": true,
    "signature": "2i3f4i",
    "returns": "",
    "params": [
@@ -12580,6 +12945,7 @@
    "c_prototype": "void SetTextLineSpacing(int spacing)",
    "status": "wrapped",
    "xt3d": "xt3d_SetTextLineSpacing",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -12598,6 +12964,7 @@
    "c_prototype": "int MeasureText(const char * text, int fontSize)",
    "status": "wrapped",
    "xt3d": "xt3d_MeasureText",
+   "needs_window": true,
    "signature": "si",
    "returns": "i",
    "params": [
@@ -12621,6 +12988,7 @@
    "c_prototype": "Vector2 MeasureTextEx(Font font, const char * text, float fontSize, float spacing)",
    "status": "wrapped",
    "xt3d": "xt3d_MeasureTextEx",
+   "needs_window": true,
    "signature": "is2f",
    "returns": "s",
    "params": [
@@ -12662,6 +13030,7 @@
    "c_prototype": "int GetGlyphIndex(Font font, int codepoint)",
    "status": "wrapped",
    "xt3d": "xt3d_GetGlyphIndex",
+   "needs_window": true,
    "signature": "2i",
    "returns": "i",
    "params": [
@@ -12693,6 +13062,7 @@
    "c_prototype": "Rectangle GetGlyphAtlasRec(Font font, int codepoint)",
    "status": "wrapped",
    "xt3d": "xt3d_GetGlyphAtlasRec",
+   "needs_window": true,
    "signature": "2i",
    "returns": "s",
    "params": [
@@ -12748,6 +13118,7 @@
    "c_prototype": "int GetCodepointCount(const char * text)",
    "status": "wrapped",
    "xt3d": "xt3d_GetCodepointCount",
+   "needs_window": false,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -13006,6 +13377,7 @@
    "c_prototype": "void DrawLine3D(Vector3 startPos, Vector3 endPos, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawLine3D",
+   "needs_window": true,
    "signature": "6f4i",
    "returns": "",
    "params": [
@@ -13069,6 +13441,7 @@
    "c_prototype": "void DrawPoint3D(Vector3 position, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawPoint3D",
+   "needs_window": true,
    "signature": "3f4i",
    "returns": "",
    "params": [
@@ -13117,6 +13490,7 @@
    "c_prototype": "void DrawCircle3D(Vector3 center, float radius, Vector3 rotationAxis, float rotationAngle, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCircle3D",
+   "needs_window": true,
    "signature": "8f4i",
    "returns": "",
    "params": [
@@ -13190,6 +13564,7 @@
    "c_prototype": "void DrawTriangle3D(Vector3 v1, Vector3 v2, Vector3 v3, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawTriangle3D",
+   "needs_window": true,
    "signature": "9f4i",
    "returns": "",
    "params": [
@@ -13276,6 +13651,7 @@
    "c_prototype": "void DrawCube(Vector3 position, float width, float height, float length, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCube",
+   "needs_window": true,
    "signature": "6f4i",
    "returns": "",
    "params": [
@@ -13339,6 +13715,7 @@
    "c_prototype": "void DrawCubeV(Vector3 position, Vector3 size, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCubeV",
+   "needs_window": true,
    "signature": "6f4i",
    "returns": "",
    "params": [
@@ -13402,6 +13779,7 @@
    "c_prototype": "void DrawCubeWires(Vector3 position, float width, float height, float length, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCubeWires",
+   "needs_window": true,
    "signature": "6f4i",
    "returns": "",
    "params": [
@@ -13465,6 +13843,7 @@
    "c_prototype": "void DrawCubeWiresV(Vector3 position, Vector3 size, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCubeWiresV",
+   "needs_window": true,
    "signature": "6f4i",
    "returns": "",
    "params": [
@@ -13528,6 +13907,7 @@
    "c_prototype": "void DrawSphere(Vector3 centerPos, float radius, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawSphere",
+   "needs_window": true,
    "signature": "4f4i",
    "returns": "",
    "params": [
@@ -13581,6 +13961,7 @@
    "c_prototype": "void DrawSphereEx(Vector3 centerPos, float radius, int rings, int slices, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawSphereEx",
+   "needs_window": true,
    "signature": "4f6i",
    "returns": "",
    "params": [
@@ -13644,6 +14025,7 @@
    "c_prototype": "void DrawSphereWires(Vector3 centerPos, float radius, int rings, int slices, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawSphereWires",
+   "needs_window": true,
    "signature": "4f6i",
    "returns": "",
    "params": [
@@ -13707,6 +14089,7 @@
    "c_prototype": "void DrawCylinder(Vector3 position, float radiusTop, float radiusBottom, float height, int sides, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCylinder",
+   "needs_window": true,
    "signature": "6f5i",
    "returns": "",
    "params": [
@@ -13775,6 +14158,7 @@
    "c_prototype": "void DrawCylinderEx(Vector3 startPos, Vector3 endPos, float startRadius, float endRadius, int sides, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCylinderEx",
+   "needs_window": true,
    "signature": "8f5i",
    "returns": "",
    "params": [
@@ -13853,6 +14237,7 @@
    "c_prototype": "void DrawCylinderWires(Vector3 position, float radiusTop, float radiusBottom, float height, int sides, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCylinderWires",
+   "needs_window": true,
    "signature": "6f5i",
    "returns": "",
    "params": [
@@ -13921,6 +14306,7 @@
    "c_prototype": "void DrawCylinderWiresEx(Vector3 startPos, Vector3 endPos, float startRadius, float endRadius, int sides, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCylinderWiresEx",
+   "needs_window": true,
    "signature": "8f5i",
    "returns": "",
    "params": [
@@ -13999,6 +14385,7 @@
    "c_prototype": "void DrawCapsule(Vector3 startPos, Vector3 endPos, float radius, int rings, int slices, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCapsule",
+   "needs_window": true,
    "signature": "7f6i",
    "returns": "",
    "params": [
@@ -14077,6 +14464,7 @@
    "c_prototype": "void DrawCapsuleWires(Vector3 startPos, Vector3 endPos, float radius, int rings, int slices, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawCapsuleWires",
+   "needs_window": true,
    "signature": "7f6i",
    "returns": "",
    "params": [
@@ -14155,6 +14543,7 @@
    "c_prototype": "void DrawPlane(Vector3 centerPos, Vector2 size, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawPlane",
+   "needs_window": true,
    "signature": "5f4i",
    "returns": "",
    "params": [
@@ -14213,6 +14602,7 @@
    "c_prototype": "void DrawRay(Ray ray, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawRay",
+   "needs_window": true,
    "signature": "6f4i",
    "returns": "",
    "params": [
@@ -14276,6 +14666,7 @@
    "c_prototype": "void DrawGrid(int slices, float spacing)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawGrid",
+   "needs_window": true,
    "signature": "if",
    "returns": "",
    "params": [
@@ -14299,6 +14690,7 @@
    "c_prototype": "Model LoadModel(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadModel",
+   "needs_window": true,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -14317,6 +14709,7 @@
    "c_prototype": "Model LoadModelFromMesh(Mesh mesh)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadModelFromMesh",
+   "needs_window": true,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -14335,6 +14728,7 @@
    "c_prototype": "bool IsModelValid(Model model)",
    "status": "wrapped",
    "xt3d": "xt3d_IsModelValid",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -14353,6 +14747,7 @@
    "c_prototype": "void UnloadModel(Model model)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadModel",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -14371,6 +14766,7 @@
    "c_prototype": "BoundingBox GetModelBoundingBox(Model model)",
    "status": "wrapped",
    "xt3d": "xt3d_GetModelBoundingBox",
+   "needs_window": false,
    "signature": "i",
    "returns": "s",
    "params": [
@@ -14389,6 +14785,7 @@
    "c_prototype": "void DrawModel(Model model, Vector3 position, float scale, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawModel",
+   "needs_window": true,
    "signature": "i4f4i",
    "returns": "",
    "params": [
@@ -14447,6 +14844,7 @@
    "c_prototype": "void DrawModelEx(Model model, Vector3 position, Vector3 rotationAxis, float rotationAngle, Vector3 scale, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawModelEx",
+   "needs_window": true,
    "signature": "i10f4i",
    "returns": "",
    "params": [
@@ -14535,6 +14933,7 @@
    "c_prototype": "void DrawModelWires(Model model, Vector3 position, float scale, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawModelWires",
+   "needs_window": true,
    "signature": "i4f4i",
    "returns": "",
    "params": [
@@ -14593,6 +14992,7 @@
    "c_prototype": "void DrawModelWiresEx(Model model, Vector3 position, Vector3 rotationAxis, float rotationAngle, Vector3 scale, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawModelWiresEx",
+   "needs_window": true,
    "signature": "i10f4i",
    "returns": "",
    "params": [
@@ -14681,6 +15081,7 @@
    "c_prototype": "void DrawBoundingBox(BoundingBox box, Color color)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawBoundingBox",
+   "needs_window": true,
    "signature": "6f4i",
    "returns": "",
    "params": [
@@ -14744,6 +15145,7 @@
    "c_prototype": "void DrawBillboard(Camera camera, Texture2D texture, Vector3 position, float scale, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawBillboard",
+   "needs_window": true,
    "signature": "2i4f4i",
    "returns": "",
    "params": [
@@ -14807,6 +15209,7 @@
    "c_prototype": "void DrawBillboardRec(Camera camera, Texture2D texture, Rectangle rec, Vector3 position, Vector2 size, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawBillboardRec",
+   "needs_window": true,
    "signature": "2i9f4i",
    "returns": "",
    "params": [
@@ -14895,6 +15298,7 @@
    "c_prototype": "void DrawBillboardPro(Camera camera, Texture2D texture, Rectangle rec, Vector3 position, Vector3 up, Vector2 size, Vector2 origin, float rotation, Color tint)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawBillboardPro",
+   "needs_window": true,
    "signature": "2i15f4i",
    "returns": "",
    "params": [
@@ -15013,6 +15417,7 @@
    "c_prototype": "void UploadMesh(Mesh * mesh, bool dynamic)",
    "status": "wrapped",
    "xt3d": "xt3d_UploadMesh",
+   "needs_window": true,
    "signature": "ib",
    "returns": "",
    "params": [
@@ -15044,6 +15449,7 @@
    "c_prototype": "void UnloadMesh(Mesh mesh)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadMesh",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -15062,6 +15468,7 @@
    "c_prototype": "void DrawMesh(Mesh mesh, Material material, Matrix transform)",
    "status": "wrapped",
    "xt3d": "xt3d_DrawMesh",
+   "needs_window": true,
    "signature": "2i16f",
    "returns": "",
    "params": [
@@ -15173,6 +15580,7 @@
    "c_prototype": "BoundingBox GetMeshBoundingBox(Mesh mesh)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMeshBoundingBox",
+   "needs_window": false,
    "signature": "i",
    "returns": "s",
    "params": [
@@ -15191,6 +15599,7 @@
    "c_prototype": "void GenMeshTangents(Mesh * mesh)",
    "status": "wrapped",
    "xt3d": "xt3d_GenMeshTangents",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -15209,6 +15618,7 @@
    "c_prototype": "bool ExportMesh(Mesh mesh, const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_ExportMesh",
+   "needs_window": false,
    "signature": "is",
    "returns": "b",
    "params": [
@@ -15232,6 +15642,7 @@
    "c_prototype": "bool ExportMeshAsCode(Mesh mesh, const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_ExportMeshAsCode",
+   "needs_window": false,
    "signature": "is",
    "returns": "b",
    "params": [
@@ -15255,6 +15666,7 @@
    "c_prototype": "Mesh GenMeshPoly(int sides, float radius)",
    "status": "wrapped",
    "xt3d": "xt3d_GenMeshPoly",
+   "needs_window": true,
    "signature": "if",
    "returns": "i",
    "params": [
@@ -15278,6 +15690,7 @@
    "c_prototype": "Mesh GenMeshPlane(float width, float length, int resX, int resZ)",
    "status": "wrapped",
    "xt3d": "xt3d_GenMeshPlane",
+   "needs_window": true,
    "signature": "2f2i",
    "returns": "i",
    "params": [
@@ -15311,6 +15724,7 @@
    "c_prototype": "Mesh GenMeshCube(float width, float height, float length)",
    "status": "wrapped",
    "xt3d": "xt3d_GenMeshCube",
+   "needs_window": true,
    "signature": "3f",
    "returns": "i",
    "params": [
@@ -15339,6 +15753,7 @@
    "c_prototype": "Mesh GenMeshSphere(float radius, int rings, int slices)",
    "status": "wrapped",
    "xt3d": "xt3d_GenMeshSphere",
+   "needs_window": true,
    "signature": "f2i",
    "returns": "i",
    "params": [
@@ -15367,6 +15782,7 @@
    "c_prototype": "Mesh GenMeshHemiSphere(float radius, int rings, int slices)",
    "status": "wrapped",
    "xt3d": "xt3d_GenMeshHemiSphere",
+   "needs_window": true,
    "signature": "f2i",
    "returns": "i",
    "params": [
@@ -15395,6 +15811,7 @@
    "c_prototype": "Mesh GenMeshCylinder(float radius, float height, int slices)",
    "status": "wrapped",
    "xt3d": "xt3d_GenMeshCylinder",
+   "needs_window": true,
    "signature": "2fi",
    "returns": "i",
    "params": [
@@ -15423,6 +15840,7 @@
    "c_prototype": "Mesh GenMeshCone(float radius, float height, int slices)",
    "status": "wrapped",
    "xt3d": "xt3d_GenMeshCone",
+   "needs_window": true,
    "signature": "2fi",
    "returns": "i",
    "params": [
@@ -15451,6 +15869,7 @@
    "c_prototype": "Mesh GenMeshTorus(float radius, float size, int radSeg, int sides)",
    "status": "wrapped",
    "xt3d": "xt3d_GenMeshTorus",
+   "needs_window": true,
    "signature": "2f2i",
    "returns": "i",
    "params": [
@@ -15484,6 +15903,7 @@
    "c_prototype": "Mesh GenMeshKnot(float radius, float size, int radSeg, int sides)",
    "status": "wrapped",
    "xt3d": "xt3d_GenMeshKnot",
+   "needs_window": true,
    "signature": "2f2i",
    "returns": "i",
    "params": [
@@ -15517,6 +15937,7 @@
    "c_prototype": "Mesh GenMeshHeightmap(Image heightmap, Vector3 size)",
    "status": "wrapped",
    "xt3d": "xt3d_GenMeshHeightmap",
+   "needs_window": true,
    "signature": "i3f",
    "returns": "i",
    "params": [
@@ -15550,6 +15971,7 @@
    "c_prototype": "Mesh GenMeshCubicmap(Image cubicmap, Vector3 cubeSize)",
    "status": "wrapped",
    "xt3d": "xt3d_GenMeshCubicmap",
+   "needs_window": true,
    "signature": "i3f",
    "returns": "i",
    "params": [
@@ -15591,6 +16013,7 @@
    "c_prototype": "Material LoadMaterialDefault(void)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadMaterialDefault",
+   "needs_window": true,
    "signature": "",
    "returns": "i",
    "params": [],
@@ -15603,6 +16026,7 @@
    "c_prototype": "bool IsMaterialValid(Material material)",
    "status": "wrapped",
    "xt3d": "xt3d_IsMaterialValid",
+   "needs_window": true,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -15621,6 +16045,7 @@
    "c_prototype": "void UnloadMaterial(Material material)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadMaterial",
+   "needs_window": true,
    "signature": "i",
    "returns": "",
    "params": [
@@ -15639,6 +16064,7 @@
    "c_prototype": "void SetMaterialTexture(Material * material, int mapType, Texture2D texture)",
    "status": "wrapped",
    "xt3d": "xt3d_SetMaterialTexture",
+   "needs_window": true,
    "signature": "3i",
    "returns": "",
    "params": [
@@ -15667,6 +16093,7 @@
    "c_prototype": "void SetModelMeshMaterial(Model * model, int meshId, int materialId)",
    "status": "wrapped",
    "xt3d": "xt3d_SetModelMeshMaterial",
+   "needs_window": true,
    "signature": "3i",
    "returns": "",
    "params": [
@@ -15703,6 +16130,7 @@
    "c_prototype": "void UpdateModelAnimation(Model model, ModelAnimation anim, float frame)",
    "status": "wrapped",
    "xt3d": "xt3d_UpdateModelAnimation",
+   "needs_window": true,
    "signature": "2if",
    "returns": "",
    "params": [
@@ -15731,6 +16159,7 @@
    "c_prototype": "void UpdateModelAnimationEx(Model model, ModelAnimation animA, float frameA, ModelAnimation animB, float frameB, float blend)",
    "status": "wrapped",
    "xt3d": "xt3d_UpdateModelAnimationEx",
+   "needs_window": true,
    "signature": "2ifi2f",
    "returns": "",
    "params": [
@@ -15782,6 +16211,7 @@
    "c_prototype": "bool IsModelAnimationValid(Model model, ModelAnimation anim)",
    "status": "wrapped",
    "xt3d": "xt3d_IsModelAnimationValid",
+   "needs_window": true,
    "signature": "2i",
    "returns": "b",
    "params": [
@@ -15805,6 +16235,7 @@
    "c_prototype": "bool CheckCollisionSpheres(Vector3 center1, float radius1, Vector3 center2, float radius2)",
    "status": "wrapped",
    "xt3d": "xt3d_CheckCollisionSpheres",
+   "needs_window": false,
    "signature": "8f",
    "returns": "b",
    "params": [
@@ -15858,6 +16289,7 @@
    "c_prototype": "bool CheckCollisionBoxes(BoundingBox box1, BoundingBox box2)",
    "status": "wrapped",
    "xt3d": "xt3d_CheckCollisionBoxes",
+   "needs_window": false,
    "signature": "12f",
    "returns": "b",
    "params": [
@@ -15931,6 +16363,7 @@
    "c_prototype": "bool CheckCollisionBoxSphere(BoundingBox box, Vector3 center, float radius)",
    "status": "wrapped",
    "xt3d": "xt3d_CheckCollisionBoxSphere",
+   "needs_window": false,
    "signature": "10f",
    "returns": "b",
    "params": [
@@ -15994,6 +16427,7 @@
    "c_prototype": "RayCollision GetRayCollisionSphere(Ray ray, Vector3 center, float radius)",
    "status": "wrapped",
    "xt3d": "xt3d_GetRayCollisionSphere",
+   "needs_window": false,
    "signature": "10f",
    "returns": "s",
    "params": [
@@ -16057,6 +16491,7 @@
    "c_prototype": "RayCollision GetRayCollisionBox(Ray ray, BoundingBox box)",
    "status": "wrapped",
    "xt3d": "xt3d_GetRayCollisionBox",
+   "needs_window": false,
    "signature": "12f",
    "returns": "s",
    "params": [
@@ -16130,6 +16565,7 @@
    "c_prototype": "RayCollision GetRayCollisionMesh(Ray ray, Mesh mesh, Matrix transform)",
    "status": "wrapped",
    "xt3d": "xt3d_GetRayCollisionMesh",
+   "needs_window": false,
    "signature": "6fi16f",
    "returns": "s",
    "params": [
@@ -16258,6 +16694,7 @@
    "c_prototype": "RayCollision GetRayCollisionTriangle(Ray ray, Vector3 p1, Vector3 p2, Vector3 p3)",
    "status": "wrapped",
    "xt3d": "xt3d_GetRayCollisionTriangle",
+   "needs_window": false,
    "signature": "15f",
    "returns": "s",
    "params": [
@@ -16346,6 +16783,7 @@
    "c_prototype": "RayCollision GetRayCollisionQuad(Ray ray, Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4)",
    "status": "wrapped",
    "xt3d": "xt3d_GetRayCollisionQuad",
+   "needs_window": false,
    "signature": "18f",
    "returns": "s",
    "params": [
@@ -16449,6 +16887,7 @@
    "c_prototype": "void InitAudioDevice(void)",
    "status": "wrapped",
    "xt3d": "xt3d_InitAudioDevice",
+   "needs_window": false,
    "signature": "",
    "returns": "",
    "params": [],
@@ -16461,6 +16900,7 @@
    "c_prototype": "void CloseAudioDevice(void)",
    "status": "wrapped",
    "xt3d": "xt3d_CloseAudioDevice",
+   "needs_window": false,
    "signature": "",
    "returns": "",
    "params": [],
@@ -16473,6 +16913,7 @@
    "c_prototype": "bool IsAudioDeviceReady(void)",
    "status": "wrapped",
    "xt3d": "xt3d_IsAudioDeviceReady",
+   "needs_window": false,
    "signature": "",
    "returns": "b",
    "params": [],
@@ -16485,6 +16926,7 @@
    "c_prototype": "void SetMasterVolume(float volume)",
    "status": "wrapped",
    "xt3d": "xt3d_SetMasterVolume",
+   "needs_window": false,
    "signature": "f",
    "returns": "",
    "params": [
@@ -16503,6 +16945,7 @@
    "c_prototype": "float GetMasterVolume(void)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMasterVolume",
+   "needs_window": false,
    "signature": "",
    "returns": "f",
    "params": [],
@@ -16515,6 +16958,7 @@
    "c_prototype": "Wave LoadWave(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadWave",
+   "needs_window": false,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -16541,6 +16985,7 @@
    "c_prototype": "bool IsWaveValid(Wave wave)",
    "status": "wrapped",
    "xt3d": "xt3d_IsWaveValid",
+   "needs_window": false,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -16559,6 +17004,7 @@
    "c_prototype": "Sound LoadSound(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadSound",
+   "needs_window": false,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -16577,6 +17023,7 @@
    "c_prototype": "Sound LoadSoundFromWave(Wave wave)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadSoundFromWave",
+   "needs_window": false,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -16595,6 +17042,7 @@
    "c_prototype": "Sound LoadSoundAlias(Sound source)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadSoundAlias",
+   "needs_window": false,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -16613,6 +17061,7 @@
    "c_prototype": "bool IsSoundValid(Sound sound)",
    "status": "wrapped",
    "xt3d": "xt3d_IsSoundValid",
+   "needs_window": false,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -16639,6 +17088,7 @@
    "c_prototype": "void UnloadWave(Wave wave)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadWave",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -16657,6 +17107,7 @@
    "c_prototype": "void UnloadSound(Sound sound)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadSound",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -16675,6 +17126,7 @@
    "c_prototype": "void UnloadSoundAlias(Sound alias)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadSoundAlias",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -16693,6 +17145,7 @@
    "c_prototype": "bool ExportWave(Wave wave, const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_ExportWave",
+   "needs_window": false,
    "signature": "is",
    "returns": "b",
    "params": [
@@ -16716,6 +17169,7 @@
    "c_prototype": "bool ExportWaveAsCode(Wave wave, const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_ExportWaveAsCode",
+   "needs_window": false,
    "signature": "is",
    "returns": "b",
    "params": [
@@ -16739,6 +17193,7 @@
    "c_prototype": "void PlaySound(Sound sound)",
    "status": "wrapped",
    "xt3d": "xt3d_PlaySound",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -16757,6 +17212,7 @@
    "c_prototype": "void StopSound(Sound sound)",
    "status": "wrapped",
    "xt3d": "xt3d_StopSound",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -16775,6 +17231,7 @@
    "c_prototype": "void PauseSound(Sound sound)",
    "status": "wrapped",
    "xt3d": "xt3d_PauseSound",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -16793,6 +17250,7 @@
    "c_prototype": "void ResumeSound(Sound sound)",
    "status": "wrapped",
    "xt3d": "xt3d_ResumeSound",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -16811,6 +17269,7 @@
    "c_prototype": "bool IsSoundPlaying(Sound sound)",
    "status": "wrapped",
    "xt3d": "xt3d_IsSoundPlaying",
+   "needs_window": false,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -16829,6 +17288,7 @@
    "c_prototype": "void SetSoundVolume(Sound sound, float volume)",
    "status": "wrapped",
    "xt3d": "xt3d_SetSoundVolume",
+   "needs_window": false,
    "signature": "if",
    "returns": "",
    "params": [
@@ -16852,6 +17312,7 @@
    "c_prototype": "void SetSoundPitch(Sound sound, float pitch)",
    "status": "wrapped",
    "xt3d": "xt3d_SetSoundPitch",
+   "needs_window": false,
    "signature": "if",
    "returns": "",
    "params": [
@@ -16875,6 +17336,7 @@
    "c_prototype": "void SetSoundPan(Sound sound, float pan)",
    "status": "wrapped",
    "xt3d": "xt3d_SetSoundPan",
+   "needs_window": false,
    "signature": "if",
    "returns": "",
    "params": [
@@ -16898,6 +17360,7 @@
    "c_prototype": "Wave WaveCopy(Wave wave)",
    "status": "wrapped",
    "xt3d": "xt3d_WaveCopy",
+   "needs_window": false,
    "signature": "i",
    "returns": "i",
    "params": [
@@ -16916,6 +17379,7 @@
    "c_prototype": "void WaveCrop(Wave * wave, int initFrame, int finalFrame)",
    "status": "wrapped",
    "xt3d": "xt3d_WaveCrop",
+   "needs_window": false,
    "signature": "3i",
    "returns": "",
    "params": [
@@ -16944,6 +17408,7 @@
    "c_prototype": "void WaveFormat(Wave * wave, int sampleRate, int sampleSize, int channels)",
    "status": "wrapped",
    "xt3d": "xt3d_WaveFormat",
+   "needs_window": false,
    "signature": "4i",
    "returns": "",
    "params": [
@@ -16993,6 +17458,7 @@
    "c_prototype": "Music LoadMusicStream(const char * fileName)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadMusicStream",
+   "needs_window": false,
    "signature": "s",
    "returns": "i",
    "params": [
@@ -17019,6 +17485,7 @@
    "c_prototype": "bool IsMusicValid(Music music)",
    "status": "wrapped",
    "xt3d": "xt3d_IsMusicValid",
+   "needs_window": false,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -17037,6 +17504,7 @@
    "c_prototype": "void UnloadMusicStream(Music music)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadMusicStream",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -17055,6 +17523,7 @@
    "c_prototype": "void PlayMusicStream(Music music)",
    "status": "wrapped",
    "xt3d": "xt3d_PlayMusicStream",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -17073,6 +17542,7 @@
    "c_prototype": "bool IsMusicStreamPlaying(Music music)",
    "status": "wrapped",
    "xt3d": "xt3d_IsMusicStreamPlaying",
+   "needs_window": false,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -17091,6 +17561,7 @@
    "c_prototype": "void UpdateMusicStream(Music music)",
    "status": "wrapped",
    "xt3d": "xt3d_UpdateMusicStream",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -17109,6 +17580,7 @@
    "c_prototype": "void StopMusicStream(Music music)",
    "status": "wrapped",
    "xt3d": "xt3d_StopMusicStream",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -17127,6 +17599,7 @@
    "c_prototype": "void PauseMusicStream(Music music)",
    "status": "wrapped",
    "xt3d": "xt3d_PauseMusicStream",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -17145,6 +17618,7 @@
    "c_prototype": "void ResumeMusicStream(Music music)",
    "status": "wrapped",
    "xt3d": "xt3d_ResumeMusicStream",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -17163,6 +17637,7 @@
    "c_prototype": "void SeekMusicStream(Music music, float position)",
    "status": "wrapped",
    "xt3d": "xt3d_SeekMusicStream",
+   "needs_window": false,
    "signature": "if",
    "returns": "",
    "params": [
@@ -17186,6 +17661,7 @@
    "c_prototype": "void SetMusicVolume(Music music, float volume)",
    "status": "wrapped",
    "xt3d": "xt3d_SetMusicVolume",
+   "needs_window": false,
    "signature": "if",
    "returns": "",
    "params": [
@@ -17209,6 +17685,7 @@
    "c_prototype": "void SetMusicPitch(Music music, float pitch)",
    "status": "wrapped",
    "xt3d": "xt3d_SetMusicPitch",
+   "needs_window": false,
    "signature": "if",
    "returns": "",
    "params": [
@@ -17232,6 +17709,7 @@
    "c_prototype": "void SetMusicPan(Music music, float pan)",
    "status": "wrapped",
    "xt3d": "xt3d_SetMusicPan",
+   "needs_window": false,
    "signature": "if",
    "returns": "",
    "params": [
@@ -17255,6 +17733,7 @@
    "c_prototype": "float GetMusicTimeLength(Music music)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMusicTimeLength",
+   "needs_window": false,
    "signature": "i",
    "returns": "f",
    "params": [
@@ -17273,6 +17752,7 @@
    "c_prototype": "float GetMusicTimePlayed(Music music)",
    "status": "wrapped",
    "xt3d": "xt3d_GetMusicTimePlayed",
+   "needs_window": false,
    "signature": "i",
    "returns": "f",
    "params": [
@@ -17291,6 +17771,7 @@
    "c_prototype": "AudioStream LoadAudioStream(unsigned int sampleRate, unsigned int sampleSize, unsigned int channels)",
    "status": "wrapped",
    "xt3d": "xt3d_LoadAudioStream",
+   "needs_window": false,
    "signature": "3i",
    "returns": "i",
    "params": [
@@ -17319,6 +17800,7 @@
    "c_prototype": "bool IsAudioStreamValid(AudioStream stream)",
    "status": "wrapped",
    "xt3d": "xt3d_IsAudioStreamValid",
+   "needs_window": false,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -17337,6 +17819,7 @@
    "c_prototype": "void UnloadAudioStream(AudioStream stream)",
    "status": "wrapped",
    "xt3d": "xt3d_UnloadAudioStream",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -17363,6 +17846,7 @@
    "c_prototype": "bool IsAudioStreamProcessed(AudioStream stream)",
    "status": "wrapped",
    "xt3d": "xt3d_IsAudioStreamProcessed",
+   "needs_window": false,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -17381,6 +17865,7 @@
    "c_prototype": "void PlayAudioStream(AudioStream stream)",
    "status": "wrapped",
    "xt3d": "xt3d_PlayAudioStream",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -17399,6 +17884,7 @@
    "c_prototype": "void PauseAudioStream(AudioStream stream)",
    "status": "wrapped",
    "xt3d": "xt3d_PauseAudioStream",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -17417,6 +17903,7 @@
    "c_prototype": "void ResumeAudioStream(AudioStream stream)",
    "status": "wrapped",
    "xt3d": "xt3d_ResumeAudioStream",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -17435,6 +17922,7 @@
    "c_prototype": "bool IsAudioStreamPlaying(AudioStream stream)",
    "status": "wrapped",
    "xt3d": "xt3d_IsAudioStreamPlaying",
+   "needs_window": false,
    "signature": "i",
    "returns": "b",
    "params": [
@@ -17453,6 +17941,7 @@
    "c_prototype": "void StopAudioStream(AudioStream stream)",
    "status": "wrapped",
    "xt3d": "xt3d_StopAudioStream",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -17471,6 +17960,7 @@
    "c_prototype": "void SetAudioStreamVolume(AudioStream stream, float volume)",
    "status": "wrapped",
    "xt3d": "xt3d_SetAudioStreamVolume",
+   "needs_window": false,
    "signature": "if",
    "returns": "",
    "params": [
@@ -17494,6 +17984,7 @@
    "c_prototype": "void SetAudioStreamPitch(AudioStream stream, float pitch)",
    "status": "wrapped",
    "xt3d": "xt3d_SetAudioStreamPitch",
+   "needs_window": false,
    "signature": "if",
    "returns": "",
    "params": [
@@ -17517,6 +18008,7 @@
    "c_prototype": "void SetAudioStreamPan(AudioStream stream, float pan)",
    "status": "wrapped",
    "xt3d": "xt3d_SetAudioStreamPan",
+   "needs_window": false,
    "signature": "if",
    "returns": "",
    "params": [
@@ -17540,6 +18032,7 @@
    "c_prototype": "void SetAudioStreamBufferSizeDefault(int size)",
    "status": "wrapped",
    "xt3d": "xt3d_SetAudioStreamBufferSizeDefault",
+   "needs_window": false,
    "signature": "i",
    "returns": "",
    "params": [
@@ -18688,6 +19181,23 @@
     }
    ],
    "returns_type": "number"
+  },
+  {
+   "raylib": null,
+   "module": "xt3d",
+   "description": "Send raylib's log messages to a text file (empty name: back to the console); works before the window opens",
+   "status": "helper",
+   "xt3d": "xt3d_SetTraceLogFile",
+   "signature": "s",
+   "returns": "b",
+   "params": [
+    {
+     "name": "fileName",
+     "type": "String",
+     "handle": false
+    }
+   ],
+   "returns_type": "boolean"
   },
   {
    "raylib": null,

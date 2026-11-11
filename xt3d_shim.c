@@ -337,6 +337,7 @@ XT3D_API int xt3d_ModelAnimationInfo(int anim)
 
 XT3D_API void xt3d_SetShaderValueFloats(int shader, int locIndex, int count, float a, float b, float c, float d)
 {
+    if (!IsWindowReady()) return;   /* no window yet: no GPU to talk to */
     float v[4] = {a, b, c, d};
     if (count < 1) count = 1;
     if (count > 4) count = 4;
@@ -345,6 +346,7 @@ XT3D_API void xt3d_SetShaderValueFloats(int shader, int locIndex, int count, flo
 
 XT3D_API void xt3d_SetShaderValueInt(int shader, int locIndex, int value)
 {
+    if (!IsWindowReady()) return;   /* no window yet: no GPU to talk to */
     SetShaderValue(*xt_Shader(shader), locIndex, &value, SHADER_UNIFORM_INT);
 }
 
@@ -384,6 +386,7 @@ static Image xt_grab(int target)
 
 XT3D_API bool xt3d_RenderTextureExport(int target, const char *fileName)
 {
+    if (!IsWindowReady()) return false;   /* no window yet: no GPU to talk to */
     Image img = xt_grab(target);
     if (!img.data) return false;
     ImageFlipVertical(&img);
@@ -394,6 +397,7 @@ XT3D_API bool xt3d_RenderTextureExport(int target, const char *fileName)
 
 XT3D_API void *xt3d_RenderTextureToImageData(int target)
 {
+    if (!IsWindowReady()) { xt_frame_bytes = 0; return xt_frame; }   /* no window yet: no frame */
     Image img = xt_grab(target);
     if (!img.data) { xt_frame_bytes = 0; return xt_frame; }
     int w = img.width, h = img.height, bytes = w * h * 4;
@@ -457,6 +461,7 @@ static int xt_parse_floats(const char *text, float **out)
 
 XT3D_API int xt3d_MeshFromText(const char *vertices, const char *texcoords, const char *indices)
 {
+    if (!IsWindowReady()) return 0;   /* no window yet: no GPU to talk to */
     float *vf = NULL, *tf = NULL, *xf = NULL;
     int nv = xt_parse_floats(vertices, &vf) / 3;
     int nt = xt_parse_floats(texcoords, &tf) / 2;
@@ -554,6 +559,32 @@ XT3D_API void xt3d_SetLineWidth(float width)
 }
 
 /* --- diagnostics */
+
+/* --- raylib log to a file
+ * raylib reports what it loads and why something failed through TraceLog, which
+ * normally goes to a console LiveCode never shows. This sends it to a text file,
+ * flushed line by line so the log survives a crash. Empty name: back to the console. */
+
+static FILE *xt_log = NULL;
+
+static void xt_log_line(int level, const char *text, va_list args)
+{
+    static const char *names[] = {"ALL", "TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL", "NONE"};
+    if (!xt_log) return;
+    fprintf(xt_log, "%s: ", (level >= 0 && level <= 7) ? names[level] : "?");
+    vfprintf(xt_log, text, args);
+    fputc('\n', xt_log);
+    fflush(xt_log);
+}
+
+XT3D_API bool xt3d_SetTraceLogFile(const char *fileName)
+{
+    if (xt_log) { fclose(xt_log); xt_log = NULL; }
+    if (!fileName || !fileName[0]) { SetTraceLogCallback(NULL); return true; }
+    xt_log = fopen(fileName, "w");
+    SetTraceLogCallback(xt_log ? xt_log_line : NULL);
+    return xt_log != NULL;
+}
 
 XT3D_API int xt3d_HandleCount(const char *typeName)
 {

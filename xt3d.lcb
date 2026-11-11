@@ -3899,6 +3899,13 @@ public handler xt3d_ResultByte(in pIndex as Number) returns Number
 	end unsafe
 end handler
 
+private foreign handler _xt3d_SetTraceLogFile(in p0 as ZStringNative) returns CBool binds to "c:xt3d>xt3d_SetTraceLogFile!cdecl"
+public handler xt3d_SetTraceLogFile(in pFileName as String) returns Boolean
+	unsafe
+		return _xt3d_SetTraceLogFile(pFileName)
+	end unsafe
+end handler
+
 private foreign handler _xt3d_HandleCount(in p0 as ZStringNative) returns CInt binds to "c:xt3d>xt3d_HandleCount!cdecl"
 public handler xt3d_HandleCount(in pTypeName as String) returns Number
 	unsafe

@@ -30,6 +30,10 @@ LiveCode Script  ──calls──▶  xt3d.lcb  ──binds to──▶  xt3d.d
 | `demos/xt3d_view_demo.livecodescript.txt` | Model viewer rendered into a LiveCode image |
 | `demos/xt3d_window_demo.livecodescript.txt` | Same scene in raylib's own window |
 | `demos/xt3d_diagnostic.livecodescript.txt` | Step-by-step self-test that logs before each call |
+| `tools/make_skinned_test.py` | Blender script that builds `test_models/skinned_bend.glb`, a small skinned, animated test model |
+| `tools/fbx_to_glb.py` | Blender script: rigged FBX (e.g. Mixamo) to a GLB raylib can animate, with the armature transform baked in |
+| `test_models/` | Test assets |
+| `3DModels/` | Sample models by format, for import testing |
 | `reference/ig3d_2007_api_manifest.json` | The 176 original iGame3D external handlers, for reference |
 | `docs/STATUS.md` | What is proven, known issues, next steps |
 | `CLAUDE.md` | Working notes for Claude Code in this repository |
@@ -48,12 +52,11 @@ LiveCode Script  ──calls──▶  xt3d.lcb  ──binds to──▶  xt3d.d
 Requirements: Visual Studio 2022 with "Desktop development with C++", and a prebuilt raylib for MSVC (for example `raylib-6.2_win64_msvc16`) unpacked at `C:\xt3d\raylib-6.2_win64_msvc16`.
 
 1. Close LiveCode.
-2. Open **x64 Native Tools Command Prompt for VS 2022**.
-3. Run `build.bat` from this folder. It copies the sources to `C:\xt3d`, compiles `xt3d.dll`, and installs the DLL and `xt3d.lcb` into `C:\xt3d\extension`.
+2. Double-click `build.bat` (this folder's copy, or one placed in `C:\xt3d`). It finds Visual Studio by itself, copies the sources to `C:\xt3d` (from the WSL project folder when run from `C:\xt3d`), compiles `xt3d.dll`, and installs the DLL and `xt3d.lcb` into `C:\xt3d\extension`. The window stays open so you can read the result.
 4. In LiveCode: Tools → Extension Builder → open `C:\xt3d\extension\xt3d.lcb` → Test.
 5. In the message box: `put xt3d_Version()` should answer `xt3d 0.1.0 / raylib 6.2`.
 
-Set `XT3D_WORK` or `XT3D_RAYLIB` before running `build.bat` to use other folders. The DLL must match LiveCode's bitness (`put the processor`).
+Set `XT3D_SRC`, `XT3D_WORK` or `XT3D_RAYLIB` before running `build.bat` to use other folders. The DLL must match LiveCode's bitness (`put the processor`).
 
 The compile command, for reference:
 

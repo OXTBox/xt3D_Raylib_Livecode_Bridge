@@ -40,6 +40,36 @@ LCBPUB = {'i':'Number','u':'Number','f':'Number','d':'Number','l':'Number','h':'
 SIG    = {'i':'i','u':'i','l':'i','h':'i','f':'f','d':'f','b':'b','s':'s','p':'p'}
 SKIP_NAMES = {'SetWindowIcons':'takes an array of images'}  # pointer-to-resource parameters that are really arrays
 
+# Window guard. Most of raylib dereferences state that InitWindow creates, so a
+# call made before the window exists (or after CloseWindow) crashes LiveCode.
+# Every wrapper is guarded unless it is listed here as safe without a window:
+# it then does nothing and returns 0 / false / "" instead.
+# Safe means pure CPU work: files, images in memory, colours, collisions, audio.
+NO_WINDOW_OK = set('''
+ InitWindow IsWindowReady SetConfigFlags SetTraceLogLevel SetRandomSeed GetRandomValue
+ SetTargetFPS WaitTime OpenURL SaveFileText
+ FileRename FileRemove FileCopy FileMove FileTextReplace FileTextFindIndex FileExists DirectoryExists
+ IsFileExtension IsFileHidden GetFileLength GetFileModTime GetFileExtension GetFileName
+ GetFileNameWithoutExt GetDirectoryPath GetPrevDirectoryPath GetWorkingDirectory
+ GetApplicationDirectory MakeDirectory ChangeDirectory IsPathFile IsPathDirectory IsPathAbsolute
+ IsFileNameValid GetDirectoryFileCount GetDirectoryFileCountEx
+ GetSplinePointLinear GetSplinePointBasis GetSplinePointCatmullRom GetSplinePointBezierQuadratic
+ GetSplinePointBezierCubic GetCollisionRec
+ LoadImage LoadImageRaw IsImageValid UnloadImage ExportImage ExportImageAsCode GenImageText
+ GetImageAlphaBorder GetImageColor GetPixelDataSize GetColor Fade
+ GetCodepointCount
+ GetMeshBoundingBox GetModelBoundingBox ExportMesh ExportMeshAsCode
+'''.split())
+NO_WINDOW_PREFIX = ('CheckCollision', 'GetRayCollision', 'GenImage', 'Color')
+NO_WINDOW_IMAGE_FONT = ('ImageText', 'ImageDrawText')  # Image* functions that need the default font
+
+def needs_window(f):
+    n = f['name']
+    if f['module'] == 'audio': return False   # raudio has its own device (InitAudioDevice)
+    if n in NO_WINDOW_OK or n.startswith(NO_WINDOW_PREFIX): return False
+    if n.startswith('Image') and not n.startswith(NO_WINDOW_IMAGE_FONT): return False
+    return True
+
 def sigcode(codes):
     out=''
     for k,g in itertools.groupby(SIG[c] for c in codes):
@@ -113,6 +143,11 @@ def flatten(f):
     if after:
         if rc!='v': raise ValueError('unload with return')
         body=body+' '+' '.join(after)
+    if needs_window(f):
+        # no window: do nothing. An Unload still releases the handle number.
+        idle={'v':'','s':'xt_set("%s", "")','p':'NULL','b':'false'}.get(rc,'0')
+        idle=(' '.join(after)+' ' if after else '')+'return'+(' '+idle if idle else '')+';'
+        body='if (!IsWindowReady()) { %s } %s'%(idle,body)
     return cp,rc,body
 
 # hand-written helpers in xt3d_shim.c: (name, return code, [(param,code)], description)
@@ -160,6 +195,7 @@ EXTRA=[
  ('SetLineWidth','v','width:f','Line width for what is drawn next'),
  ('ResultLength','i','','Length in bytes of the most recent text result (diagnostic)'),
  ('ResultByte','i','index:i','One byte of the most recent text result, 0-based (diagnostic)'),
+ ('SetTraceLogFile','b','fileName:s','Send raylib\'s log messages to a text file (empty name: back to the console); works before the window opens'),
  ('HandleCount','i','typeName:s','Number of live handles of a type such as "Model" or "Texture"'),
 ]
 
@@ -179,7 +215,7 @@ def main():
         cname='xt3d_'+f['name']
         inc.append('XT3D_API %s %s(%s) { %s }'%(('int' if rc=='s' else CTYPE.get(rc,'void')) if rc!='v' else 'void',cname,
                    ', '.join(CTYPE[c]+(' ' if not CTYPE[c].endswith('*') else '')+n for n,c in cp) or 'void',body))
-        e.update(status='wrapped',xt3d=cname,signature=sigcode([c for _,c in cp]),returns=SIG.get(rc,''),
+        e.update(status='wrapped',xt3d=cname,needs_window=needs_window(f),signature=sigcode([c for _,c in cp]),returns=SIG.get(rc,''),
                  params=[dict(name=n,type=LCBPUB[c],handle=(c=='h')) for n,c in cp],
                  returns_type={'v':'nothing','h':'handle','s':'string','b':'boolean','p':'pointer'}.get(rc,'number'),
                  _lcb=(cp,rc))
