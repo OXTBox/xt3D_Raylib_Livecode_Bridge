@@ -21,7 +21,7 @@ SYSTEM = ('You help with the xt3d project: raylib 3D for LiveCode 9.6.3. You can
 
 
 def chat(model, messages, tools, effort):
-    body = {'model': model, 'messages': messages, 'temperature': 0.2, 'max_tokens': 4000}
+    body = {'model': model, 'messages': messages, 'temperature': 0.2, 'max_tokens': 2048}   # thinking included; caps runaways
     if effort:
         body['reasoning_effort'] = effort
     if tools:
