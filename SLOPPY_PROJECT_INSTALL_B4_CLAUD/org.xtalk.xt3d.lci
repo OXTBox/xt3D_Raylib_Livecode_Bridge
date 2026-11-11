@@ -1,0 +1,533 @@
+import module org.xtalk.xt3d
+  use com.livecode.foreign
+  handler xt3d_InitWindow(in pWidth as Number, in pHeight as Number, in pTitle as String) returns nothing
+  handler xt3d_CloseWindow() returns nothing
+  handler xt3d_WindowShouldClose() returns Boolean
+  handler xt3d_IsWindowReady() returns Boolean
+  handler xt3d_IsWindowFullscreen() returns Boolean
+  handler xt3d_IsWindowHidden() returns Boolean
+  handler xt3d_IsWindowMinimized() returns Boolean
+  handler xt3d_IsWindowMaximized() returns Boolean
+  handler xt3d_IsWindowFocused() returns Boolean
+  handler xt3d_IsWindowResized() returns Boolean
+  handler xt3d_IsWindowState(in pFlag as Number) returns Boolean
+  handler xt3d_SetWindowState(in pFlags as Number) returns nothing
+  handler xt3d_ClearWindowState(in pFlags as Number) returns nothing
+  handler xt3d_ToggleFullscreen() returns nothing
+  handler xt3d_ToggleBorderlessWindowed() returns nothing
+  handler xt3d_MaximizeWindow() returns nothing
+  handler xt3d_MinimizeWindow() returns nothing
+  handler xt3d_RestoreWindow() returns nothing
+  handler xt3d_SetWindowIcon(in pFlags as Number) returns nothing
+  handler xt3d_SetWindowTitle(in pTitle as String) returns nothing
+  handler xt3d_SetWindowPosition(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetWindowMonitor(in pFlags as Number) returns nothing
+  handler xt3d_SetWindowMinSize(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetWindowMaxSize(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetWindowSize(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetWindowOpacity(in pFlags as Number) returns nothing
+  handler xt3d_SetWindowFocused() returns nothing
+  handler xt3d_GetWindowHandle() returns Pointer
+  handler xt3d_GetScreenWidth() returns Number
+  handler xt3d_GetScreenHeight() returns Number
+  handler xt3d_GetRenderWidth() returns Number
+  handler xt3d_GetRenderHeight() returns Number
+  handler xt3d_GetMonitorCount() returns Number
+  handler xt3d_GetCurrentMonitor() returns Number
+  handler xt3d_GetMonitorPosition(in pMonitor as Number) returns String
+  handler xt3d_GetMonitorWidth(in pMonitor as Number) returns Number
+  handler xt3d_GetMonitorHeight(in pMonitor as Number) returns Number
+  handler xt3d_GetMonitorPhysicalWidth(in pMonitor as Number) returns Number
+  handler xt3d_GetMonitorPhysicalHeight(in pMonitor as Number) returns Number
+  handler xt3d_GetMonitorRefreshRate(in pMonitor as Number) returns Number
+  handler xt3d_GetWindowPosition() returns String
+  handler xt3d_GetWindowScaleDPI() returns String
+  handler xt3d_GetMonitorName(in pMonitor as Number) returns String
+  handler xt3d_SetClipboardText(in pTitle as String) returns nothing
+  handler xt3d_GetClipboardText() returns String
+  handler xt3d_GetClipboardImage() returns Number
+  handler xt3d_EnableEventWaiting() returns nothing
+  handler xt3d_DisableEventWaiting() returns nothing
+  handler xt3d_ShowCursor() returns nothing
+  handler xt3d_HideCursor() returns nothing
+  handler xt3d_IsCursorHidden() returns Boolean
+  handler xt3d_EnableCursor() returns nothing
+  handler xt3d_DisableCursor() returns nothing
+  handler xt3d_IsCursorOnScreen() returns Boolean
+  handler xt3d_ClearBackground(in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_BeginDrawing() returns nothing
+  handler xt3d_EndDrawing() returns nothing
+  handler xt3d_BeginMode2D(in pFlags as Number) returns nothing
+  handler xt3d_EndMode2D() returns nothing
+  handler xt3d_BeginMode3D(in pFlags as Number) returns nothing
+  handler xt3d_EndMode3D() returns nothing
+  handler xt3d_BeginTextureMode(in pFlags as Number) returns nothing
+  handler xt3d_EndTextureMode() returns nothing
+  handler xt3d_BeginShaderMode(in pFlags as Number) returns nothing
+  handler xt3d_EndShaderMode() returns nothing
+  handler xt3d_BeginBlendMode(in pFlags as Number) returns nothing
+  handler xt3d_EndBlendMode() returns nothing
+  handler xt3d_BeginScissorMode(in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_EndScissorMode() returns nothing
+  handler xt3d_EndVrStereoMode() returns nothing
+  handler xt3d_LoadShader(in pVsFileName as String, in pFsFileName as String) returns Number
+  handler xt3d_LoadShaderFromMemory(in pVsFileName as String, in pFsFileName as String) returns Number
+  handler xt3d_IsShaderValid(in pFlag as Number) returns Boolean
+  handler xt3d_GetShaderLocation(in pShader as Number, in pUniformName as String) returns Number
+  handler xt3d_GetShaderLocationAttrib(in pShader as Number, in pUniformName as String) returns Number
+  handler xt3d_SetShaderValueMatrix(in pShader as Number, in pLocIndex as Number, in pMat_m0 as Number, in pMat_m1 as Number, in pMat_m2 as Number, in pMat_m3 as Number, in pMat_m4 as Number, in pMat_m5 as Number, in pMat_m6 as Number, in pMat_m7 as Number, in pMat_m8 as Number, in pMat_m9 as Number, in pMat_m10 as Number, in pMat_m11 as Number, in pMat_m12 as Number, in pMat_m13 as Number, in pMat_m14 as Number, in pMat_m15 as Number) returns nothing
+  handler xt3d_SetShaderValueTexture(in pShader as Number, in pLocIndex as Number, in pTexture as Number) returns nothing
+  handler xt3d_UnloadShader(in pFlags as Number) returns nothing
+  handler xt3d_GetScreenToWorldRay(in pPosition_x as Number, in pPosition_y as Number, in pCamera as Number) returns String
+  handler xt3d_GetScreenToWorldRayEx(in pPosition_x as Number, in pPosition_y as Number, in pCamera as Number, in pWidth as Number, in pHeight as Number) returns String
+  handler xt3d_GetWorldToScreen(in pPosition_x as Number, in pPosition_y as Number, in pPosition_z as Number, in pCamera as Number) returns String
+  handler xt3d_GetWorldToScreenEx(in pPosition_x as Number, in pPosition_y as Number, in pPosition_z as Number, in pCamera as Number, in pWidth as Number, in pHeight as Number) returns String
+  handler xt3d_GetWorldToScreen2D(in pPosition_x as Number, in pPosition_y as Number, in pCamera as Number) returns String
+  handler xt3d_GetScreenToWorld2D(in pPosition_x as Number, in pPosition_y as Number, in pCamera as Number) returns String
+  handler xt3d_GetCameraMatrix(in pMonitor as Number) returns String
+  handler xt3d_GetCameraMatrix2D(in pMonitor as Number) returns String
+  handler xt3d_SetTargetFPS(in pFlags as Number) returns nothing
+  handler xt3d_GetFrameTime() returns Number
+  handler xt3d_GetTime() returns Number
+  handler xt3d_GetFPS() returns Number
+  handler xt3d_SwapScreenBuffer() returns nothing
+  handler xt3d_PollInputEvents() returns nothing
+  handler xt3d_WaitTime(in pFlags as Number) returns nothing
+  handler xt3d_SetRandomSeed(in pFlags as Number) returns nothing
+  handler xt3d_GetRandomValue(in pMin as Number, in pMax as Number) returns Number
+  handler xt3d_TakeScreenshot(in pTitle as String) returns nothing
+  handler xt3d_SetConfigFlags(in pFlags as Number) returns nothing
+  handler xt3d_OpenURL(in pTitle as String) returns nothing
+  handler xt3d_SetTraceLogLevel(in pFlags as Number) returns nothing
+  handler xt3d_SaveFileText(in pFileName as String, in pText as String) returns Boolean
+  handler xt3d_FileRename(in pVsFileName as String, in pFsFileName as String) returns Number
+  handler xt3d_FileRemove(in pFileName as String) returns Number
+  handler xt3d_FileCopy(in pVsFileName as String, in pFsFileName as String) returns Number
+  handler xt3d_FileMove(in pVsFileName as String, in pFsFileName as String) returns Number
+  handler xt3d_FileTextReplace(in pFileName as String, in pSearch as String, in pReplacement as String) returns Number
+  handler xt3d_FileTextFindIndex(in pVsFileName as String, in pFsFileName as String) returns Number
+  handler xt3d_FileExists(in pFileName as String) returns Boolean
+  handler xt3d_DirectoryExists(in pFileName as String) returns Boolean
+  handler xt3d_IsFileExtension(in pFileName as String, in pText as String) returns Boolean
+  handler xt3d_IsFileHidden(in pFileName as String) returns Boolean
+  handler xt3d_GetFileLength(in pFileName as String) returns Number
+  handler xt3d_GetFileModTime(in pFileName as String) returns Number
+  handler xt3d_GetFileExtension(in pFileName as String) returns String
+  handler xt3d_GetFileName(in pFileName as String) returns String
+  handler xt3d_GetFileNameWithoutExt(in pFileName as String) returns String
+  handler xt3d_GetDirectoryPath(in pFileName as String) returns String
+  handler xt3d_GetPrevDirectoryPath(in pFileName as String) returns String
+  handler xt3d_GetWorkingDirectory() returns String
+  handler xt3d_GetApplicationDirectory() returns String
+  handler xt3d_MakeDirectory(in pFileName as String) returns Number
+  handler xt3d_ChangeDirectory(in pFileName as String) returns Number
+  handler xt3d_IsPathFile(in pFileName as String) returns Boolean
+  handler xt3d_IsPathDirectory(in pFileName as String) returns Boolean
+  handler xt3d_IsPathAbsolute(in pFileName as String) returns Boolean
+  handler xt3d_IsFileNameValid(in pFileName as String) returns Boolean
+  handler xt3d_IsFileDropped() returns Boolean
+  handler xt3d_GetDirectoryFileCount(in pFileName as String) returns Number
+  handler xt3d_GetDirectoryFileCountEx(in pBasePath as String, in pFilter as String, in pScanSubdirs as Boolean) returns Number
+  handler xt3d_SetAutomationEventBaseFrame(in pFlags as Number) returns nothing
+  handler xt3d_StartAutomationEventRecording() returns nothing
+  handler xt3d_StopAutomationEventRecording() returns nothing
+  handler xt3d_IsKeyPressed(in pFlag as Number) returns Boolean
+  handler xt3d_IsKeyPressedRepeat(in pFlag as Number) returns Boolean
+  handler xt3d_IsKeyDown(in pFlag as Number) returns Boolean
+  handler xt3d_IsKeyReleased(in pFlag as Number) returns Boolean
+  handler xt3d_IsKeyUp(in pFlag as Number) returns Boolean
+  handler xt3d_GetKeyPressed() returns Number
+  handler xt3d_GetCharPressed() returns Number
+  handler xt3d_GetKeyName(in pMonitor as Number) returns String
+  handler xt3d_SetExitKey(in pFlags as Number) returns nothing
+  handler xt3d_IsGamepadAvailable(in pFlag as Number) returns Boolean
+  handler xt3d_GetGamepadName(in pMonitor as Number) returns String
+  handler xt3d_IsGamepadButtonPressed(in pGamepad as Number, in pButton as Number) returns Boolean
+  handler xt3d_IsGamepadButtonDown(in pGamepad as Number, in pButton as Number) returns Boolean
+  handler xt3d_IsGamepadButtonReleased(in pGamepad as Number, in pButton as Number) returns Boolean
+  handler xt3d_IsGamepadButtonUp(in pGamepad as Number, in pButton as Number) returns Boolean
+  handler xt3d_GetGamepadButtonPressed() returns Number
+  handler xt3d_GetGamepadAxisCount(in pMonitor as Number) returns Number
+  handler xt3d_GetGamepadAxisMovement(in pMin as Number, in pMax as Number) returns Number
+  handler xt3d_SetGamepadMappings(in pFileName as String) returns Number
+  handler xt3d_SetGamepadVibration(in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_IsMouseButtonPressed(in pFlag as Number) returns Boolean
+  handler xt3d_IsMouseButtonDown(in pFlag as Number) returns Boolean
+  handler xt3d_IsMouseButtonReleased(in pFlag as Number) returns Boolean
+  handler xt3d_IsMouseButtonUp(in pFlag as Number) returns Boolean
+  handler xt3d_GetMouseX() returns Number
+  handler xt3d_GetMouseY() returns Number
+  handler xt3d_GetMousePosition() returns String
+  handler xt3d_GetMouseDelta() returns String
+  handler xt3d_SetMousePosition(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetMouseOffset(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetMouseScale(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_GetMouseWheelMove() returns Number
+  handler xt3d_GetMouseWheelMoveV() returns String
+  handler xt3d_SetMouseCursor(in pFlags as Number) returns nothing
+  handler xt3d_GetTouchX() returns Number
+  handler xt3d_GetTouchY() returns Number
+  handler xt3d_GetTouchPosition(in pMonitor as Number) returns String
+  handler xt3d_GetTouchPointId(in pMonitor as Number) returns Number
+  handler xt3d_GetTouchPointCount() returns Number
+  handler xt3d_SetGesturesEnabled(in pFlags as Number) returns nothing
+  handler xt3d_IsGestureDetected(in pFlag as Number) returns Boolean
+  handler xt3d_GetGestureDetected() returns Number
+  handler xt3d_GetGestureHoldDuration() returns Number
+  handler xt3d_GetGestureDragVector() returns String
+  handler xt3d_GetGestureDragAngle() returns Number
+  handler xt3d_GetGesturePinchVector() returns String
+  handler xt3d_GetGesturePinchAngle() returns Number
+  handler xt3d_UpdateCamera(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_UpdateCameraPro(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_SetShapesTexture(in pTexture as Number, in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number) returns nothing
+  handler xt3d_GetShapesTexture() returns Number
+  handler xt3d_GetShapesTextureRectangle() returns String
+  handler xt3d_DrawPixel(in pPosX as Number, in pPosY as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawPixelV(in pPosX as Number, in pPosY as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawLine(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_DrawLineV(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_DrawLineEx(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawLineBezier(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawLineDashed(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawTriangle(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawTriangleGradient(in pShader as Number, in pLocIndex as Number, in pMat_m0 as Number, in pMat_m1 as Number, in pMat_m2 as Number, in pMat_m3 as Number, in pMat_m4 as Number, in pMat_m5 as Number, in pMat_m6 as Number, in pMat_m7 as Number, in pMat_m8 as Number, in pMat_m9 as Number, in pMat_m10 as Number, in pMat_m11 as Number, in pMat_m12 as Number, in pMat_m13 as Number, in pMat_m14 as Number, in pMat_m15 as Number) returns nothing
+  handler xt3d_DrawTriangleLines(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawTriangleLinesEx(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawRectangle(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_DrawRectangleV(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_DrawRectangleRec(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_DrawRectanglePro(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawRectangleGradientV(in pPosX as Number, in pPosY as Number, in pWidth as Number, in pHeight as Number, in pTop_r as Number, in pTop_g as Number, in pTop_b as Number, in pTop_a as Number, in pBottom_r as Number, in pBottom_g as Number, in pBottom_b as Number, in pBottom_a as Number) returns nothing
+  handler xt3d_DrawRectangleGradientH(in pPosX as Number, in pPosY as Number, in pWidth as Number, in pHeight as Number, in pTop_r as Number, in pTop_g as Number, in pTop_b as Number, in pTop_a as Number, in pBottom_r as Number, in pBottom_g as Number, in pBottom_b as Number, in pBottom_a as Number) returns nothing
+  handler xt3d_DrawRectangleGradientEx(in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number, in pCol1_r as Number, in pCol1_g as Number, in pCol1_b as Number, in pCol1_a as Number, in pCol2_r as Number, in pCol2_g as Number, in pCol2_b as Number, in pCol2_a as Number, in pCol3_r as Number, in pCol3_g as Number, in pCol3_b as Number, in pCol3_a as Number, in pCol4_r as Number, in pCol4_g as Number, in pCol4_b as Number, in pCol4_a as Number) returns nothing
+  handler xt3d_DrawRectangleLines(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_DrawRectangleLinesEx(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawRectangleRounded(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawRectangleRoundedLines(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawRectangleRoundedLinesEx(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawPoly(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawPolyLines(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawPolyLinesEx(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCircle(in pCenterX as Number, in pCenterY as Number, in pRadius as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCircleV(in pCenterX as Number, in pCenterY as Number, in pRadius as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCircleGradient(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCircleSector(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCircleSectorLines(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCircleSectorLinesEx(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCircleLines(in pCenterX as Number, in pCenterY as Number, in pRadius as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCircleLinesV(in pCenterX as Number, in pCenterY as Number, in pRadius as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCircleLinesEx(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_DrawEllipse(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_DrawEllipseV(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_DrawEllipseLines(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_DrawEllipseLinesV(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_DrawEllipseLinesEx(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawRing(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawRingLines(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawRingLinesEx(in pPosX as Number, in pPosY as Number, in pWidth as Number, in pHeight as Number, in pTop_r as Number, in pTop_g as Number, in pTop_b as Number, in pTop_a as Number, in pBottom_r as Number, in pBottom_g as Number, in pBottom_b as Number, in pBottom_a as Number) returns nothing
+  handler xt3d_DrawSplineSegmentLinear(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawSplineSegmentBasis(in pP1_x as Number, in pP1_y as Number, in pP2_x as Number, in pP2_y as Number, in pP3_x as Number, in pP3_y as Number, in pP4_x as Number, in pP4_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawSplineSegmentCatmullRom(in pP1_x as Number, in pP1_y as Number, in pP2_x as Number, in pP2_y as Number, in pP3_x as Number, in pP3_y as Number, in pP4_x as Number, in pP4_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawSplineSegmentBezierQuadratic(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawSplineSegmentBezierCubic(in pP1_x as Number, in pP1_y as Number, in pP2_x as Number, in pP2_y as Number, in pP3_x as Number, in pP3_y as Number, in pP4_x as Number, in pP4_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_GetSplinePointLinear(in pPosition_x as Number, in pPosition_y as Number, in pCamera as Number, in pWidth as Number, in pHeight as Number) returns String
+  handler xt3d_GetSplinePointBasis(in pP1_x as Number, in pP1_y as Number, in pP2_x as Number, in pP2_y as Number, in pP3_x as Number, in pP3_y as Number, in pP4_x as Number, in pP4_y as Number, in pT as Number) returns String
+  handler xt3d_GetSplinePointCatmullRom(in pP1_x as Number, in pP1_y as Number, in pP2_x as Number, in pP2_y as Number, in pP3_x as Number, in pP3_y as Number, in pP4_x as Number, in pP4_y as Number, in pT as Number) returns String
+  handler xt3d_GetSplinePointBezierQuadratic(in pP1_x as Number, in pP1_y as Number, in pC2_x as Number, in pC2_y as Number, in pP3_x as Number, in pP3_y as Number, in pT as Number) returns String
+  handler xt3d_GetSplinePointBezierCubic(in pP1_x as Number, in pP1_y as Number, in pP2_x as Number, in pP2_y as Number, in pP3_x as Number, in pP3_y as Number, in pP4_x as Number, in pP4_y as Number, in pT as Number) returns String
+  handler xt3d_CheckCollisionRecs(in pRec1_x as Number, in pRec1_y as Number, in pRec1_width as Number, in pRec1_height as Number, in pRec2_x as Number, in pRec2_y as Number, in pRec2_width as Number, in pRec2_height as Number) returns Boolean
+  handler xt3d_CheckCollisionCircles(in pCenter1_x as Number, in pCenter1_y as Number, in pRadius1 as Number, in pCenter2_x as Number, in pCenter2_y as Number, in pRadius2 as Number) returns Boolean
+  handler xt3d_CheckCollisionCircleRec(in pCenter_x as Number, in pCenter_y as Number, in pRadius as Number, in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number) returns Boolean
+  handler xt3d_CheckCollisionCircleLine(in pCenter_x as Number, in pCenter_y as Number, in pRadius as Number, in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number) returns Boolean
+  handler xt3d_CheckCollisionPointRec(in pCenter1_x as Number, in pCenter1_y as Number, in pRadius1 as Number, in pCenter2_x as Number, in pCenter2_y as Number, in pRadius2 as Number) returns Boolean
+  handler xt3d_CheckCollisionPointCircle(in pPoint_x as Number, in pPoint_y as Number, in pCenter_x as Number, in pCenter_y as Number, in pRadius as Number) returns Boolean
+  handler xt3d_CheckCollisionPointTriangle(in pRec1_x as Number, in pRec1_y as Number, in pRec1_width as Number, in pRec1_height as Number, in pRec2_x as Number, in pRec2_y as Number, in pRec2_width as Number, in pRec2_height as Number) returns Boolean
+  handler xt3d_CheckCollisionPointLine(in pCenter_x as Number, in pCenter_y as Number, in pRadius as Number, in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number) returns Boolean
+  handler xt3d_GetCollisionRec(in pRec1_x as Number, in pRec1_y as Number, in pRec1_width as Number, in pRec1_height as Number, in pRec2_x as Number, in pRec2_y as Number, in pRec2_width as Number, in pRec2_height as Number) returns String
+  handler xt3d_LoadImage(in pFileName as String) returns Number
+  handler xt3d_LoadImageRaw(in pFileName as String, in pWidth as Number, in pHeight as Number, in pFormat as Number, in pHeaderSize as Number) returns Number
+  handler xt3d_LoadImageFromTexture(in pMonitor as Number) returns Number
+  handler xt3d_LoadImageFromScreen() returns Number
+  handler xt3d_IsImageValid(in pFlag as Number) returns Boolean
+  handler xt3d_UnloadImage(in pFlags as Number) returns nothing
+  handler xt3d_ExportImage(in pImage as Number, in pFileName as String) returns Boolean
+  handler xt3d_ExportImageAsCode(in pImage as Number, in pFileName as String) returns Boolean
+  handler xt3d_GenImageColor(in pWidth as Number, in pHeight as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns Number
+  handler xt3d_GenImageGradientLinear(in pWidth as Number, in pHeight as Number, in pDirection as Number, in pStart_r as Number, in pStart_g as Number, in pStart_b as Number, in pStart_a as Number, in pEnd_r as Number, in pEnd_g as Number, in pEnd_b as Number, in pEnd_a as Number) returns Number
+  handler xt3d_GenImageGradientRadial(in pWidth as Number, in pHeight as Number, in pDirection as Number, in pStart_r as Number, in pStart_g as Number, in pStart_b as Number, in pStart_a as Number, in pEnd_r as Number, in pEnd_g as Number, in pEnd_b as Number, in pEnd_a as Number) returns Number
+  handler xt3d_GenImageGradientSquare(in pWidth as Number, in pHeight as Number, in pDirection as Number, in pStart_r as Number, in pStart_g as Number, in pStart_b as Number, in pStart_a as Number, in pEnd_r as Number, in pEnd_g as Number, in pEnd_b as Number, in pEnd_a as Number) returns Number
+  handler xt3d_GenImageChecked(in pWidth as Number, in pHeight as Number, in pChecksX as Number, in pChecksY as Number, in pCol1_r as Number, in pCol1_g as Number, in pCol1_b as Number, in pCol1_a as Number, in pCol2_r as Number, in pCol2_g as Number, in pCol2_b as Number, in pCol2_a as Number) returns Number
+  handler xt3d_GenImageWhiteNoise(in pWidth as Number, in pHeight as Number, in pFactor as Number) returns Number
+  handler xt3d_GenImagePerlinNoise(in pWidth as Number, in pHeight as Number, in pOffsetX as Number, in pOffsetY as Number, in pScale as Number) returns Number
+  handler xt3d_GenImageCellular(in pWidth as Number, in pHeight as Number, in pFactor as Number) returns Number
+  handler xt3d_GenImageText(in pWidth as Number, in pHeight as Number, in pText as String) returns Number
+  handler xt3d_ImageCopy(in pMonitor as Number) returns Number
+  handler xt3d_ImageFromImage(in pWidth as Number, in pHeight as Number, in pOffsetX as Number, in pOffsetY as Number, in pScale as Number) returns Number
+  handler xt3d_ImageFromChannel(in pMin as Number, in pMax as Number) returns Number
+  handler xt3d_ImageText(in pText as String, in pFontSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns Number
+  handler xt3d_ImageTextEx(in pFont as Number, in pText as String, in pFontSize as Number, in pSpacing as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns Number
+  handler xt3d_ImageFormat(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_ImageToPOT(in pTexture as Number, in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number) returns nothing
+  handler xt3d_ImageCrop(in pTexture as Number, in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number) returns nothing
+  handler xt3d_ImageAlphaCrop(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_ImageAlphaClear(in pPosX as Number, in pPosY as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageAlphaMask(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_ImageAlphaPremultiply(in pFlags as Number) returns nothing
+  handler xt3d_ImageBlurGaussian(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_ImageResize(in pShader as Number, in pLocIndex as Number, in pTexture as Number) returns nothing
+  handler xt3d_ImageResizeNN(in pShader as Number, in pLocIndex as Number, in pTexture as Number) returns nothing
+  handler xt3d_ImageResizeCanvas(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageMipmaps(in pFlags as Number) returns nothing
+  handler xt3d_ImageDither(in pTexture as Number, in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number) returns nothing
+  handler xt3d_ImageFlipVertical(in pFlags as Number) returns nothing
+  handler xt3d_ImageFlipHorizontal(in pFlags as Number) returns nothing
+  handler xt3d_ImageRotate(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_ImageRotateCW(in pFlags as Number) returns nothing
+  handler xt3d_ImageRotateCCW(in pFlags as Number) returns nothing
+  handler xt3d_ImageColorTint(in pTexture as Number, in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number) returns nothing
+  handler xt3d_ImageColorInvert(in pFlags as Number) returns nothing
+  handler xt3d_ImageColorGrayscale(in pFlags as Number) returns nothing
+  handler xt3d_ImageColorContrast(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_ImageColorBrightness(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_ImageColorReplace(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_GetImageAlphaBorder(in pImage as Number, in pThreshold as Number) returns String
+  handler xt3d_GetImageColor(in pPosition_x as Number, in pPosition_y as Number, in pCamera as Number) returns String
+  handler xt3d_ImageClearBackground(in pTexture as Number, in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number) returns nothing
+  handler xt3d_ImageDrawPixel(in pCenterX as Number, in pCenterY as Number, in pRadius as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawPixelV(in pCenterX as Number, in pCenterY as Number, in pRadius as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawLine(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawLineV(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawLineEx(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawTriangle(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawTriangleGradient(in pDst as Number, in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pC1_r as Number, in pC1_g as Number, in pC1_b as Number, in pC1_a as Number, in pC2_r as Number, in pC2_g as Number, in pC2_b as Number, in pC2_a as Number, in pC3_r as Number, in pC3_g as Number, in pC3_b as Number, in pC3_a as Number) returns nothing
+  handler xt3d_ImageDrawTriangleLines(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawRectangle(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawRectangleV(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawRectangleRec(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawRectanglePro(in pPosX as Number, in pPosY as Number, in pWidth as Number, in pHeight as Number, in pTop_r as Number, in pTop_g as Number, in pTop_b as Number, in pTop_a as Number, in pBottom_r as Number, in pBottom_g as Number, in pBottom_b as Number, in pBottom_a as Number) returns nothing
+  handler xt3d_ImageDrawRectangleLines(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawRectangleLinesEx(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawRectangleGradientEx(in pDst as Number, in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number, in pCol1_r as Number, in pCol1_g as Number, in pCol1_b as Number, in pCol1_a as Number, in pCol2_r as Number, in pCol2_g as Number, in pCol2_b as Number, in pCol2_a as Number, in pCol3_r as Number, in pCol3_g as Number, in pCol3_b as Number, in pCol3_a as Number, in pCol4_r as Number, in pCol4_g as Number, in pCol4_b as Number, in pCol4_a as Number) returns nothing
+  handler xt3d_ImageDrawCircle(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_ImageDrawCircleV(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_ImageDrawCircleLines(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_ImageDrawCircleLinesV(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_ImageDrawCircleGradient(in pPosX as Number, in pPosY as Number, in pWidth as Number, in pHeight as Number, in pTop_r as Number, in pTop_g as Number, in pTop_b as Number, in pTop_a as Number, in pBottom_r as Number, in pBottom_g as Number, in pBottom_b as Number, in pBottom_a as Number) returns nothing
+  handler xt3d_ImageDrawImage(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_ImageDrawImageEx(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawImageRec(in pPosX as Number, in pPosY as Number, in pWidth as Number, in pHeight as Number, in pTop_r as Number, in pTop_g as Number, in pTop_b as Number, in pTop_a as Number, in pBottom_r as Number, in pBottom_g as Number, in pBottom_b as Number, in pBottom_a as Number) returns nothing
+  handler xt3d_ImageDrawImagePro(in pDst as Number, in pSrc as Number, in pSrcRec_x as Number, in pSrcRec_y as Number, in pSrcRec_width as Number, in pSrcRec_height as Number, in pDstRec_x as Number, in pDstRec_y as Number, in pDstRec_width as Number, in pDstRec_height as Number, in pOrigin_x as Number, in pOrigin_y as Number, in pRotation as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns nothing
+  handler xt3d_ImageDrawText(in pDst as Number, in pText as String, in pPosX as Number, in pPosY as Number, in pFontSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ImageDrawTextEx(in pDst as Number, in pFont as Number, in pText as String, in pPosition_x as Number, in pPosition_y as Number, in pFontSize as Number, in pSpacing as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns nothing
+  handler xt3d_ImageDrawTextPro(in pDst as Number, in pFont as Number, in pText as String, in pPosition_x as Number, in pPosition_y as Number, in pOrigin_x as Number, in pOrigin_y as Number, in pRotation as Number, in pFontSize as Number, in pSpacing as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns nothing
+  handler xt3d_LoadTexture(in pFileName as String) returns Number
+  handler xt3d_LoadTextureFromImage(in pMonitor as Number) returns Number
+  handler xt3d_LoadTextureCubemap(in pMin as Number, in pMax as Number) returns Number
+  handler xt3d_LoadRenderTexture(in pMin as Number, in pMax as Number) returns Number
+  handler xt3d_LoadRenderTextureEx(in pWidth as Number, in pHeight as Number, in pFactor as Number) returns Number
+  handler xt3d_IsTextureValid(in pFlag as Number) returns Boolean
+  handler xt3d_UnloadTexture(in pFlags as Number) returns nothing
+  handler xt3d_IsRenderTextureValid(in pFlag as Number) returns Boolean
+  handler xt3d_UnloadRenderTexture(in pFlags as Number) returns nothing
+  handler xt3d_GenTextureMipmaps(in pFlags as Number) returns nothing
+  handler xt3d_SetTextureFilter(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetTextureWrap(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_DrawTexture(in pCenterX as Number, in pCenterY as Number, in pRadius as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawTextureV(in pCenterX as Number, in pCenterY as Number, in pRadius as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawTextureEx(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawTextureRec(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawTexturePro(in pTexture as Number, in pSrcrec_x as Number, in pSrcrec_y as Number, in pSrcrec_width as Number, in pSrcrec_height as Number, in pDstrec_x as Number, in pDstrec_y as Number, in pDstrec_width as Number, in pDstrec_height as Number, in pOrigin_x as Number, in pOrigin_y as Number, in pRotation as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns nothing
+  handler xt3d_DrawTextureNPatch(in pDst as Number, in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number, in pCol1_r as Number, in pCol1_g as Number, in pCol1_b as Number, in pCol1_a as Number, in pCol2_r as Number, in pCol2_g as Number, in pCol2_b as Number, in pCol2_a as Number, in pCol3_r as Number, in pCol3_g as Number, in pCol3_b as Number, in pCol3_a as Number, in pCol4_r as Number, in pCol4_g as Number, in pCol4_b as Number, in pCol4_a as Number) returns nothing
+  handler xt3d_ColorIsEqual(in pRec1_x as Number, in pRec1_y as Number, in pRec1_width as Number, in pRec1_height as Number, in pRec2_x as Number, in pRec2_y as Number, in pRec2_width as Number, in pRec2_height as Number) returns Boolean
+  handler xt3d_Fade(in pPosition_x as Number, in pPosition_y as Number, in pCamera as Number, in pWidth as Number, in pHeight as Number) returns String
+  handler xt3d_ColorToInt(in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns Number
+  handler xt3d_ColorNormalize(in pPosition_x as Number, in pPosition_y as Number, in pPosition_z as Number, in pCamera as Number) returns String
+  handler xt3d_ColorFromNormalized(in pPosition_x as Number, in pPosition_y as Number, in pPosition_z as Number, in pCamera as Number) returns String
+  handler xt3d_ColorToHSV(in pPosition_x as Number, in pPosition_y as Number, in pPosition_z as Number, in pCamera as Number) returns String
+  handler xt3d_ColorFromHSV(in pPosition_x as Number, in pPosition_y as Number, in pCamera as Number) returns String
+  handler xt3d_ColorTint(in pRec1_x as Number, in pRec1_y as Number, in pRec1_width as Number, in pRec1_height as Number, in pRec2_x as Number, in pRec2_y as Number, in pRec2_width as Number, in pRec2_height as Number) returns String
+  handler xt3d_ColorBrightness(in pPosition_x as Number, in pPosition_y as Number, in pCamera as Number, in pWidth as Number, in pHeight as Number) returns String
+  handler xt3d_ColorContrast(in pPosition_x as Number, in pPosition_y as Number, in pCamera as Number, in pWidth as Number, in pHeight as Number) returns String
+  handler xt3d_ColorAlpha(in pPosition_x as Number, in pPosition_y as Number, in pCamera as Number, in pWidth as Number, in pHeight as Number) returns String
+  handler xt3d_ColorAlphaBlend(in pDst_r as Number, in pDst_g as Number, in pDst_b as Number, in pDst_a as Number, in pSrc_r as Number, in pSrc_g as Number, in pSrc_b as Number, in pSrc_a as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns String
+  handler xt3d_ColorLerp(in pP1_x as Number, in pP1_y as Number, in pP2_x as Number, in pP2_y as Number, in pP3_x as Number, in pP3_y as Number, in pP4_x as Number, in pP4_y as Number, in pT as Number) returns String
+  handler xt3d_GetColor(in pMonitor as Number) returns String
+  handler xt3d_GetPixelDataSize(in pWidth as Number, in pHeight as Number, in pFactor as Number) returns Number
+  handler xt3d_GetFontDefault() returns Number
+  handler xt3d_LoadFont(in pFileName as String) returns Number
+  handler xt3d_LoadFontFromImage(in pWidth as Number, in pHeight as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns Number
+  handler xt3d_IsFontValid(in pFlag as Number) returns Boolean
+  handler xt3d_UnloadFont(in pFlags as Number) returns nothing
+  handler xt3d_ExportFontAsCode(in pImage as Number, in pFileName as String) returns Boolean
+  handler xt3d_DrawFPS(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_DrawText(in pText as String, in pPosX as Number, in pPosY as Number, in pFontSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawTextEx(in pFont as Number, in pText as String, in pPosition_x as Number, in pPosition_y as Number, in pFontSize as Number, in pSpacing as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns nothing
+  handler xt3d_DrawTextPro(in pFont as Number, in pText as String, in pPosition_x as Number, in pPosition_y as Number, in pOrigin_x as Number, in pOrigin_y as Number, in pRotation as Number, in pFontSize as Number, in pSpacing as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns nothing
+  handler xt3d_DrawTextCodepoint(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_SetTextLineSpacing(in pFlags as Number) returns nothing
+  handler xt3d_MeasureText(in pText as String, in pFontSize as Number) returns Number
+  handler xt3d_MeasureTextEx(in pFont as Number, in pText as String, in pFontSize as Number, in pSpacing as Number) returns String
+  handler xt3d_GetGlyphIndex(in pMin as Number, in pMax as Number) returns Number
+  handler xt3d_GetGlyphAtlasRec(in pImage as Number, in pThreshold as Number) returns String
+  handler xt3d_GetCodepointCount(in pFileName as String) returns Number
+  handler xt3d_DrawLine3D(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawPoint3D(in pCenterX as Number, in pCenterY as Number, in pRadius as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCircle3D(in pPosX as Number, in pPosY as Number, in pWidth as Number, in pHeight as Number, in pTop_r as Number, in pTop_g as Number, in pTop_b as Number, in pTop_a as Number, in pBottom_r as Number, in pBottom_g as Number, in pBottom_b as Number, in pBottom_a as Number) returns nothing
+  handler xt3d_DrawTriangle3D(in pP1_x as Number, in pP1_y as Number, in pP2_x as Number, in pP2_y as Number, in pP3_x as Number, in pP3_y as Number, in pP4_x as Number, in pP4_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCube(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCubeV(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCubeWires(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCubeWiresV(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawSphere(in pCamera as Number, in pMovement_x as Number, in pMovement_y as Number, in pMovement_z as Number, in pRotation_x as Number, in pRotation_y as Number, in pRotation_z as Number, in pZoom as Number) returns nothing
+  handler xt3d_DrawSphereEx(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawSphereWires(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCylinder(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCylinderEx(in pP1_x as Number, in pP1_y as Number, in pP2_x as Number, in pP2_y as Number, in pP3_x as Number, in pP3_y as Number, in pP4_x as Number, in pP4_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCylinderWires(in pV1_x as Number, in pV1_y as Number, in pV2_x as Number, in pV2_y as Number, in pV3_x as Number, in pV3_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCylinderWiresEx(in pP1_x as Number, in pP1_y as Number, in pP2_x as Number, in pP2_y as Number, in pP3_x as Number, in pP3_y as Number, in pP4_x as Number, in pP4_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCapsule(in pP1_x as Number, in pP1_y as Number, in pP2_x as Number, in pP2_y as Number, in pP3_x as Number, in pP3_y as Number, in pP4_x as Number, in pP4_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawCapsuleWires(in pP1_x as Number, in pP1_y as Number, in pP2_x as Number, in pP2_y as Number, in pP3_x as Number, in pP3_y as Number, in pP4_x as Number, in pP4_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawPlane(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawRay(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawGrid(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_LoadModel(in pFileName as String) returns Number
+  handler xt3d_LoadModelFromMesh(in pMonitor as Number) returns Number
+  handler xt3d_IsModelValid(in pFlag as Number) returns Boolean
+  handler xt3d_UnloadModel(in pFlags as Number) returns nothing
+  handler xt3d_GetModelBoundingBox(in pMonitor as Number) returns String
+  handler xt3d_DrawModel(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawModelEx(in pModel as Number, in pPosition_x as Number, in pPosition_y as Number, in pPosition_z as Number, in pRotationAxis_x as Number, in pRotationAxis_y as Number, in pRotationAxis_z as Number, in pRotationAngle as Number, in pScale_x as Number, in pScale_y as Number, in pScale_z as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns nothing
+  handler xt3d_DrawModelWires(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pThick as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawModelWiresEx(in pModel as Number, in pPosition_x as Number, in pPosition_y as Number, in pPosition_z as Number, in pRotationAxis_x as Number, in pRotationAxis_y as Number, in pRotationAxis_z as Number, in pRotationAngle as Number, in pScale_x as Number, in pScale_y as Number, in pScale_z as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns nothing
+  handler xt3d_DrawBoundingBox(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawBillboard(in pStartPos_x as Number, in pStartPos_y as Number, in pEndPos_x as Number, in pEndPos_y as Number, in pDashSize as Number, in pSpaceSize as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_DrawBillboardRec(in pModel as Number, in pPosition_x as Number, in pPosition_y as Number, in pPosition_z as Number, in pRotationAxis_x as Number, in pRotationAxis_y as Number, in pRotationAxis_z as Number, in pRotationAngle as Number, in pScale_x as Number, in pScale_y as Number, in pScale_z as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns nothing
+  handler xt3d_DrawBillboardPro(in pDst as Number, in pRec_x as Number, in pRec_y as Number, in pRec_width as Number, in pRec_height as Number, in pCol1_r as Number, in pCol1_g as Number, in pCol1_b as Number, in pCol1_a as Number, in pCol2_r as Number, in pCol2_g as Number, in pCol2_b as Number, in pCol2_a as Number, in pCol3_r as Number, in pCol3_g as Number, in pCol3_b as Number, in pCol3_a as Number, in pCol4_r as Number, in pCol4_g as Number, in pCol4_b as Number, in pCol4_a as Number) returns nothing
+  handler xt3d_UploadMesh(in pMesh as Number, in pDynamic as Boolean) returns nothing
+  handler xt3d_UnloadMesh(in pFlags as Number) returns nothing
+  handler xt3d_DrawMesh(in pShader as Number, in pLocIndex as Number, in pMat_m0 as Number, in pMat_m1 as Number, in pMat_m2 as Number, in pMat_m3 as Number, in pMat_m4 as Number, in pMat_m5 as Number, in pMat_m6 as Number, in pMat_m7 as Number, in pMat_m8 as Number, in pMat_m9 as Number, in pMat_m10 as Number, in pMat_m11 as Number, in pMat_m12 as Number, in pMat_m13 as Number, in pMat_m14 as Number, in pMat_m15 as Number) returns nothing
+  handler xt3d_GetMeshBoundingBox(in pMonitor as Number) returns String
+  handler xt3d_GenMeshTangents(in pFlags as Number) returns nothing
+  handler xt3d_ExportMesh(in pImage as Number, in pFileName as String) returns Boolean
+  handler xt3d_ExportMeshAsCode(in pImage as Number, in pFileName as String) returns Boolean
+  handler xt3d_GenMeshPoly(in pMin as Number, in pMax as Number) returns Number
+  handler xt3d_GenMeshPlane(in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns Number
+  handler xt3d_GenMeshCube(in pWidth as Number, in pHeight as Number, in pFactor as Number) returns Number
+  handler xt3d_GenMeshSphere(in pWidth as Number, in pHeight as Number, in pFactor as Number) returns Number
+  handler xt3d_GenMeshHemiSphere(in pWidth as Number, in pHeight as Number, in pFactor as Number) returns Number
+  handler xt3d_GenMeshCylinder(in pWidth as Number, in pHeight as Number, in pFactor as Number) returns Number
+  handler xt3d_GenMeshCone(in pWidth as Number, in pHeight as Number, in pFactor as Number) returns Number
+  handler xt3d_GenMeshTorus(in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns Number
+  handler xt3d_GenMeshKnot(in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns Number
+  handler xt3d_GenMeshHeightmap(in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns Number
+  handler xt3d_GenMeshCubicmap(in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns Number
+  handler xt3d_LoadMaterialDefault() returns Number
+  handler xt3d_IsMaterialValid(in pFlag as Number) returns Boolean
+  handler xt3d_UnloadMaterial(in pFlags as Number) returns nothing
+  handler xt3d_SetMaterialTexture(in pShader as Number, in pLocIndex as Number, in pTexture as Number) returns nothing
+  handler xt3d_SetModelMeshMaterial(in pShader as Number, in pLocIndex as Number, in pTexture as Number) returns nothing
+  handler xt3d_UpdateModelAnimation(in pShader as Number, in pLocIndex as Number, in pTexture as Number) returns nothing
+  handler xt3d_UpdateModelAnimationEx(in pPosX as Number, in pPosY as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_IsModelAnimationValid(in pGamepad as Number, in pButton as Number) returns Boolean
+  handler xt3d_CheckCollisionSpheres(in pRec1_x as Number, in pRec1_y as Number, in pRec1_width as Number, in pRec1_height as Number, in pRec2_x as Number, in pRec2_y as Number, in pRec2_width as Number, in pRec2_height as Number) returns Boolean
+  handler xt3d_CheckCollisionBoxes(in pBox1_min_x as Number, in pBox1_min_y as Number, in pBox1_min_z as Number, in pBox1_max_x as Number, in pBox1_max_y as Number, in pBox1_max_z as Number, in pBox2_min_x as Number, in pBox2_min_y as Number, in pBox2_min_z as Number, in pBox2_max_x as Number, in pBox2_max_y as Number, in pBox2_max_z as Number) returns Boolean
+  handler xt3d_CheckCollisionBoxSphere(in pBox_min_x as Number, in pBox_min_y as Number, in pBox_min_z as Number, in pBox_max_x as Number, in pBox_max_y as Number, in pBox_max_z as Number, in pCenter_x as Number, in pCenter_y as Number, in pCenter_z as Number, in pRadius as Number) returns Boolean
+  handler xt3d_GetRayCollisionSphere(in pRay_position_x as Number, in pRay_position_y as Number, in pRay_position_z as Number, in pRay_direction_x as Number, in pRay_direction_y as Number, in pRay_direction_z as Number, in pCenter_x as Number, in pCenter_y as Number, in pCenter_z as Number, in pRadius as Number) returns String
+  handler xt3d_GetRayCollisionBox(in pDst_r as Number, in pDst_g as Number, in pDst_b as Number, in pDst_a as Number, in pSrc_r as Number, in pSrc_g as Number, in pSrc_b as Number, in pSrc_a as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns String
+  handler xt3d_GetRayCollisionMesh(in pRay_position_x as Number, in pRay_position_y as Number, in pRay_position_z as Number, in pRay_direction_x as Number, in pRay_direction_y as Number, in pRay_direction_z as Number, in pMesh as Number, in pTransform_m0 as Number, in pTransform_m1 as Number, in pTransform_m2 as Number, in pTransform_m3 as Number, in pTransform_m4 as Number, in pTransform_m5 as Number, in pTransform_m6 as Number, in pTransform_m7 as Number, in pTransform_m8 as Number, in pTransform_m9 as Number, in pTransform_m10 as Number, in pTransform_m11 as Number, in pTransform_m12 as Number, in pTransform_m13 as Number, in pTransform_m14 as Number, in pTransform_m15 as Number) returns String
+  handler xt3d_GetRayCollisionTriangle(in pRay_position_x as Number, in pRay_position_y as Number, in pRay_position_z as Number, in pRay_direction_x as Number, in pRay_direction_y as Number, in pRay_direction_z as Number, in pP1_x as Number, in pP1_y as Number, in pP1_z as Number, in pP2_x as Number, in pP2_y as Number, in pP2_z as Number, in pP3_x as Number, in pP3_y as Number, in pP3_z as Number) returns String
+  handler xt3d_GetRayCollisionQuad(in pRay_position_x as Number, in pRay_position_y as Number, in pRay_position_z as Number, in pRay_direction_x as Number, in pRay_direction_y as Number, in pRay_direction_z as Number, in pP1_x as Number, in pP1_y as Number, in pP1_z as Number, in pP2_x as Number, in pP2_y as Number, in pP2_z as Number, in pP3_x as Number, in pP3_y as Number, in pP3_z as Number, in pP4_x as Number, in pP4_y as Number, in pP4_z as Number) returns String
+  handler xt3d_InitAudioDevice() returns nothing
+  handler xt3d_CloseAudioDevice() returns nothing
+  handler xt3d_IsAudioDeviceReady() returns Boolean
+  handler xt3d_SetMasterVolume(in pFlags as Number) returns nothing
+  handler xt3d_GetMasterVolume() returns Number
+  handler xt3d_LoadWave(in pFileName as String) returns Number
+  handler xt3d_IsWaveValid(in pFlag as Number) returns Boolean
+  handler xt3d_LoadSound(in pFileName as String) returns Number
+  handler xt3d_LoadSoundFromWave(in pMonitor as Number) returns Number
+  handler xt3d_LoadSoundAlias(in pMonitor as Number) returns Number
+  handler xt3d_IsSoundValid(in pFlag as Number) returns Boolean
+  handler xt3d_UnloadWave(in pFlags as Number) returns nothing
+  handler xt3d_UnloadSound(in pFlags as Number) returns nothing
+  handler xt3d_UnloadSoundAlias(in pFlags as Number) returns nothing
+  handler xt3d_ExportWave(in pImage as Number, in pFileName as String) returns Boolean
+  handler xt3d_ExportWaveAsCode(in pImage as Number, in pFileName as String) returns Boolean
+  handler xt3d_PlaySound(in pFlags as Number) returns nothing
+  handler xt3d_StopSound(in pFlags as Number) returns nothing
+  handler xt3d_PauseSound(in pFlags as Number) returns nothing
+  handler xt3d_ResumeSound(in pFlags as Number) returns nothing
+  handler xt3d_IsSoundPlaying(in pFlag as Number) returns Boolean
+  handler xt3d_SetSoundVolume(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetSoundPitch(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetSoundPan(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_WaveCopy(in pMonitor as Number) returns Number
+  handler xt3d_WaveCrop(in pShader as Number, in pLocIndex as Number, in pTexture as Number) returns nothing
+  handler xt3d_WaveFormat(in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_LoadMusicStream(in pFileName as String) returns Number
+  handler xt3d_IsMusicValid(in pFlag as Number) returns Boolean
+  handler xt3d_UnloadMusicStream(in pFlags as Number) returns nothing
+  handler xt3d_PlayMusicStream(in pFlags as Number) returns nothing
+  handler xt3d_IsMusicStreamPlaying(in pFlag as Number) returns Boolean
+  handler xt3d_UpdateMusicStream(in pFlags as Number) returns nothing
+  handler xt3d_StopMusicStream(in pFlags as Number) returns nothing
+  handler xt3d_PauseMusicStream(in pFlags as Number) returns nothing
+  handler xt3d_ResumeMusicStream(in pFlags as Number) returns nothing
+  handler xt3d_SeekMusicStream(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetMusicVolume(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetMusicPitch(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetMusicPan(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_GetMusicTimeLength(in pMonitor as Number) returns Number
+  handler xt3d_GetMusicTimePlayed(in pMonitor as Number) returns Number
+  handler xt3d_LoadAudioStream(in pWidth as Number, in pHeight as Number, in pFactor as Number) returns Number
+  handler xt3d_IsAudioStreamValid(in pFlag as Number) returns Boolean
+  handler xt3d_UnloadAudioStream(in pFlags as Number) returns nothing
+  handler xt3d_IsAudioStreamProcessed(in pFlag as Number) returns Boolean
+  handler xt3d_PlayAudioStream(in pFlags as Number) returns nothing
+  handler xt3d_PauseAudioStream(in pFlags as Number) returns nothing
+  handler xt3d_ResumeAudioStream(in pFlags as Number) returns nothing
+  handler xt3d_IsAudioStreamPlaying(in pFlag as Number) returns Boolean
+  handler xt3d_StopAudioStream(in pFlags as Number) returns nothing
+  handler xt3d_SetAudioStreamVolume(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetAudioStreamPitch(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetAudioStreamPan(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_SetAudioStreamBufferSizeDefault(in pFlags as Number) returns nothing
+  handler xt3d_Version() returns String
+  handler xt3d_InitHidden(in pWidth as Number, in pHeight as Number, in pTitle as String) returns nothing
+  handler xt3d_CameraCreate(in pWidth as Number, in pHeight as Number, in pDirection as Number, in pStart_r as Number, in pStart_g as Number, in pStart_b as Number, in pStart_a as Number, in pEnd_r as Number, in pEnd_g as Number, in pEnd_b as Number, in pEnd_a as Number) returns Number
+  handler xt3d_CameraSet(in pPosX as Number, in pPosY as Number, in pWidth as Number, in pHeight as Number, in pTop_r as Number, in pTop_g as Number, in pTop_b as Number, in pTop_a as Number, in pBottom_r as Number, in pBottom_g as Number, in pBottom_b as Number, in pBottom_a as Number) returns nothing
+  handler xt3d_CameraGet(in pMonitor as Number) returns String
+  handler xt3d_CameraFree(in pFlags as Number) returns nothing
+  handler xt3d_Camera2DCreate(in pWidth as Number, in pHeight as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns Number
+  handler xt3d_Camera2DSet(in pCenterX as Number, in pCenterY as Number, in pRadius as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_Camera2DFree(in pFlags as Number) returns nothing
+  handler xt3d_ImageInfo(in pMonitor as Number) returns String
+  handler xt3d_TextureInfo(in pMonitor as Number) returns String
+  handler xt3d_RenderTextureGetTexture(in pMonitor as Number) returns Number
+  handler xt3d_ModelInfo(in pMonitor as Number) returns String
+  handler xt3d_ModelGetMesh(in pMin as Number, in pMax as Number) returns Number
+  handler xt3d_ModelSetTransform(in pDst as Number, in pSrc as Number, in pSrcRec_x as Number, in pSrcRec_y as Number, in pSrcRec_width as Number, in pSrcRec_height as Number, in pDstRec_x as Number, in pDstRec_y as Number, in pDstRec_width as Number, in pDstRec_height as Number, in pOrigin_x as Number, in pOrigin_y as Number, in pRotation as Number, in pTint_r as Number, in pTint_g as Number, in pTint_b as Number, in pTint_a as Number) returns nothing
+  handler xt3d_ModelGetTransform(in pMonitor as Number) returns String
+  handler xt3d_ModelSetMaterialTexture(in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ModelSetMaterialColor(in pCenterX as Number, in pCenterY as Number, in pRadius as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_ModelSetMaterialShader(in pShader as Number, in pLocIndex as Number, in pTexture as Number) returns nothing
+  handler xt3d_MaterialSetColor(in pPosX as Number, in pPosY as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_MaterialSetShader(in pX as Number, in pY as Number) returns nothing
+  handler xt3d_LoadModelAnimations(in pFileName as String) returns String
+  handler xt3d_UnloadModelAnimations(in pFlags as Number) returns nothing
+  handler xt3d_ModelAnimationInfo(in pMonitor as Number) returns String
+  handler xt3d_SetShaderValueFloats(in pCenterX as Number, in pCenterY as Number, in pRadius as Number, in pColor_r as Number, in pColor_g as Number, in pColor_b as Number, in pColor_a as Number) returns nothing
+  handler xt3d_SetShaderValueInt(in pShader as Number, in pLocIndex as Number, in pTexture as Number) returns nothing
+  handler xt3d_GetRayCollisionModel(in pP1_x as Number, in pP1_y as Number, in pC2_x as Number, in pC2_y as Number, in pP3_x as Number, in pP3_y as Number, in pT as Number) returns String
+  handler xt3d_RenderTextureExport(in pImage as Number, in pFileName as String) returns Boolean
+  handler xt3d_RenderTextureToImageData(in pTarget as Number) returns Pointer
+  handler xt3d_ImageDataSize() returns Number
+  handler xt3d_AlphaDataSize() returns Number
+  handler xt3d_RenderTextureToAlphaData(in pTarget as Number) returns Pointer
+  handler xt3d_MeshFromText(in pFileName as String, in pSearch as String, in pReplacement as String) returns Number
+  handler xt3d_MeshInfo(in pMonitor as Number) returns String
+  handler xt3d_HandleCount(in pFileName as String) returns Number
+  handler xt3d_RenderTextureImageData(in pTarget as Number) returns Data
+  handler xt3d_RenderTextureAlphaData(in pTarget as Number) returns Data
+end module
