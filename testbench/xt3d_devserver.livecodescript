@@ -153,8 +153,12 @@ on DevServer.OnHeader pSocket, pData
    repeat for each line tLine in line 2 to -1 of pData
       put offset(":", tLine) into tColon
       if tColon = 0 then next repeat
-      put toLower(word 1 to -1 of char 1 to tColon - 1 of tLine) into tKey
-      put word 1 to -1 of char tColon + 1 to -1 of tLine into tVal
+      -- chunks nest big-to-small only ("word of char" is "bad chunk order"),
+      -- so cut the characters first, then trim with word 1 to -1
+      put char 1 to tColon - 1 of tLine into tKey
+      put toLower(word 1 to -1 of tKey) into tKey
+      put char tColon + 1 to -1 of tLine into tVal
+      put word 1 to -1 of tVal into tVal
       if tKey is "content-length" then put tVal into tC["len"]
       if tKey is "x-token" then put tVal into tToken
    end repeat

@@ -37,6 +37,8 @@ A bridge that lets LiveCode Script (LiveCode Community 9.6.3) drive raylib 6.2. 
 10. **Display scaling.** At 125% Windows scaling LiveCode stretches images by 1.25 and edges look rough. Set `the scaleFactor of stack` to `1 / the screenPixelScale` and render at real pixel size.
 11. **raylib's MSAA flag does not apply to render textures.** Anti-aliasing in the image path is done by rendering at 2x and shrinking with bilinear filtering.
 
+12. **Chunks nest small inside big.** `char 3 of word 2` is fine; `word 1 to -1 of char 1 to 5 of x` is the compile error "bad chunk order". Cut the smaller chunk into a variable first. Other pitfalls met so far: variable names that spell keywords (`tExt`, `tHere`), and a one-line `if` before an `else`.
+
 ## Debugging on the owner's machine
 
 A crash takes LiveCode straight to the desktop with no message. The method that works: a script that appends the name of each step to a log file before running it (`demos/xt3d_diagnostic.livecodescript.txt`), then read the last line after the crash. Ask for the log and for exact error text; LCB errors name the `.lcb` path and line, which also reveals which copy of the file was loaded.
