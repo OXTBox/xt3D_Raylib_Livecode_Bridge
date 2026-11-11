@@ -29,6 +29,7 @@ LiveCode Script  ──calls──▶  xt3d.lcb  ──binds to──▶  xt3d.d
 | `build.bat` | Windows build and install into the extension folder |
 | `testbench/xt3d_testbench.livecodescript` | Test bench: a script-only stack (File > Open Stack) with model browser, orbit camera, render switches, animation controls and a "Run checks" self-test |
 | `testbench/xt3d_devserver.livecodescript` | Dev server (library stack) that lets Claude Code drive the bench over localhost; development only |
+| `llm/` | Local-model link: MCP tool server, LiveCode primer, terminal client (see `llm/README.md`) |
 | `tools/xt3d_dev.sh` | Client for the dev server, run from WSL |
 | `demos/xt3d_view_demo.livecodescript.txt` | Model viewer rendered into a LiveCode image |
 | `demos/xt3d_window_demo.livecodescript.txt` | Same scene in raylib's own window |

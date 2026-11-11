@@ -48,7 +48,7 @@ Last updated 2026-11-11.
 
 1. ~~Animation on a skinned GLB~~ (done). Culling helpers: `thebox.obj` still looks wrong, but the file itself is suspect (AC3D, 2007); confirm on a known-good model.
 2. ~~Guard every generated wrapper that needs a window~~ (done in the generator; confirm on Windows: before `xt3d_InitHidden`, `xt3d_DrawCube`, `xt3d_LoadModel` and `xt3d_CloseWindow` should do nothing instead of crashing).
-3. MCP bridge: a small stdio MCP server that forwards tool calls over a localhost TCP socket to a listener in LiveCode Script, exposing `xt3d_call`, a command list from the manifest, a screenshot tool, and gated script execution. A watched folder as fallback.
+3. MCP bridge: **first version in `llm/`** (2026-11-11). `xt3d_mcp.py` gives LM Studio or Claude Desktop tools: primer, handler search, run/eval in LiveCode, load model, checks, errors, snapshot. It goes through the dev server; registered in LM Studio. Tested with spark-x2.6-4b on the offline tools; the LiveCode tools wait for the bench to be open. Still to do: a Claude Desktop config, and a screenshot of the 3D view alone.
 4. A standard lighting shader and the helpers to drive it.
 5. Package the frame loop, display-scale handling and anti-aliasing as a reusable script library so a stack needs a few lines, not a pasted demo.
 6. Importer for the old iGame3D `.wtf` model format using `xt3d_MeshFromText` (the format is plain text; see `CLAUDE.md`).

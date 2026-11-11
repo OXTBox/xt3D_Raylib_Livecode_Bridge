@@ -51,6 +51,10 @@ Script-only stacks: if the owner saves one from the IDE, LiveCode writes its in-
 
 After editing a bench or server file, copy it to `C:\xt3d\testbench\` before `reload`. Building the DLL needs LiveCode closed (rule 7), which also stops the server.
 
+## Local models
+
+LM Studio runs on Windows at 127.0.0.1:1234 (reach it with `curl.exe`). `llm/ask_local.py "question"` asks a local model with the xt3d tools; useful for cheap bulk work and for testing the MCP server. Small models do not know LiveCode: they need `llm/livecode_primer.md` (served by the `livecode_primer` tool). When a local model makes a new kind of LiveCode mistake, add it to the primer's mistakes list.
+
 ## Old iGame3D formats (for importers)
 
 - `.wtf` model: plain text. Line 1 `iGame3D Mdl`, then sections `#Bones:`, `#Vertices:` (count, then `x,y,z,boneIndex` per line), `#Paths:`, `#Groups:` (name, count, vertex indices), `#BoneOrientations:`, `#Edges:`, `#Materials:` (count; per material: name, a count of `key=value` lines, those lines, a triangle count, then `a,b,c,u1,v1,u2,v2,u3,v3` per triangle), `#Animations:`.
