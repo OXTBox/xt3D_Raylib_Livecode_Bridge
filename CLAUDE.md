@@ -45,7 +45,9 @@ Change one thing per round. Each round costs him a rebuild and often a LiveCode 
 
 ## Driving LiveCode from here (dev server)
 
-When the owner has ticked "Dev server" in the test bench (`testbench/xt3d_testbench.livecodescript`, installed in `C:\xt3d\testbench\`), `tools/xt3d_dev.sh` talks to the running IDE: `ping`, `run '<statements>'` (inside the bench script), `eval`, `reload` (reopen the bench from its file after editing it), `snap` (PNG of the bench to `C:/xt3d/snap.png`, then Read it), `checks` (Run checks + results). It goes through Windows' `curl.exe`, because WSL2 cannot reach Windows' 127.0.0.1. No token file at `C:\xt3d\.xt3d_devtoken` means the server is not running: ask the owner to tick the box. Logs to read directly: `C:\xt3d\bench_checks.txt`, `C:\xt3d\raylib_log.txt`.
+When the owner has ticked "Dev server" in the test bench (`testbench/xt3d_testbench.livecodescript`, installed in `C:\xt3d\testbench\`), `tools/xt3d_dev.sh` talks to the running IDE: `ping`, `run '<statements>'` (inside the bench script), `eval`, `reload` (reopen the bench from its file after editing it), `snap` (PNG of the bench to `C:/xt3d/snap.png`, then Read it), `checks` (Run checks + results). It goes through Windows' `curl.exe`, because WSL2 cannot reach Windows' 127.0.0.1. No token file at `C:\xt3d\.xt3d_devtoken` means the server is not running: ask the owner to tick the box. Logs to read directly: `C:\xt3d\bench_checks.txt`, `C:\xt3d\raylib_log.txt`, and `C:\xt3d\livecode_errors.txt` (every LiveCode script error while the dev server runs, translated; `tools/xt3d_dev.sh errors`). The bench starts the server itself; opening `xt3d_devserver.livecodescript` directly also starts it.
+
+Script-only stacks: if the owner saves one from the IDE, LiveCode writes its in-memory script over the file (and adds a UTF-8 BOM). That silently undid bench edits once. The owner should choose "Don't Save" when closing; if a file's first bytes are a BOM, check it against git before editing.
 
 After editing a bench or server file, copy it to `C:\xt3d\testbench\` before `reload`. Building the DLL needs LiveCode closed (rule 7), which also stops the server.
 

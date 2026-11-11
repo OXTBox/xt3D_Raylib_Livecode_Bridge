@@ -8,12 +8,20 @@
 #   tools/xt3d_dev.sh reload [windows-path]    close and reopen the bench from its file
 #   tools/xt3d_dev.sh snap [windows-path]      PNG of the bench (default C:/xt3d/snap.png)
 #   tools/xt3d_dev.sh checks                   press "Run checks", print bench_checks.txt
+#   tools/xt3d_dev.sh errors [N]               last N entries of C:/xt3d/livecode_errors.txt
+#                                              (reads the file; works without the server)
 #
 # The server listens on Windows' 127.0.0.1, which WSL2 cannot reach directly, so the
 # requests go through Windows' own curl.exe. Token and port come from
 # C:\xt3d\.xt3d_devtoken (written by DevServer.Start).
 
 set -euo pipefail
+ERRFILE=/mnt/c/xt3d/livecode_errors.txt
+if [[ "${1:-}" == errors ]]; then
+  [[ -f "$ERRFILE" ]] || { echo "no error log yet ($ERRFILE)"; exit 0; }
+  tr -d '\r' < "$ERRFILE" | awk -v n="${2:-5}" '/^==== /{c++} {e[c]=e[c] $0 "\n"} END{for(i=(c-n+1>1?c-n+1:1);i<=c;i++) printf "%s", e[i]}'
+  exit 0
+fi
 TOKEN_FILE="${XT3D_TOKEN_FILE:-/mnt/c/xt3d/.xt3d_devtoken}"
 [[ -f "$TOKEN_FILE" ]] || { echo "No $TOKEN_FILE: tick 'Dev server' in the test bench" >&2; exit 2; }
 TOKEN="$(sed -n 1p "$TOKEN_FILE" | tr -d '\r')"
@@ -49,5 +57,5 @@ case "$cmd" in
   reload) if [[ -n "${1:-}" ]]; then printf '' | req POST "/reload?path=$(urlenc "$1")"; else printf '' | req POST /reload; fi ;;
   snap)   if [[ -n "${1:-}" ]]; then req GET "/snap?file=$(urlenc "$1")"; else req GET /snap; fi ;;
   checks) printf 'xbRunChecks' | req POST /run >/dev/null; tr -d '\r' < /mnt/c/xt3d/bench_checks.txt | grep -E 'PASS|FAIL' ;;
-  *) sed -n '2,13p' "$0"; exit 1 ;;
+  *) sed -n '2,15p' "$0"; exit 1 ;;
 esac

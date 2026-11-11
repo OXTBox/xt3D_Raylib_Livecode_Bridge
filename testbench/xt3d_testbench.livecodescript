@@ -1,7 +1,10 @@
-﻿script "xt3dTestBench"
+script "xt3dTestBench"
 -- xt3d Test Bench: a script-only stack. In LiveCode: File > Open Stack, pick this
 -- file. It builds its own controls each time it opens (nothing is saved but this
 -- script), so edits to the file show up the next time it is opened.
+--
+-- WHEN CLOSING THIS STACK, CHOOSE "DON'T SAVE". This file is the source; saving from the
+-- IDE writes LiveCode's in-memory copy back over it, which may be older.
 --
 -- Needs the xt3d extension loaded first (Extension Builder > open
 -- C:\xt3d\extension\xt3d.lcb > Test).
@@ -9,6 +12,7 @@
 --   drag on the view ...... orbit the camera
 --   mouse wheel on view ... zoom
 --   file list ............. click a model to load it; "Folder..." picks another folder
+--   Dev server ............ lets Claude Code drive this bench; starts with it (see xt3d_devserver)
 --   Run checks ............ crash guards, pure functions, the test models, a frame copy;
 --                           each step is written to C:/xt3d/bench_checks.txt before it runs
 --
@@ -51,6 +55,7 @@ on preOpenStack
    set the scaleFactor of me to 1 / sScale
    set the title of me to "xt3d Test Bench"
    set the resizable of me to false
+   set the destroyStack of me to true   -- closing removes it from memory, so reopening reads the file
    set the width of me to px(kPanelX + kPanelW + 10)
    set the height of me to px(kViewH + 130)
    set the textSize of me to px(12)
@@ -86,11 +91,14 @@ on openStack
       exit openStack
    end try
    xbPlaceWindow
+   -- the dev server (and its error log) starts with the bench; untick to stop it
+   if not xbDevRunning() then xbDevServer true
    put 45 into sYaw
    put 25 into sPitch
    put 5 into sDist
    xbStartView
-   put "Ready. " & xt3d_Version() & return & "Click a model in the list, or Run checks." into field "info"
+   put "Ready. " & xt3d_Version() & return & "Click a model in the list, or Run checks." & return & \
+         "Dev server:" && xbDevRunning() & ". Errors go to C:/xt3d/livecode_errors.txt" into field "info"
 end openStack
 
 on closeStack
@@ -150,7 +158,10 @@ command xbBuildControls
    add 30 to tY
    xbMake "button", "camBtn", tX, tY, 120, 24, "Reset camera"
    xbMake "button", "unloadBtn", tX + 130, tY, 120, 24, "Unload"
-   add 32 to tY
+   add 30 to tY
+   xbMake "checkbox", "devChk", tX, tY, kPanelW, 20, "Dev server (lets Claude drive this bench)"
+   set the hilite of button "devChk" to xbDevRunning()
+   add 26 to tY
    xbMake "field", "info", tX, tY, kPanelW, kViewH + 124 - tY
    set the vScrollbar of field "info" to true
    set the textSize of field "info" to px(11)
@@ -256,6 +267,9 @@ on mouseUp
          put 5 into sDist
          put 0 into sAngle
          break
+      case "devChk"
+         xbDevServer the hilite of button "devChk"
+         break
       case "unloadBtn"
          xbUnloadModel
          put "No model loaded." into field "info"
@@ -314,6 +328,62 @@ on scrollbarDrag pValue
       set the hilite of button "playChk" to false
    end if
 end scrollbarDrag
+
+-------------------------------------------------------------------- dev server
+
+-- the server is a separate library stack, so it survives this bench being reloaded
+command xbDevServer pOn
+   local tPath
+   if pOn then
+      put the effective filename of me into tPath
+      set the itemDel to "/"
+      put "xt3d_devserver.livecodescript" into item -1 of tPath
+      if there is not a file tPath then
+         put "Dev server file not found:" & return & tPath into field "info"
+         set the hilite of button "devChk" to false
+         exit xbDevServer
+      end if
+      start using stack tPath
+      DevServer.Start 8766, the short name of me
+      put the result into field "info"
+      set the hilite of button "devChk" to xbDevRunning()
+   else
+      if xbDevRunning() then DevServer.Stop
+      put "Dev server stopped." into field "info"
+   end if
+end xbDevServer
+
+function xbDevRunning
+   local tErr
+   try
+      return DevServer.Running()
+   catch tErr
+      return false
+   end try
+end xbDevRunning
+
+-- called by the dev server: run statements / evaluate an expression in this script,
+-- so its handlers and script locals are reachable
+command DevServer.Exec pCode
+   local tErr
+   try
+      do pCode
+   catch tErr
+      DevServer.LogError tErr, "/run in the bench"
+      return "ERROR:" & return & DevServer.ErrorText(tErr)
+   end try
+   return the result
+end DevServer.Exec
+
+function DevServer.Eval pExpr
+   local tErr
+   try
+      return value(pExpr)
+   catch tErr
+      DevServer.LogError tErr, "/eval in the bench"
+      return "ERROR:" & return & DevServer.ErrorText(tErr)
+   end try
+end DevServer.Eval
 
 -------------------------------------------------------------------- view
 
