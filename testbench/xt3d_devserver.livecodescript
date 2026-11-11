@@ -37,6 +37,9 @@ script "xt3dDevServer"
 constant kTokenFile = "C:/xt3d/.xt3d_devtoken"
 constant kSnapFile = "C:/xt3d/snap.png"
 constant kErrorFile = "C:/xt3d/livecode_errors.txt"
+-- error message lists, saved from the IDE once (a standalone has no scriptExecutionErrors)
+constant kExecErrorList = "C:/xt3d/lc_execution_errors.txt"
+constant kParseErrorList = "C:/xt3d/lc_parsing_errors.txt"
 
 local sDev   -- ["port"], ["token"], ["target"], ["reload"], ["conn"][socket][...]
 local sLastErrorWindow   -- text of the IDE error window when last read
@@ -195,8 +198,8 @@ on DevServer.Handle pSocket, pBody
             catch tErr
                put "xt3d extension not loaded" into tVersion
             end try
-            put "OK LiveCode" && the version & " | target" && tTarget & \
-                  (there is a stack tTarget) & " | " & tVersion into tOut
+            put "OK LiveCode" && the version && "(" & the environment & ") | target" && tTarget && \
+                  "open:" && (there is a stack tTarget) & " | " & tVersion into tOut
             break
          case "/run"
             put DevServer.Run(pBody, bInServer, tTarget) into tOut
@@ -312,8 +315,10 @@ function DevServer.ErrorText pError, pParsing
    local tLine, tOut, tCode, tList, tMsg
    if pParsing is true then
       put the scriptParsingErrors into tList
+      if tList is empty and there is a file kParseErrorList then put URL ("file:" & kParseErrorList) into tList
    else
       put the scriptExecutionErrors into tList
+      if tList is empty and there is a file kExecErrorList then put URL ("file:" & kExecErrorList) into tList
    end if
    repeat for each line tLine in pError
       put item 1 of tLine into tCode
