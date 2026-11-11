@@ -1,4 +1,4 @@
-script "xt3dTestBench"
+﻿script "xt3dTestBench"
 -- xt3d Test Bench: a script-only stack. In LiveCode: File > Open Stack, pick this
 -- file. It builds its own controls each time it opens (nothing is saved but this
 -- script), so edits to the file show up the next time it is opened.

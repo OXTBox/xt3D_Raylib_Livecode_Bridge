@@ -43,6 +43,12 @@ A crash takes LiveCode straight to the desktop with no message. The method that 
 
 Change one thing per round. Each round costs him a rebuild and often a LiveCode restart.
 
+## Driving LiveCode from here (dev server)
+
+When the owner has ticked "Dev server" in the test bench (`testbench/xt3d_testbench.livecodescript`, installed in `C:\xt3d\testbench\`), `tools/xt3d_dev.sh` talks to the running IDE: `ping`, `run '<statements>'` (inside the bench script), `eval`, `reload` (reopen the bench from its file after editing it), `snap` (PNG of the bench to `C:/xt3d/snap.png`, then Read it), `checks` (Run checks + results). It goes through Windows' `curl.exe`, because WSL2 cannot reach Windows' 127.0.0.1. No token file at `C:\xt3d\.xt3d_devtoken` means the server is not running: ask the owner to tick the box. Logs to read directly: `C:\xt3d\bench_checks.txt`, `C:\xt3d\raylib_log.txt`.
+
+After editing a bench or server file, copy it to `C:\xt3d\testbench\` before `reload`. Building the DLL needs LiveCode closed (rule 7), which also stops the server.
+
 ## Old iGame3D formats (for importers)
 
 - `.wtf` model: plain text. Line 1 `iGame3D Mdl`, then sections `#Bones:`, `#Vertices:` (count, then `x,y,z,boneIndex` per line), `#Paths:`, `#Groups:` (name, count, vertex indices), `#BoneOrientations:`, `#Edges:`, `#Materials:` (count; per material: name, a count of `key=value` lines, those lines, a triangle count, then `a,b,c,u1,v1,u2,v2,u3,v3` per triangle), `#Animations:`.

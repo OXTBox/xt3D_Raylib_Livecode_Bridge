@@ -33,6 +33,8 @@ Last updated 2026-11-11.
 - macOS and Linux builds. On macOS, raylib's window layer and LiveCode may both want the application main loop.
 
 
+- Dev server (`testbench/xt3d_devserver.livecodescript` + `tools/xt3d_dev.sh`): written, not yet started in LiveCode. It is the LiveCode-side listener the MCP bridge (next step 3) needs.
+
 ## Known issues and limits
 
 - Handles survive `CloseWindow` in the tables but their GPU side is gone; reopening the window does not bring them back.
