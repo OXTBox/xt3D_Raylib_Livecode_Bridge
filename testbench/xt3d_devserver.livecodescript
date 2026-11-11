@@ -133,12 +133,12 @@ end DevServer.OnBody
 -------------------------------------------------------------------- routes
 
 on DevServer.Handle pSocket, pBody
-   local tC, tCode, tOut, tErr, tTarget, tHere, tFile, tVersion
+   local tC, tCode, tOut, tErr, tTarget, bInServer, tFile, tVersion
    put sDev["conn"][pSocket] into tC
    put 200 into tCode
    put sDev["target"] into tTarget
    -- run in the target stack when it is open, unless asked to run here
-   put (tC["query"]["in"] is "server" or there is not a stack tTarget) into tHere
+   put (tC["query"]["in"] is "server" or there is not a stack tTarget) into bInServer
    try
       switch tC["route"]
          case "/ping"
@@ -151,10 +151,10 @@ on DevServer.Handle pSocket, pBody
                   (there is a stack tTarget) & " | " & tVersion into tOut
             break
          case "/run"
-            put DevServer.Run(pBody, tHere, tTarget) into tOut
+            put DevServer.Run(pBody, bInServer, tTarget) into tOut
             break
          case "/eval"
-            if tHere then
+            if bInServer then
                put DevServer.Eval(pBody) into tOut
             else
                dispatch function "DevServer.Eval" to stack tTarget with pBody
@@ -197,10 +197,10 @@ end DevServer.Handle
 
 -- Statements run through "do". Anything put into the message box comes back,
 -- followed by the result if there is one.
-function DevServer.Run pCode, pHere, pTarget
+function DevServer.Run pCode, pInServer, pTarget
    local tErr, tResult
    put empty into msg
-   if pHere then
+   if pInServer then
       try
          do pCode
          put the result into tResult
