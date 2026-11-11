@@ -41,10 +41,17 @@ if not exist "%XT3D_RAYLIB%\lib\raylib.lib" (
 )
 if not exist "%XT3D_WORK%" mkdir "%XT3D_WORK%"
 
-rem --- sources
+rem --- sources (xt3d.lcb goes only into extension\, never loose in the work folder:
+rem     the Extension Builder must open the copy that has code\x86_64-win32\xt3d.dll beside it)
 if /i "%XT3D_SRC%"=="%XT3D_WORK%\" goto :compile
 echo === Copying sources from %XT3D_SRC%
-for %%f in (xt3d_shim.c xt3d_generated.inc xt3d.lcb) do (
+if not exist "%XT3D_WORK%\extension" mkdir "%XT3D_WORK%\extension"
+copy /Y "%XT3D_SRC%xt3d.lcb" "%XT3D_WORK%\extension\xt3d.lcb" >nul
+if errorlevel 1 (
+  echo ERROR: could not copy xt3d.lcb from "%XT3D_SRC%".
+  goto :fail
+)
+for %%f in (xt3d_shim.c xt3d_generated.inc) do (
   copy /Y "%XT3D_SRC%%%f" "%XT3D_WORK%\%%f" >nul
   if errorlevel 1 (
     echo ERROR: could not copy %%f from "%XT3D_SRC%". Set XT3D_SRC to the folder that holds it.
@@ -54,7 +61,9 @@ for %%f in (xt3d_shim.c xt3d_generated.inc xt3d.lcb) do (
 
 :compile
 cd /d "%XT3D_WORK%"
-for %%f in (xt3d_shim.c xt3d_generated.inc xt3d.lcb) do if not exist "%%f" (
+rem a loose xt3d.lcb here is the wrong one to open; remove it and what the Extension Builder made from it
+for %%f in (xt3d.lcb manifest.xml module.2.lcm api.lcdoc org.xtalk.xtbridge.lci org.xtalk.xtbridge.0.1.0.lce) do if exist "%%f" del "%%f"
+for %%f in (xt3d_shim.c xt3d_generated.inc extension\xt3d.lcb) do if not exist "%%f" (
   echo ERROR: %XT3D_WORK%\%%f is missing.
   goto :fail
 )
@@ -73,11 +82,6 @@ if errorlevel 1 (
 
 if not exist "extension\code\x86_64-win32" mkdir "extension\code\x86_64-win32"
 echo === Installing into %XT3D_WORK%\extension
-copy /Y xt3d.lcb "extension\xt3d.lcb" >nul
-if errorlevel 1 (
-  echo ERROR: could not copy xt3d.lcb.
-  goto :fail
-)
 copy /Y xt3d.dll "extension\code\x86_64-win32\xt3d.dll" >nul
 if errorlevel 1 (
   echo ERROR: could not copy xt3d.dll. Is LiveCode still running?

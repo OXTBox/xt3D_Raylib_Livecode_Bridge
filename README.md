@@ -27,6 +27,7 @@ LiveCode Script  ──calls──▶  xt3d.lcb  ──binds to──▶  xt3d.d
 | `xt3d.lcb` | Generated: LiveCode Builder library, one public `xt3d_` handler per wrapper and helper |
 | `xt3d_raylib_manifest.json` | Generated: every raylib function with its `xt3d_` name, parameters, return shape and description, the reason for each skipped one, plus raylib's enums and colours |
 | `build.bat` | Windows build and install into the extension folder |
+| `testbench/xt3d_testbench.livecodescript` | Test bench: a script-only stack (File > Open Stack) with model browser, orbit camera, render switches, animation controls and a "Run checks" self-test |
 | `demos/xt3d_view_demo.livecodescript.txt` | Model viewer rendered into a LiveCode image |
 | `demos/xt3d_window_demo.livecodescript.txt` | Same scene in raylib's own window |
 | `demos/xt3d_diagnostic.livecodescript.txt` | Step-by-step self-test that logs before each call |

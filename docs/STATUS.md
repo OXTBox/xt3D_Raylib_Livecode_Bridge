@@ -19,16 +19,19 @@ Last updated 2026-11-11.
 - Pixel-exact display on a 125% scaled display using the stack `scaleFactor`.
 - Skeletal animation from a Mixamo FBX converted with `tools/fbx_to_glb.py` (`3DModels/glb/body_block_baked.glb`: 2 meshes, 65 bones, 209 frames). Blender's default glTF export of the same file loads face down and does not animate, because raylib ignores the transform on the Armature node; the script bakes it in.
 - raylib's log to a file with `xt3d_SetTraceLogFile` (the view demo writes `C:\xt3d\raylib_log.txt`).
+- Window guards: with no window open, `DrawCube`, `LoadModel` (answers 0), `GetMousePosition` (answers empty), `CloseWindow` and `UnloadModel` do nothing instead of crashing; closing and reopening the view works (test bench checks, 2026-11-11).
+- Test bench (`testbench/xt3d_testbench.livecodescript`): opens as a script-only stack; "Run checks" passes all 15 checks.
 - Supersampled anti-aliasing (render at 2x, shrink with bilinear filtering).
 
 ## Built but not yet confirmed on a real machine
 
 - `xt3d_SetBackfaceCulling`, `xt3d_SetCullFace`, `xt3d_SetWireMode`, `xt3d_SetDepthTest`, `xt3d_SetLineWidth`. They bind and are called; the visual result on `thebox.obj` has not been reported. They are guarded to do nothing when no window is open.
-- Window guards (2026-11-11): 290 of the 493 generated wrappers, plus `xt3d_MeshFromText`, `xt3d_RenderTextureExport`, `xt3d_RenderTextureToImageData` and the `SetShaderValue` helpers, now do nothing and return 0 / false / "" when no window is open. An `Unload...` with no window still frees the handle number. The rest (files, images in memory, colours, collisions, audio) run without a window. The manifest marks each wrapper with `needs_window`. Compiles cleanly with MSVC; behaviour in LiveCode not yet confirmed.
+- Window guards (2026-11-11): 290 of the 493 generated wrappers, plus `xt3d_MeshFromText`, `xt3d_RenderTextureExport`, `xt3d_RenderTextureToImageData` and the `SetShaderValue` helpers, now do nothing and return 0 / false / "" when no window is open. An `Unload...` with no window still frees the handle number. The rest (files, images in memory, colours, collisions, audio) run without a window. The manifest marks each wrapper with `needs_window`.
 - Some Khronos sample glTF/GLB files render only half or one side of the model. Not yet looked at.
 - `xt3d_MeshFromText` against real raylib (tested against a stub only).
 - Textures on models, shaders, audio, fonts, 2D drawing beyond `DrawText`.
 - macOS and Linux builds. On macOS, raylib's window layer and LiveCode may both want the application main loop.
+
 
 ## Known issues and limits
 
