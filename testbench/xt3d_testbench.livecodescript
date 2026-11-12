@@ -39,6 +39,8 @@ local sScale, sViewW, sViewH, sRunning, sFrameMsg
 local sTarget, sBig, sBigTexture, sCamera
 -- the loaded model
 local sModel, sModelPath, sFit, sLift
+local sWireColor   -- set while a line-only model (the face card) is shown: draw only its lines, in this colour
+local sModel2, sWireColor2   -- a second line-only model drawn with it (the face card's panel)
 local sAnimFirst, sAnimCount, sAnim, sAnimFrames, sAnimFrame
 -- camera orbit, spin, timing
 local sYaw, sPitch, sDist, sAngle, sLastTick, sDragging, sDragX, sDragY
@@ -101,6 +103,8 @@ on openStack
    xbStartView
    put "Ready. " & xt3d_Version() & return & "Click a model in the list, or Run checks." & return & \
          "Dev server:" && xbDevRunning() & ". Errors go to C:/LIB_MCP/livecode_errors.txt" into field "info"
+   -- the default card while Claude is connected: the face (the Face button brings it back)
+   if xbDevRunning() then xbShowFace
 end openStack
 
 on closeStack
@@ -173,8 +177,9 @@ command xbBuildControls
    set the hilite of button "playChk" to true
    xbMake "scrollbar", "frameBar", tX + 62, tY, kPanelW - 62, 22
    add 30 to tY
-   xbMake "button", "camBtn", tX, tY, 120, 24, "Reset camera"
-   xbMake "button", "unloadBtn", tX + 130, tY, 120, 24, "Unload"
+   xbMake "button", "camBtn", tX, tY, 104, 24, "Reset camera"
+   xbMake "button", "faceBtn", tX + 110, tY, 64, 24, "Face"
+   xbMake "button", "unloadBtn", tX + 180, tY, 70, 24, "Unload"
    add 30 to tY
    xbMake "checkbox", "devChk", tX, tY, kPanelW, 20, "Dev server (lets Claude drive this bench)"
    set the hilite of button "devChk" to xbDevRunning()
@@ -286,6 +291,9 @@ on mouseUp
          break
       case "devChk"
          xbDevServer the hilite of button "devChk"
+         break
+      case "faceBtn"
+         xbShowFace
          break
       case "unloadBtn"
          xbUnloadModel
@@ -500,18 +508,26 @@ command xbFrame
       else
          xt3d_SetCullFace 1
       end if
-      if the hilite of button "tintChk" then
+      if sWireColor is not empty then
+         -- a line-only model (the face card): its lines, nothing else
+         xt3d_DrawModelWiresEx sModel, 0,sLift,0, 0,1,0, sAngle, sFit,sFit,sFit, item 1 of sWireColor, item 2 of sWireColor, item 3 of sWireColor, 255
+         if sModel2 > 0 then
+            xt3d_DrawModelWiresEx sModel2, 0,sLift,0, 0,1,0, sAngle, sFit,sFit,sFit, item 1 of sWireColor2, item 2 of sWireColor2, item 3 of sWireColor2, 255
+         end if
+      else if the hilite of button "tintChk" then
          put "255,160,0" into tTint
       else
          put "255,255,255" into tTint
       end if
-      if the hilite of button "solidChk" then
+      if sWireColor is not empty then
+         -- drawn above
+      else if the hilite of button "solidChk" then
          xt3d_DrawModelEx sModel, 0,sLift,0, 0,1,0, sAngle, sFit,sFit,sFit, item 1 of tTint, item 2 of tTint, item 3 of tTint, 255
          put "0,0,0" into tWire
       else
          put tTint into tWire
       end if
-      if the hilite of button "wiresChk" then
+      if the hilite of button "wiresChk" and sWireColor is empty then
          xt3d_DrawModelWiresEx sModel, 0,sLift,0, 0,1,0, sAngle, sFit,sFit,sFit, item 1 of tWire, item 2 of tWire, item 3 of tWire, 255
       end if
       xt3d_SetCullFace 1
@@ -550,21 +566,11 @@ command xbLoadModel pPath
       return false
    end if
    put pPath into sModelPath
-
-   -- bounding box: minX,minY,minZ,maxX,maxY,maxZ
-   put xt3d_GetModelBoundingBox(sModel) into tBox
+   xbFitModel
+   put the result into tBox
    put item 4 of tBox - item 1 of tBox into tSizeX
    put item 5 of tBox - item 2 of tBox into tSizeY
    put item 6 of tBox - item 3 of tBox into tSizeZ
-   put (item 1 of tBox + item 4 of tBox) / 2 into tCX
-   put (item 2 of tBox + item 5 of tBox) / 2 into tCY
-   put (item 3 of tBox + item 6 of tBox) / 2 into tCZ
-   put max(tSizeX, tSizeY, tSizeZ) into tBiggest
-   if tBiggest <= 0 then put 1 into tBiggest
-   put 2 / tBiggest into sFit
-   put tSizeY * sFit / 2 into sLift
-   -- move the model's middle to its origin, so it sits on the grid and spins about its middle
-   xt3d_ModelSetTransform sModel, 1,0,0,0, 0,1,0,0, 0,0,1,0, -tCX,-tCY,-tCZ,1
 
    -- animations: "firstHandle,count"; handles are consecutive
    put xt3d_LoadModelAnimations(pPath) into tAnims
@@ -588,6 +594,100 @@ command xbLoadModel pPath
    return true
 end xbLoadModel
 
+-- scale sModel to 2 units across, centre it on its own origin and stand it on the grid;
+-- returns its bounding box (minX,minY,minZ,maxX,maxY,maxZ)
+command xbFitModel
+   local tBox, tSizeY, tCX, tCY, tCZ, tBiggest
+   put xt3d_GetModelBoundingBox(sModel) into tBox
+   put item 5 of tBox - item 2 of tBox into tSizeY
+   put (item 1 of tBox + item 4 of tBox) / 2 into tCX
+   put (item 2 of tBox + item 5 of tBox) / 2 into tCY
+   put (item 3 of tBox + item 6 of tBox) / 2 into tCZ
+   put max(item 4 of tBox - item 1 of tBox, tSizeY, item 6 of tBox - item 3 of tBox) into tBiggest
+   if tBiggest <= 0 then put 1 into tBiggest
+   put 2 / tBiggest into sFit
+   put tSizeY * sFit / 2 into sLift
+   -- move the model's middle to its origin, so it sits on the grid and spins about its middle
+   xt3d_ModelSetTransform sModel, 1,0,0,0, 0,1,0,0, 0,0,1,0, -tCX,-tCY,-tCZ,1
+   return tBox
+end xbFitModel
+
+-- The face card: Claude's face from LIB_MCP's assets (a 1-bit grid) as raised wireframe
+-- blocks on a grid panel, made with LIB_MAP. All its lines are one mesh, so the whole
+-- face is one draw call a frame. Each line is stored as a sliver triangle, which raylib's
+-- wire mode draws as that line. Shown by itself when the dev server starts.
+command xbShowFace
+   local tLib, tMapLib, tFaceFile, tGrid, tBlank, tEdges, tCount, tMatrix
+   put xbFindLibMCP() into tLib
+   if tLib is empty then
+      put "Face: LIB_MCP not found next to this project." into field "info"
+      exit xbShowFace
+   end if
+   set the itemDel to "/"
+   put item 1 to -3 of tLib & "/assets/claude_face_bits.txt" into tFaceFile
+   put item 1 to -4 of tLib & "/LIB_MAP/livecode/lib_map.livecodescript" into tMapLib
+   set the itemDel to comma
+   if there is not a file tFaceFile or there is not a file tMapLib then
+      put "Face: needs" && tFaceFile & return & "and" && tMapLib into field "info"
+      exit xbShowFace
+   end if
+   -- always the current file: an older LIB_MAP may still be in memory
+   if there is a stack "LIB_MAP" then
+      stop using stack "LIB_MAP"
+      delete stack "LIB_MAP"
+   end if
+   start using stack tMapLib
+   if sRunning is not true then xbStartView
+   put URL ("file:" & tFaceFile) into tGrid
+   xbUnloadModel
+   -- the panel's grid (dim) is the main model, so the fit is taken from the whole picture;
+   -- the face's blocks (bright) are a second model placed the same way
+   put tGrid into tBlank
+   replace "1" with "0" in tBlank
+   put Map.BlockEdges(tBlank, 0.1, 0.6, true) into tEdges
+   put xbLinesModel(tEdges) into sModel
+   put Map.BlockEdges(tGrid, 0.1, 0.6, false) into tEdges
+   put the number of lines of tEdges into tCount
+   put xbLinesModel(tEdges) into sModel2
+   if sModel is 0 or sModel2 is 0 then
+      put "Face: could not build the meshes." into field "info"
+      exit xbShowFace
+   end if
+   xbFitModel
+   put xt3d_ModelGetTransform(sModel) into tMatrix
+   xt3d_ModelSetTransform sModel2, item 1 of tMatrix, item 2 of tMatrix, item 3 of tMatrix, item 4 of tMatrix, \
+         item 5 of tMatrix, item 6 of tMatrix, item 7 of tMatrix, item 8 of tMatrix, \
+         item 9 of tMatrix, item 10 of tMatrix, item 11 of tMatrix, item 12 of tMatrix, \
+         item 13 of tMatrix, item 14 of tMatrix, item 15 of tMatrix, item 16 of tMatrix
+   put "30,95,105" into sWireColor
+   put "130,250,250" into sWireColor2
+   put "claude face" into sModelPath
+   -- a three-quarter view, a little from above, no floor grid
+   put 28 into sYaw
+   put 16 into sPitch
+   put 3.0 into sDist
+   put 0 into sAngle
+   set the hilite of button "spinChk" to false
+   set the hilite of button "gridChk" to false
+   put "Claude (LIB_MCP connected)" & return & tCount && "face lines + panel grid, two draw calls a frame" & return & \
+         "from" && tFaceFile into field "info"
+end xbShowFace
+
+-- line segments (x1,y1,z1,x2,y2,z2 per line) as one model for wire drawing: each segment
+-- becomes a sliver triangle, which raylib's wire mode draws as that line. 0 on failure.
+function xbLinesModel pSegments
+   local tSeg, tVerts, tMesh
+   repeat for each line tSeg in pSegments
+      put item 1 to 3 of tSeg & return & item 4 to 6 of tSeg & return & \
+            item 4 of tSeg + 0.0004 & "," & item 5 of tSeg + 0.0004 & "," & item 6 of tSeg & return after tVerts
+   end repeat
+   if tVerts is empty then return 0
+   delete the last char of tVerts
+   put xt3d_MeshFromText(tVerts, "", "") into tMesh
+   if tMesh is not a number or tMesh <= 0 then return 0
+   return xt3d_LoadModelFromMesh(tMesh)
+end xbLinesModel
+
 command xbSelectAnim pIndex
    put 0 into sAnimFrame
    put 0 into sAnimFrames
@@ -605,12 +705,16 @@ end xbSelectAnim
 command xbUnloadModel
    if sAnimCount > 0 then xt3d_UnloadModelAnimations sAnimFirst
    if sModel > 0 then xt3d_UnloadModel sModel
+   if sModel2 > 0 then xt3d_UnloadModel sModel2
    put 0 into sModel
+   put 0 into sModel2
    put 0 into sAnimCount
    put 0 into sAnimFrames
    put 0 into sLift
    put 1 into sFit
    put empty into sModelPath
+   put empty into sWireColor
+   put empty into sWireColor2
    if there is a button "animMenu" then xbAnimMenu
 end xbUnloadModel
 
