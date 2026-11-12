@@ -116,6 +116,8 @@ on openStack
       exit openStack
    end try
    xbPlaceWindow
+   -- always on screen: a standalone build once opened it hidden
+   if not the visible of me then show me
    -- the dev server (and its error log) starts with the bench; untick to stop it
    if not xbDevRunning() then xbDevServer true
    put 45 into sYaw
