@@ -1,3 +1,4 @@
+script "xt3dViewDemo"
 -- xt3d view demo: load a model, fit it to the view, play its first animation if it
 -- has one, with switches for spin and face culling. Needs the DLL built after
 -- xt3d_SetBackfaceCulling was added. Type  xt3dStart  and pick a file.

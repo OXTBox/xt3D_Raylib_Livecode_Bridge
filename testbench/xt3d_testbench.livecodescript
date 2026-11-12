@@ -111,8 +111,19 @@ end openStack
 
 on closeStack
    xbStopView
+   xbCancelPending
    set the scaleFactor of me to 1
 end closeStack
+
+-- cancel every message this stack still has queued (frame timers, redraws), so closing
+-- leaves nothing behind that could keep the old copy in memory
+command xbCancelPending
+   local tLine, tLong
+   put the long name of me into tLong
+   repeat for each line tLine in the pendingMessages
+      if item 4 to -1 of tLine contains tLong then cancel item 1 of tLine
+   end repeat
+end xbCancelPending
 
 -- In a standalone (the xt3d_Bench build) load the xt3d extension from where build.bat
 -- installs it, so the standalone always uses the latest build and needs no inclusion.

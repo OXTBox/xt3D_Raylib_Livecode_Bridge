@@ -1,8 +1,10 @@
+script "xt3dDiagnostic"
 -- xt3d diagnostic 2. Logs every step to C:/xt3d/diag_log.txt before running it.
 -- Order: number passing, a full frame saved to PNG, then the two risky things
 -- (text coming back from the DLL, and the frame copy into LiveCode).
 --
--- Paste into the card script of a NEW stack, Apply, then type  xt3dDiag2
+-- A script-only stack: File > Open Stack, pick this file, then type  xt3dDiag2
+-- in the Message Box. (Or paste it, without line 1, into the card script of a new stack.)
 
 constant kLog = "C:/xt3d/diag_log.txt"
 

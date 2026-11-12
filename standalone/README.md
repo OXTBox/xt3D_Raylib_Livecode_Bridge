@@ -28,3 +28,29 @@ from their files, so changes to them need no rebuild.
 
 `tools/bench ping | run | eval | snap | reload | checks` starts it when needed.
 Close its small status window to quit it.
+
+# The games bench standalone (xt3d_Bench_LibMCP)
+
+The bench with games (`testbench/xt3d_testBench_lib_mcp.livecodescript`): everything the
+bench does, plus a **Games** button that lists the Vibecode3D game card scripts in
+`../LIB_GAMES/Vibecode3D_Games` and plays them in the 3D view. LIB_MCP runs on port **8770**.
+
+## Build
+
+1. New stack `xt3d_Bench_LibMCP`; paste `launcher_lib_mcp.livecodescript` as its stack
+   script; save it here as `standalone\xt3d_Bench_LibMCP.livecode`.
+2. File > Save as Standalone Application (Windows). The build lands in
+   `standalone\xt3d_Bench_LibMCP\xt3d_Bench_LibMCP.exe`.
+
+As with the plain bench, the launcher finds the bench, LIB_MCP and xt3d from their files,
+so changes to them need no rebuild. `tools/gamebench ping | run | eval | snap` starts and
+drives it.
+
+## How a game runs
+
+Clicking a game puts its script into the bench's card (like a `Play.<Game>` card) and
+loads `testbench/vibe_engine_xt3d.livecodescript`: the owner's whole Vibecode3D engine,
+made by `tools/make_vibe_xt3d.py` from the newest script in `Vibecode3D/livecode`, with
+the LiveCode drawing swapped for xt3d (`testbench/vibe_xt3d_overrides.livecodescript`).
+Each mesh becomes one xt3d model of lines; the HUD, particles and lasers are 2D lines.
+After saving a new engine script, run `python3 tools/make_vibe_xt3d.py` again.

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# tools/gamebench - talk to the games bench standalone (LIB_MCP on port 8770), starting it if needed.
+#   tools/gamebench ping | run '<statements>' | eval '<expr>' | snap [C:/path.png] | reload | checks
+# Everything except "checks" is passed to LIB_MCP's lcmcp with --port 8770.
+HERE="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+LCMCP="$HERE/../LIB_MCP/tools/lcmcp"
+TOKEN=/mnt/c/LIB_MCP/devtoken_8770.txt
+EXE="$HERE/standalone/xt3d_Bench_LibMCP/xt3d_Bench_LibMCP.exe"
+alive() { [[ -f "$TOKEN" ]] && "$LCMCP" --port 8770 ping >/dev/null 2>&1; }
+if ! alive; then
+  rm -f "$TOKEN"
+  [[ -f "$EXE" ]] || { echo "no build at $EXE (see standalone/README.md)" >&2; exit 2; }
+  (cd /mnt/c && cmd.exe /c start "" "$(wslpath -w "$EXE")" >/dev/null 2>&1)
+  for _ in $(seq 60); do [[ -f "$TOKEN" ]] && break; sleep 0.5; done
+  sleep 4   # the bench opens and starts raylib after the server
+fi
+if [[ "${1:-}" == checks ]]; then
+  "$LCMCP" --port 8770 run 'xbRunChecks' >/dev/null
+  tr -d '\r' < /mnt/c/xt3d/bench_checks.txt | grep -E 'PASS|FAIL' | sed 's/^ *//'
+  exit
+fi
+exec "$LCMCP" --port 8770 "$@"

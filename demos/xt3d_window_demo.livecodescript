@@ -1,8 +1,9 @@
+script "xt3dWindowDemo"
 -- xt3d window demo: the same scene in raylib's own visible window, with raylib's
 -- built-in 4x edge smoothing, for comparison with the in-stack image.
 --
--- Stop any other xt3d demo first (xt3dStop). Paste into the card script of a
--- new stack, Apply, then type  xt3dWinStart .  Stop with  xt3dWinStop ,
+-- Stop any other xt3d demo first (xt3dStop). A script-only stack: File > Open Stack,
+-- pick this file, then type  xt3dWinStart  in the Message Box.  Stop with  xt3dWinStop ,
 -- the window's close box, or Escape while the raylib window has focus.
 
 constant kWidth = 640

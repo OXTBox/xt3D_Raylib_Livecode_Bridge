@@ -38,9 +38,9 @@ LiveCode Script  ──calls──▶  xt3d.lcb  ──binds to──▶  xt3d.d
 | `testbench/xt3d_testbench.livecodescript` | Test bench: a script-only stack (File > Open Stack) with model browser, orbit camera, render switches, animation controls and a "Run checks" self-test |
 | (sibling) `~/projects/LIB_MCP` | Optional. Dev server, compile checks, error log, MCP server: lets Claude Code or a local model drive LiveCode. The bench starts it when present. |
 | `mcp/xt3d_tools.py` | xt3d tool pack for LIB_MCP's MCP server: handler search, load models, bench checks |
-| `demos/xt3d_view_demo.livecodescript.txt` | Model viewer rendered into a LiveCode image |
-| `demos/xt3d_window_demo.livecodescript.txt` | Same scene in raylib's own window |
-| `demos/xt3d_diagnostic.livecodescript.txt` | Step-by-step self-test that logs before each call |
+| `demos/xt3d_view_demo.livecodescript` | Model viewer rendered into a LiveCode image |
+| `demos/xt3d_window_demo.livecodescript` | Same scene in raylib's own window |
+| `demos/xt3d_diagnostic.livecodescript` | Step-by-step self-test that logs before each call |
 | `tools/make_skinned_test.py` | Blender script that builds `test_models/skinned_bend.glb`, a small skinned, animated test model |
 | `tools/fbx_to_glb.py` | Blender script: rigged FBX (e.g. Mixamo) to a GLB raylib can animate, with the armature transform baked in |
 | `test_models/` | Test assets |
