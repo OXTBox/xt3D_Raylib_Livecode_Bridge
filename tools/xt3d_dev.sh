@@ -36,8 +36,6 @@ SA_EXE='C:\xt3d\xt3d_MCP\xt3d_MCP.exe'
 start_standalone() {
   [[ -f "$SA_TOKEN" ]] && return 0
   [[ -f /mnt/c/xt3d/xt3d_MCP/xt3d_MCP.exe ]] || return 1
-  # only a build with the launcher script uses port 8767; an older build would take the IDE's port
-  grep -q -a 'DevServer.Start 8767' /mnt/c/xt3d/xt3d_MCP/xt3d_MCP.exe || return 1
   (cd /mnt/c/xt3d && cmd.exe /c start "" "$SA_EXE" >/dev/null 2>&1)
   for _ in $(seq 30); do [[ -f "$SA_TOKEN" ]] && return 0; sleep 0.5; done
   return 1
