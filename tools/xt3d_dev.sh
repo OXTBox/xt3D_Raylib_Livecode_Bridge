@@ -30,12 +30,14 @@ if [[ "${1:-}" == errors ]]; then
 fi
 IDE_TOKEN=/mnt/c/xt3d/.xt3d_devtoken
 SA_TOKEN=/mnt/c/xt3d/.xt3d_devtoken_8767
-SA_EXE='C:\xt3d\xt3d_MCP\xt3d_MCP.exe'
+# the build in this project, run where LiveCode puts it, so a rebuild is live at once
+SA_DIR="$(cd "$(dirname "$0")/.." && pwd)/livecode_stacks/xt3d_MCP/Windows x86-64"
+SA_EXE="$(wslpath -w "$SA_DIR/xt3d_MCP.exe")"
 
 # start the standalone if its token file is missing; wait up to 15 s for it
 start_standalone() {
   [[ -f "$SA_TOKEN" ]] && return 0
-  [[ -f /mnt/c/xt3d/xt3d_MCP/xt3d_MCP.exe ]] || return 1
+  [[ -f "$SA_DIR/xt3d_MCP.exe" ]] || return 1
   (cd /mnt/c/xt3d && cmd.exe /c start "" "$SA_EXE" >/dev/null 2>&1)
   for _ in $(seq 30); do [[ -f "$SA_TOKEN" ]] && return 0; sleep 0.5; done
   return 1

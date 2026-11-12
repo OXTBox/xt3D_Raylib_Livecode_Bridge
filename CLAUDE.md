@@ -47,7 +47,7 @@ Change one thing per round. Each round costs him a rebuild and often a LiveCode 
 
 ## Driving LiveCode from here (dev server)
 
-**Compile-check every LiveCode script before giving it to the owner:** `tools/xt3d_dev.sh compile <file>` compiles it in a real LiveCode 9.6.3 engine (the standalone `C:\xt3d\xt3d_MCP\xt3d_MCP.exe` on port 8767, started automatically once it has been rebuilt with `livecode_stacks/xt3d_MCP_launcher.livecodescript`; otherwise the IDE's server). It answers `COMPILES OK` or LiveCode's own error text with file line numbers. The owner should never have to retype an error from the IDE's locked error fields: run-time errors are in `C:\xt3d\livecode_errors.txt`.
+**Compile-check every LiveCode script before giving it to the owner:** `tools/xt3d_dev.sh compile <file>` compiles it in a real LiveCode 9.6.3 engine (the standalone `livecode_stacks/xt3d_MCP/Windows x86-64/xt3d_MCP.exe`, run in place from `\\wsl$`, port 8767, started automatically; its stack script is `livecode_stacks/xt3d_MCP_launcher.livecodescript`, which loads the server file, so only launcher changes need a rebuild). It answers `COMPILES OK` or LiveCode's own error text with file line numbers. The owner should never have to retype an error from the IDE's locked error fields: run-time errors are in `C:\xt3d\livecode_errors.txt`.
 
 Code sent with `run`/`runs` executes inside the dev server's handler through `do`: do not declare `local` names the handler already uses (`tErr`, `tResult`), and prefer unusual names (`xtccScript`).
 
