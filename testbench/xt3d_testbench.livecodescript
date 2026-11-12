@@ -83,6 +83,7 @@ end xbPlaceWindow
 
 on openStack
    local tError
+   xbLoadXt3d
    try
       get xt3d_Version()
    catch tError
@@ -106,6 +107,21 @@ on closeStack
    xbStopView
    set the scaleFactor of me to 1
 end closeStack
+
+-- In a standalone (the xt3d_Bench build) load the xt3d extension from where build.bat
+-- installs it, so the standalone always uses the latest build and needs no inclusion.
+-- The library mapping comes first: the DLL is bound on the first xt3d call.
+-- In the IDE the Extension Builder loads it, so nothing happens here.
+command xbLoadXt3d
+   local tErr
+   if the environment is "development" then exit xbLoadXt3d
+   if the loadedExtensions contains "org.xtalk.xtbridge" then exit xbLoadXt3d
+   try
+      set the revLibraryMapping["xt3d"] to "C:/xt3d/extension/code/x86_64-win32/xt3d.dll"
+      load extension from file "C:/xt3d/extension/module.2.lcm" with resource path "C:/xt3d/extension"
+   catch tErr
+   end try
+end xbLoadXt3d
 
 function px pLogical
    return round(pLogical * sScale)
