@@ -62,6 +62,12 @@ The bench must be opened from the WSL folder
 not from a copy, so it finds LIB_MCP. `C:\xt3d` holds only what the DLL build and LiveCode's
 extension loading need, plus `test_models` and `bench_checks.txt`.
 
+**The bench without the owner:** `tools/bench` starts the xt3d bench standalone
+(`standalone/xt3d_Bench/xt3d_Bench.exe`, LIB_MCP on port 8768) and talks to it: `tools/bench checks`,
+`tools/bench run 'xbLoadModel "C:/xt3d/test_models/skinned_bend.glb"'`, `tools/bench snap C:/LIB_MCP/s.png`,
+then Read `/mnt/c/LIB_MCP/s.png` to see the 3D view. The bench loads xt3d from `C:\xt3d\extension`
+itself, so after `build.bat` just `tools/bench reload` (or restart it).
+
 Script-only stacks: if the owner saves one from the IDE, LiveCode writes its in-memory script
 over the file (and adds a UTF-8 BOM). That silently undid bench edits once. The owner should
 choose "Don't Save" when closing; if a file's first bytes are a BOM, check it against git.
