@@ -16,7 +16,10 @@ script "xt3dDevServer"
 --
 -- Plain HTTP. Only connections from 127.0.0.1 are answered, and every request must
 -- carry the header  X-Token: <token>.  The token is new on every start and is written,
--- with the port, to C:/xt3d/.xt3d_devtoken (line 1 token, line 2 port).
+-- with the port, to a token file (line 1 token, line 2 port):
+--   port 8766, the IDE (bench) .......... C:/xt3d/.xt3d_devtoken
+--   port 8767, the standalone xt3d_MCP .. C:/xt3d/.xt3d_devtoken_8767
+-- so the IDE and the standalone can run at the same time.
 -- tools/xt3d_dev.sh reads it from there.
 --
 -- ROUTES (bodies are UTF-8 text)
@@ -28,6 +31,9 @@ script "xt3dDevServer"
 --   POST /eval                   body = one expression -> its value (?in=server as above)
 --   POST /reload                 close the target stack and open it again from its file
 --                                (?path=<file> opens that file instead)
+--   POST /compile                body = a whole script (a .livecodescript file's text is fine):
+--                                answers "COMPILES OK" or the compile errors, translated, with
+--                                line numbers of the text as sent
 --   GET  /snap                   save a PNG of the target stack's card (?file=, default
 --                                C:/xt3d/snap.png), for Claude to look at
 -- Errors from /run and /eval come back translated, and are also written to the error file.
@@ -82,13 +88,18 @@ command DevServer.Start pPort, pTarget
    put pPort into sDev["port"]
    put pTarget into sDev["target"]
    put DevServer.NewToken() into sDev["token"]
+   if pPort is 8766 then
+      put kTokenFile into sDev["tokenfile"]
+   else
+      put kTokenFile & "_" & pPort into sDev["tokenfile"]
+   end if
    accept connections on port pPort with message "DevServer.OnConnect"
    put the result into tErr
    if tErr is not empty then
       put empty into sDev
       return "DevServer: could not listen on port" && pPort & ":" && tErr
    end if
-   put sDev["token"] & return & sDev["port"] & return into URL ("file:" & kTokenFile)
+   put sDev["token"] & return & sDev["port"] & return into URL ("file:" & sDev["tokenfile"])
    DevServer.LogError empty, "dev server started on port" && pPort
    if sWatching is not true then
       put true into sWatching
@@ -105,8 +116,10 @@ command DevServer.Stop
       catch tErr
       end try
    end if
+   if sDev["tokenfile"] is not empty and there is a file sDev["tokenfile"] then
+      delete file sDev["tokenfile"]
+   end if
    put empty into sDev
-   if there is a file kTokenFile then delete file kTokenFile
 end DevServer.Stop
 
 function DevServer.Running
@@ -229,6 +242,9 @@ on DevServer.Handle pSocket, pBody
             send "DevServer.DoReload" to me in 50 milliseconds
             put "OK reloading" && sDev["reload"] into tOut
             break
+         case "/compile"
+            put DevServer.Compile(pBody) into tOut
+            break
          case "/snap"
             put tC["query"]["file"] into tFile
             if tFile is empty then put kSnapFile into tFile
@@ -269,6 +285,23 @@ function DevServer.Run pCode, pInServer, pTarget
    if msg is empty then return "result:" && tResult
    return msg & return & "result:" && tResult
 end DevServer.Run
+
+-- Compile a script without running it: set it as the script of a hidden scratch stack.
+-- A script-only file's first line (script "name") is blanked, so line numbers still match.
+function DevServer.Compile pScript
+   local tOld, tErr
+   if line 1 of pScript begins with "script " then put empty into line 1 of pScript
+   if there is not a stack "xtCompileCheck" then
+      put the defaultStack into tOld
+      create invisible stack "xtCompileCheck"
+      set the defaultStack to tOld
+   end if
+   set the script of stack "xtCompileCheck" to pScript
+   put the result into tErr
+   delete stack "xtCompileCheck"   -- so the IDE never asks to save it
+   if tErr is empty then return "COMPILES OK"
+   return "COMPILE ERROR" & return & DevServer.ErrorText(tErr, true)
+end DevServer.Compile
 
 function DevServer.Eval pExpr
    local tErr
@@ -315,18 +348,22 @@ function DevServer.ErrorText pError, pParsing
    local tLine, tOut, tCode, tList, tMsg
    if pParsing is true then
       put the scriptParsingErrors into tList
-      if tList is empty and there is a file kParseErrorList then put URL ("file:" & kParseErrorList) into tList
+      if tList is empty and there is a file kParseErrorList then
+         put URL ("file:" & kParseErrorList) into tList
+      end if
    else
       put the scriptExecutionErrors into tList
-      if tList is empty and there is a file kExecErrorList then put URL ("file:" & kExecErrorList) into tList
+      if tList is empty and there is a file kExecErrorList then
+         put URL ("file:" & kExecErrorList) into tList
+      end if
    end if
    repeat for each line tLine in pError
       put item 1 of tLine into tCode
       if tCode is an integer and tCode > 0 then
          put line tCode of tList into tMsg
-         put "  " & tMsg & "  (line" && item 2 of tLine & ", column" && item 3 of tLine into tLine
-         if item 4 of tLine is not empty then put ", near:" && item 4 of tLine after tLine
-         put ")" after tLine
+         put "  " & tMsg & "  (line" && item 2 of tLine & ", column" && item 3 of tLine into tMsg
+         if item 4 of tLine is not empty then put ", near:" && item 4 to -1 of tLine after tMsg
+         put tMsg & ")" into tLine
       end if
       put tLine & return after tOut
    end repeat

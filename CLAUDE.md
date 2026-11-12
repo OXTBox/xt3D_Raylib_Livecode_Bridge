@@ -47,6 +47,12 @@ Change one thing per round. Each round costs him a rebuild and often a LiveCode 
 
 ## Driving LiveCode from here (dev server)
 
+**Compile-check every LiveCode script before giving it to the owner:** `tools/xt3d_dev.sh compile <file>` compiles it in a real LiveCode 9.6.3 engine (the standalone `C:\xt3d\xt3d_MCP\xt3d_MCP.exe` on port 8767, started automatically once it has been rebuilt with `livecode_stacks/xt3d_MCP_launcher.livecodescript`; otherwise the IDE's server). It answers `COMPILES OK` or LiveCode's own error text with file line numbers. The owner should never have to retype an error from the IDE's locked error fields: run-time errors are in `C:\xt3d\livecode_errors.txt`.
+
+Code sent with `run`/`runs` executes inside the dev server's handler through `do`: do not declare `local` names the handler already uses (`tErr`, `tResult`), and prefer unusual names (`xtccScript`).
+
+Two servers, two ports: IDE (bench) 8766, token `C:\xt3d\.xt3d_devtoken`; standalone 8767, token `C:\xt3d\.xt3d_devtoken_8767` (`--standalone`).
+
 When the owner has ticked "Dev server" in the test bench (`testbench/xt3d_testbench.livecodescript`, installed in `C:\xt3d\testbench\`), `tools/xt3d_dev.sh` talks to the running IDE: `ping`, `run '<statements>'` (inside the bench script), `eval`, `reload` (reopen the bench from its file after editing it), `snap` (PNG of the bench to `C:/xt3d/snap.png`, then Read it), `checks` (Run checks + results). It goes through Windows' `curl.exe`, because WSL2 cannot reach Windows' 127.0.0.1. No token file at `C:\xt3d\.xt3d_devtoken` means the server is not running: ask the owner to tick the box. Logs to read directly: `C:\xt3d\bench_checks.txt`, `C:\xt3d\raylib_log.txt`, and `C:\xt3d\livecode_errors.txt` (every LiveCode script error while the dev server runs, translated; `tools/xt3d_dev.sh errors`). The bench starts the server itself; opening `xt3d_devserver.livecodescript` directly also starts it.
 
 Script-only stacks: if the owner saves one from the IDE, LiveCode writes its in-memory script over the file (and adds a UTF-8 BOM). That silently undid bench edits once. The owner should choose "Don't Save" when closing; if a file's first bytes are a BOM, check it against git before editing.
