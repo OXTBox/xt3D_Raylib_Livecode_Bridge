@@ -12,7 +12,8 @@ script "xt3dTestBench"
 --   drag on the view ...... orbit the camera
 --   mouse wheel on view ... zoom
 --   file list ............. click a model to load it; "Folder..." picks another folder
---   Dev server ............ lets Claude Code drive this bench; starts with it (see xt3d_devserver)
+--   Dev server ............ lets Claude Code drive this bench; starts with it. It is the LIB_MCP
+--                           library, found as a sibling project (../LIB_MCP); optional
 --   Run checks ............ crash guards, pure functions, the test models, a frame copy;
 --                           each step is written to C:/xt3d/bench_checks.txt before it runs
 --
@@ -98,7 +99,7 @@ on openStack
    put 5 into sDist
    xbStartView
    put "Ready. " & xt3d_Version() & return & "Click a model in the list, or Run checks." & return & \
-         "Dev server:" && xbDevRunning() & ". Errors go to C:/xt3d/livecode_errors.txt" into field "info"
+         "Dev server:" && xbDevRunning() & ". Errors go to C:/LIB_MCP/livecode_errors.txt" into field "info"
 end openStack
 
 on closeStack
@@ -331,15 +332,14 @@ end scrollbarDrag
 
 -------------------------------------------------------------------- dev server
 
--- the server is a separate library stack, so it survives this bench being reloaded
+-- the server is the LIB_MCP library (a separate project), so it survives this bench being reloaded
 command xbDevServer pOn
    local tPath
    if pOn then
-      put the effective filename of me into tPath
-      set the itemDel to "/"
-      put "xt3d_devserver.livecodescript" into item -1 of tPath
-      if there is not a file tPath then
-         put "Dev server file not found:" & return & tPath into field "info"
+      put xbFindLibMCP() into tPath
+      if tPath is empty then
+         put "Dev server: LIB_MCP not found next to this project" & return & \
+               "(looked for LIB_MCP/livecode/lib_mcp.livecodescript above" && the effective filename of me & ")" into field "info"
          set the hilite of button "devChk" to false
          exit xbDevServer
       end if
@@ -352,6 +352,20 @@ command xbDevServer pOn
       put "Dev server stopped." into field "info"
    end if
 end xbDevServer
+
+-- walk up from this file; at each folder look for a LIB_MCP project beside it
+function xbFindLibMCP
+   local tPath, tTry
+   put the effective filename of me into tPath
+   set the itemDel to "/"
+   repeat 6 times
+      delete item -1 of tPath
+      if tPath is empty then exit repeat
+      put tPath & "/LIB_MCP/livecode/lib_mcp.livecodescript" into tTry
+      if there is a file tTry then return tTry
+   end repeat
+   return empty
+end xbFindLibMCP
 
 function xbDevRunning
    local tErr

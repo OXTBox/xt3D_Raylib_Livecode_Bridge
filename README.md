@@ -28,9 +28,8 @@ LiveCode Script  ──calls──▶  xt3d.lcb  ──binds to──▶  xt3d.d
 | `xt3d_raylib_manifest.json` | Generated: every raylib function with its `xt3d_` name, parameters, return shape and description, the reason for each skipped one, plus raylib's enums and colours |
 | `build.bat` | Windows build and install into the extension folder |
 | `testbench/xt3d_testbench.livecodescript` | Test bench: a script-only stack (File > Open Stack) with model browser, orbit camera, render switches, animation controls and a "Run checks" self-test |
-| `testbench/xt3d_devserver.livecodescript` | Dev server (library stack) that lets Claude Code drive the bench over localhost; development only |
-| `llm/` | Local-model link: MCP tool server, LiveCode primer, terminal client (see `llm/README.md`) |
-| `tools/xt3d_dev.sh` | Client for the dev server, run from WSL |
+| (sibling) `~/projects/LIB_MCP` | Optional. Dev server, compile checks, error log, MCP server: lets Claude Code or a local model drive LiveCode. The bench starts it when present. |
+| `mcp/xt3d_tools.py` | xt3d tool pack for LIB_MCP's MCP server: handler search, load models, bench checks |
 | `demos/xt3d_view_demo.livecodescript.txt` | Model viewer rendered into a LiveCode image |
 | `demos/xt3d_window_demo.livecodescript.txt` | Same scene in raylib's own window |
 | `demos/xt3d_diagnostic.livecodescript.txt` | Step-by-step self-test that logs before each call |

@@ -45,23 +45,26 @@ A crash takes LiveCode straight to the desktop with no message. The method that 
 
 Change one thing per round. Each round costs him a rebuild and often a LiveCode restart.
 
-## Driving LiveCode from here (dev server)
+## Driving LiveCode from here: LIB_MCP (a separate library)
 
-**Compile-check every LiveCode script before giving it to the owner:** `tools/xt3d_dev.sh compile <file>` compiles it in a real LiveCode 9.6.3 engine (the standalone `livecode_stacks/xt3d_MCP/Windows x86-64/xt3d_MCP.exe`, run in place from `\\wsl$`, port 8767, started automatically; its stack script is `livecode_stacks/xt3d_MCP_launcher.livecodescript`, which loads the server file, so only launcher changes need a rebuild). It answers `COMPILES OK` or LiveCode's own error text with file line numbers. The owner should never have to retype an error from the IDE's locked error fields: run-time errors are in `C:\xt3d\livecode_errors.txt`.
+The dev server, the compile check, the error log and the MCP/local-model tools live in the
+sibling project `~/projects/LIB_MCP` (read its `CLAUDE.md`). xt3d only adds:
+- `mcp/xt3d_tools.py`: an MCP tool pack (handler search, list/load models, bench checks)
+- the test bench, which finds `../LIB_MCP` and starts its server on port 8766 when it opens
 
-Code sent with `run`/`runs` executes inside the dev server's handler through `do`: do not declare `local` names the handler already uses (`tErr`, `tResult`), and prefer unusual names (`xtccScript`).
+**Compile-check every LiveCode script before giving it to the owner:**
+`~/projects/LIB_MCP/tools/lcmcp compile <file>` (real LiveCode 9.6.3; starts LIB_MCP's
+standalone on port 8767 by itself). Run-time errors: `lcmcp errors`. With the bench open:
+`lcmcp run 'xbLoadModel "C:/xt3d/test_models/skinned_bend.glb"'`, `lcmcp snap`, `lcmcp reload`.
 
-Two servers, two ports: IDE (bench) 8766, token `C:\xt3d\.xt3d_devtoken`; standalone 8767, token `C:\xt3d\.xt3d_devtoken_8767` (`--standalone`).
+The bench must be opened from the WSL folder
+(`\\wsl$\Ubuntu\home\igame3d\projects\xt3D_Raylib_Livecode_Bridge\testbench\xt3d_testbench.livecodescript`),
+not from a copy, so it finds LIB_MCP. `C:\xt3d` holds only what the DLL build and LiveCode's
+extension loading need, plus `test_models` and `bench_checks.txt`.
 
-When the owner has ticked "Dev server" in the test bench (`testbench/xt3d_testbench.livecodescript`, installed in `C:\xt3d\testbench\`), `tools/xt3d_dev.sh` talks to the running IDE: `ping`, `run '<statements>'` (inside the bench script), `eval`, `reload` (reopen the bench from its file after editing it), `snap` (PNG of the bench to `C:/xt3d/snap.png`, then Read it), `checks` (Run checks + results). It goes through Windows' `curl.exe`, because WSL2 cannot reach Windows' 127.0.0.1. No token file at `C:\xt3d\.xt3d_devtoken` means the server is not running: ask the owner to tick the box. Logs to read directly: `C:\xt3d\bench_checks.txt`, `C:\xt3d\raylib_log.txt`, and `C:\xt3d\livecode_errors.txt` (every LiveCode script error while the dev server runs, translated; `tools/xt3d_dev.sh errors`). The bench starts the server itself; opening `xt3d_devserver.livecodescript` directly also starts it.
-
-Script-only stacks: if the owner saves one from the IDE, LiveCode writes its in-memory script over the file (and adds a UTF-8 BOM). That silently undid bench edits once. The owner should choose "Don't Save" when closing; if a file's first bytes are a BOM, check it against git before editing.
-
-After editing a bench or server file, copy it to `C:\xt3d\testbench\` before `reload`. Building the DLL needs LiveCode closed (rule 7), which also stops the server.
-
-## Local models
-
-LM Studio runs on Windows at 127.0.0.1:1234 (reach it with `curl.exe`). `llm/ask_local.py "question"` asks a local model with the xt3d tools; useful for cheap bulk work and for testing the MCP server. Small models do not know LiveCode: they need `llm/livecode_primer.md` (served by the `livecode_primer` tool). When a local model makes a new kind of LiveCode mistake, add it to the primer's mistakes list.
+Script-only stacks: if the owner saves one from the IDE, LiveCode writes its in-memory script
+over the file (and adds a UTF-8 BOM). That silently undid bench edits once. The owner should
+choose "Don't Save" when closing; if a file's first bytes are a BOM, check it against git.
 
 ## Old iGame3D formats (for importers)
 
