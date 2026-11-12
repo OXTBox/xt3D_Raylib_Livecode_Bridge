@@ -81,7 +81,7 @@ on xt3dStart
    end repeat
    if sAnimCount > 0 then put the last item of xt3d_ModelAnimationInfo(sAnimFirst) into sAnimFrames
    
-   put "file: " & tPath & return & \
+   put "file: " & tPath & return & \   -- lint-ok: report to the message box
          "meshes,materials,bones: " & xt3d_ModelInfo(sModel) & return & \
          "bounding box: " & tBox & return & \
          "size: " & tSizeX & "," & tSizeY & "," & tSizeZ & return & \
