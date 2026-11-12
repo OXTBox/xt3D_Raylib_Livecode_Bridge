@@ -6,6 +6,14 @@ It grew out of iGame3D, a 2007 Revolution/LiveCode 3D engine and editor. The `ig
 
 Tested with LiveCode Community 9.6.3 (64-bit, Windows) and raylib 6.2.
 
+## Family
+
+xt3d is one of several separate libraries, each its own project under `~/projects`:
+LIB_MCP (drive LiveCode from tools and AI models), LIB_XTJSON (stacks <-> JSON), LIB_BIT
+(1-bit grids), LIB_TRACE (outline tracing, grid to 3D map), Vibecode3D (the vector 3D
+engine, with LIB_LLM) and xtalk_py (Python runtime for xTalk, planned). The table is in
+`~/projects/LIB_MCP/README.md`.
+
 ## How it fits together
 
 ```
