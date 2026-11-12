@@ -32,10 +32,12 @@ constant kPanelW = 250
 constant kSample = 2       -- 2 = render at double size and shrink (smooth edges); 1 = off
 constant kAnimFPS = 60     -- raylib samples glTF animations at 60 key frames a second
 constant kSpin = 30        -- degrees a second when Spin is on
-constant kFrameMS = 16     -- milliseconds between frames
+constant kFrameMS = 16     -- milliseconds between frames while something moves
 
 -- view and GPU resources
-local sScale, sViewW, sViewH, sRunning, sFrameMsg
+-- sDirty: something changed and the view needs one new frame (see xbRedraw). The loop
+-- runs only while Spin is on or an animation plays; otherwise the bench sleeps.
+local sScale, sViewW, sViewH, sRunning, sFrameMsg, sDirty
 local sTarget, sBig, sBigTexture, sCamera
 -- the loaded model
 local sModel, sModelPath, sFit, sLift
@@ -300,6 +302,8 @@ on mouseUp
          put "No model loaded." into field "info"
          break
    end switch
+   -- any click may have changed the picture (a checkbox, the camera, a model)
+   xbRedraw
 end mouseUp
 
 on mouseRelease
@@ -325,6 +329,7 @@ on mouseMove pX, pY
    put max(-85, min(85, sPitch)) into sPitch
    put pX into sDragX
    put pY into sDragY
+   xbRedraw
 end mouseMove
 
 -- the mouse wheel arrives as raw keys 65308 (down) and 65309 (up)
@@ -336,6 +341,7 @@ on rawKeyDown pKey
          divide sDist by 1.1
       end if
       put max(0.5, min(200, sDist)) into sDist
+      xbRedraw
    else
       pass rawKeyDown
    end if
@@ -351,6 +357,7 @@ on scrollbarDrag pValue
    if the short name of the target is "frameBar" and sSettingSlider is not true then
       put pValue into sAnimFrame
       set the hilite of button "playChk" to false
+      xbRedraw
    end if
 end scrollbarDrag
 
@@ -404,13 +411,18 @@ end xbDevRunning
 -- so its handlers and script locals are reachable
 command DevServer.Exec pCode
    local tErr
+   local tResult
    try
       do pCode
+      put the result into tResult
    catch tErr
       DevServer.LogError tErr, "/run in the bench"
+      xbRedraw
       return "ERROR:" & return & DevServer.ErrorText(tErr)
    end try
-   return the result
+   -- code run from Claude Code may have changed what the view shows
+   xbRedraw
+   return tResult
 end DevServer.Exec
 
 function DevServer.Eval pExpr
@@ -446,8 +458,31 @@ command xbStartView
    put sLastTick into sFPSTick
    put true into sRunning
    xbShowLog
+   put true into sDirty
    xbFrame
 end xbStartView
+
+-- Ask for one new frame: call after anything that changes what the view shows. Cheap to
+-- call often; the frame is drawn once, after the current handler finishes. If the loop
+-- is already running (Spin, an animation playing) the next frame picks the change up.
+command xbRedraw
+   put true into sDirty
+   if sRunning is not true or sFrameMsg is not empty then exit xbRedraw
+   -- waking from rest: restart the clocks so Spin and animation don't jump ahead
+   put the milliseconds into sLastTick
+   put sLastTick into sFPSTick
+   put 0 into sFrames
+   send "xbFrame" to me in 0 milliseconds
+   put the result into sFrameMsg
+end xbRedraw
+
+-- true while the picture changes by itself, so the loop must keep running
+function xbMoving
+   if there is not a button "spinChk" then return false
+   if the hilite of button "spinChk" then return true
+   if sModel > 0 and sAnimFrames > 0 and the hilite of button "playChk" then return true
+   return false
+end xbMoving
 
 command xbStopView
    if sRunning is not true then exit xbStopView
@@ -462,8 +497,13 @@ command xbStopView
 end xbStopView
 
 command xbFrame
+   local tNow, tSeconds, tYaw, tPitch, tEX, tEY, tEZ, tTint, tWire, tText, tMoving
+   put empty into sFrameMsg
    if sRunning is not true then exit xbFrame
-   local tNow, tSeconds, tYaw, tPitch, tEX, tEY, tEZ, tTint, tWire, tText
+   -- at rest with nothing changed: draw nothing and sleep until xbRedraw
+   put xbMoving() into tMoving
+   if not tMoving and sDirty is not true then exit xbFrame
+   put false into sDirty
    put the milliseconds into tNow
    put (tNow - sLastTick) / 1000 into tSeconds
    put tNow into sLastTick
@@ -534,7 +574,11 @@ command xbFrame
       xt3d_SetBackfaceCulling true
    end if
    xt3d_EndMode3D
-   put sFPS & " fps" into tText
+   if tMoving then
+      put sFPS & " fps" into tText
+   else
+      put "at rest" into tText
+   end if
    if sModel > 0 and sAnimFrames > 0 then put "   frame " & trunc(sAnimFrame) & " / " & sAnimFrames after tText
    if sModel = 0 then put "   no model loaded" after tText
    xt3d_DrawText tText, 10 * kSample, 10 * kSample, 20 * kSample, 255,255,255,255
@@ -546,8 +590,11 @@ command xbFrame
    xt3d_EndTextureMode
    set the imageData of image "view" to xt3d_RenderTextureImageData(sTarget)
 
-   send "xbFrame" to me in kFrameMS milliseconds
-   put the result into sFrameMsg
+   -- keep going only while something moves (Spin or animation may have just stopped)
+   if xbMoving() then
+      send "xbFrame" to me in kFrameMS milliseconds
+      put the result into sFrameMsg
+   end if
 end xbFrame
 
 -------------------------------------------------------------------- models
@@ -671,6 +718,7 @@ command xbShowFace
    set the hilite of button "gridChk" to false
    put "Claude (LIB_MCP connected)" & return & tCount && "face lines + panel grid, two draw calls a frame" & return & \
          "from" && tFaceFile into field "info"
+   xbRedraw
 end xbShowFace
 
 -- line segments (x1,y1,z1,x2,y2,z2 per line) as one model for wire drawing: each segment
@@ -700,6 +748,7 @@ command xbSelectAnim pIndex
    set the endValue of scrollbar "frameBar" to max(1, sAnimFrames - 1)
    set the thumbPosition of scrollbar "frameBar" to 0
    put false into sSettingSlider
+   xbRedraw
 end xbSelectAnim
 
 command xbUnloadModel
@@ -716,6 +765,7 @@ command xbUnloadModel
    put empty into sWireColor
    put empty into sWireColor2
    if there is a button "animMenu" then xbAnimMenu
+   xbRedraw
 end xbUnloadModel
 
 -- warnings, errors and load reports from raylib's log, newest last
