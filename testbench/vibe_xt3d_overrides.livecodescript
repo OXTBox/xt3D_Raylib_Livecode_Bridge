@@ -271,3 +271,11 @@ function Skin.WTFMesh pPath, pRadius
    end if
    return tM
 end Skin.WTFMesh
+
+## Vector Toss banter needs three more HUD glyphs: ? , and ' (Opus 15 Nov 2026).
+on VectorText.Init
+   Vibe.Orig.VectorText.Init
+   put "01 10 30 41 42 23 24|25 26" into sFont["?"]
+   put "25 26 16" into sFont[","]
+   put "20 21" into sFont["'"]
+end VectorText.Init
