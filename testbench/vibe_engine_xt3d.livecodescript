@@ -4061,7 +4061,7 @@ end IndexEffectsValues
 ## Each glyph sits on a 4 x 6 grid (y down). Points are "xy" digit pairs, a stroke is
 ## points joined in order, strokes are separated by "|". Advance is 6 grid units.
 
-on VectorText.Init
+on Vibe.Orig.VectorText.Init
    put empty into sFont
    put "00 40 46 06 00|06 40" into sFont["0"]
    put "10 20 26|16 36" into sFont["1"]
@@ -4106,7 +4106,7 @@ on VectorText.Init
    put "20 24|25 26" into sFont["!"]
    put "06 40" into sFont["/"]
    put "06 20 46 06" into sFont["^"] -- triangle, for lives
-end VectorText.Init
+end Vibe.Orig.VectorText.Init
 
 ## Graphic points for a line of text. pX,pY = top-left, pSize = letter height in pixels.
 function VectorText.Points pText,pX,pY,pSize
@@ -8296,3 +8296,11 @@ function Skin.WTFMesh pPath, pRadius
    end if
    return tM
 end Skin.WTFMesh
+
+## Vector Toss banter needs three more HUD glyphs: ? , and ' (Opus 15 Nov 2026).
+on VectorText.Init
+   Vibe.Orig.VectorText.Init
+   put "01 10 30 41 42 23 24|25 26" into sFont["?"]
+   put "25 26 16" into sFont[","]
+   put "20 21" into sFont["'"]
+end VectorText.Init
