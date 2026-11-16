@@ -3,3 +3,12 @@
 livecode_stacks/xt3d_MCP/
 livecode_stacks/CopyStack.livecode
 standalone/xt3d_Bench/
+
+# build output (made by building the extension and the bench standalone)
+/api.lcdoc
+/manifest.xml
+/module.2.lcm
+/org.xtalk.xtbridge.0.1.0.lce
+/org.xtalk.xtbridge.lci
+standalone/xt3d_Bench_LibMCP/
+*.lnk
