@@ -9,7 +9,12 @@ a script-only library stack ("VibeEngineXt3d") holding the WHOLE engine unchange
     Vibe.Orig.<name>, and the overrides file is appended (so its handlers share the engine's
     script locals: sOrigColor, sView, sLoopActive ...);
   * card/stack system messages the bench must not get from a library (openCard, closeCard,
-    mouseUp) are renamed Vibe.Unused.<name>.
+    mouseUp) are renamed Vibe.Unused.<name>;
+  * the Rename Day aliases (LIB_ig3d/livecode/contract_aliases.livecodescript, written by
+    LIB_ig3d/tools/make_names.py from the engine contract) are appended last: the new
+    Group.Verb names (Entity.SetPosition, Mesh.Box, Camera.Reset ...) pass to the handlers that
+    still have the old names. An alias whose name the engine or the overrides already define
+    is left out, so the day the engine takes a new name itself nothing is defined twice.
 
 Run it again after every new save of the engine script; the result is committed so a
 standalone build always has it.
@@ -21,6 +26,7 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECTS = os.path.dirname(HERE)
 OVERRIDES = os.path.join(HERE, "testbench", "vibe_xt3d_overrides.livecodescript")
 OUT = os.path.join(HERE, "testbench", "vibe_engine_xt3d.livecodescript")
+ALIASES = os.path.join(PROJECTS, "LIB_ig3d", "livecode", "contract_aliases.livecodescript")
 UNUSED = {"opencard", "closecard", "mouseup"}
 HANDLER = re.compile(r"^(\s*)(private\s+)?(on|function|command|getprop|setprop)(\s+)([A-Za-z0-9_.]+)", re.I)
 
@@ -36,6 +42,25 @@ def newest_engine():
 
 def handler_names(lines):
     return {m.group(5).lower() for m in (HANDLER.match(l) for l in lines) if m}
+
+
+def aliases(have):
+    """The alias handlers, whole, except those whose name is already in `have` (lower case)."""
+    if not os.path.exists(ALIASES):
+        return [], [], None
+    with open(ALIASES, encoding="utf-8") as f:
+        lines = f.read().replace("\r\n", "\n").split("\n")
+    out, added, skipped, skip = [], [], [], False
+    for line in lines:
+        m = HANDLER.match(line)
+        if m:
+            skip = m.group(5).lower() in have
+            (skipped if skip else added).append(m.group(5))
+        if not skip:
+            out.append(line)
+        elif re.match(r"^\s*end\s+[A-Za-z0-9_.]+\s*$", line, re.I):
+            skip = False
+    return out, added, skipped
 
 
 def main():
@@ -80,11 +105,18 @@ def main():
         "-- Engine source: " + os.path.relpath(src_path, PROJECTS),
         "",
     ]
-    text = "\n".join(header + out + ["", ""] + over).rstrip("\n") + "\n"
+    alias_lines, added, skipped = aliases(handler_names(out) | handler_names(over))
+    text = "\n".join(header + out + ["", ""] + over + ["", ""] + alias_lines).rstrip("\n") + "\n"
     with open(OUT, "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
     print("wrote", os.path.relpath(OUT, HERE), "from", os.path.relpath(src_path, PROJECTS))
     print("renamed:", " ".join(renamed))
+    if skipped is None:
+        print("NO ALIASES: LIB_ig3d/livecode/contract_aliases.livecodescript not found")
+    else:
+        print("aliases appended (%d):" % len(added), " ".join(added))
+        if skipped:
+            print("aliases left out, the engine has the name itself:", " ".join(skipped))
     if missing:
         print("overrides with no engine handler of that name (new handlers):", " ".join(missing))
 
