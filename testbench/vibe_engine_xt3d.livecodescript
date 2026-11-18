@@ -8408,6 +8408,32 @@ on Entity.SetMesh pId, pMesh
    return empty
 end Entity.SetMesh
 
+## Draws the object in another colour from now on: a name, #RRGGBB or r,g,b, as for
+## Entity.Spawn. Objects of one colour share one graphic ("Batch_<colour>"), so this moves the
+## object to the new colour's graphic; the old one is cleared by the next frame if it is left
+## empty. Nothing else about the object changes. the result: empty, or why not.
+on Entity.SetColor pId, pColor
+   global gSceneObjects, gObjectTransforms
+   local tOut, tEntry, tFound, tGraphic
+   if pColor is empty then return "Entity.SetColor: no colour"
+   put Scene.ColorGraphic(pColor) into tGraphic
+   put false into tFound
+   repeat for each line tEntry in gSceneObjects
+      if word 2 of tEntry is pId and pId is not empty then
+         -- an object with a graphic of its own (word 3 empty): clear it, it is not drawn again
+         if word 3 of tEntry is empty and there is a graphic pId then set the points of graphic pId to empty
+         put word 1 to 2 of tEntry && tGraphic into tEntry
+         put true into tFound
+      end if
+      put tEntry & cr after tOut
+   end repeat
+   if not tFound then return "Entity.SetColor: no object" && pId
+   delete the last char of tOut
+   put tOut into gSceneObjects
+   put pColor into gObjectTransforms[pId]["color"]
+   return empty
+end Entity.SetColor
+
 ## Sets a value the engine understands: hp (hits it takes before it explodes), ttl (steps
 ## until the engine removes it), radius (units, for collisions). Empty clears hp or ttl.
 ## the result: empty, or why not.
@@ -8424,11 +8450,23 @@ on Entity.Set pId, pProp, pValue
    return empty
 end Entity.Set
 
-## Reads one back: hp, ttl, radius, mesh, group. Empty when the object is gone.
+## Reads one back: hp, ttl, radius, mesh, group, color. Empty when the object is gone.
+## color is as the game wrote it (Entity.Spawn or Entity.SetColor).
 function Entity.Get pId, pProp
-   global gObjectTransforms
+   global gObjectTransforms, gSceneObjects
+   local tEntry, tGraphic
    if not Scene.Has(pId) then return empty
-   if pProp is not among the items of "hp,ttl,radius,mesh,group" then return empty
+   if pProp is not among the items of "hp,ttl,radius,mesh,group,color" then return empty
+   if pProp is "color" and gObjectTransforms[pId]["color"] is empty then
+      -- never recoloured: the colour it was spawned with, kept by its graphic
+      repeat for each line tEntry in gSceneObjects
+         if word 2 of tEntry is pId then
+            put word 3 of tEntry into tGraphic
+            if tGraphic is empty then put pId into tGraphic
+            return sOrigColor[tGraphic]
+         end if
+      end repeat
+   end if
    return gObjectTransforms[pId][pProp]
 end Entity.Get
 
