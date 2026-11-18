@@ -10,6 +10,9 @@ a script-only library stack ("VibeEngineXt3d") holding the WHOLE engine unchange
     script locals: sOrigColor, sView, sLoopActive ...);
   * card/stack system messages the bench must not get from a library (openCard, closeCard,
     mouseUp) are renamed Vibe.Unused.<name>;
+  * the contract's own calls (LIB_ig3d/livecode/contract_calls.livecodescript, hand-written:
+    Camera.SetLook, Entity.Set ...) are appended after the overrides and treated the same way
+    (a handler there that the engine has replaces it); one name in both files is an error;
   * the Rename Day aliases (LIB_ig3d/livecode/contract_aliases.livecodescript, written by
     LIB_ig3d/tools/make_names.py from the engine contract) are appended last: the new
     Group.Verb names (Entity.SetPosition, Mesh.Box, Camera.Reset ...) pass to the handlers that
@@ -27,6 +30,7 @@ PROJECTS = os.path.dirname(HERE)
 OVERRIDES = os.path.join(HERE, "testbench", "vibe_xt3d_overrides.livecodescript")
 OUT = os.path.join(HERE, "testbench", "vibe_engine_xt3d.livecodescript")
 ALIASES = os.path.join(PROJECTS, "LIB_ig3d", "livecode", "contract_aliases.livecodescript")
+CALLS = os.path.join(PROJECTS, "LIB_ig3d", "livecode", "contract_calls.livecodescript")
 UNUSED = {"opencard", "closecard", "mouseup"}
 HANDLER = re.compile(r"^(\s*)(private\s+)?(on|function|command|getprop|setprop)(\s+)([A-Za-z0-9_.]+)", re.I)
 
@@ -69,9 +73,16 @@ def main():
         src = f.read().replace("\r\n", "\n").replace("\r", "\n").lstrip("﻿").split("\n")
     with open(OVERRIDES, encoding="utf-8") as f:
         over = f.read().replace("\r\n", "\n").split("\n")
+    with open(CALLS, encoding="utf-8") as f:
+        calls = f.read().replace("\r\n", "\n").split("\n")
+    if calls and calls[0].lower().startswith("script "):
+        calls = calls[1:]
     if src and src[0].lower().startswith("script "):
         src = src[1:]
-    replaced = handler_names(over)
+    both = handler_names(over) & handler_names(calls)
+    if both:
+        sys.exit("defined in both the overrides and contract_calls: " + " ".join(sorted(both)))
+    replaced = handler_names(over) | handler_names(calls)
     out, renamed, current = [], [], None
     for line in src:
         m = HANDLER.match(line)
@@ -105,8 +116,8 @@ def main():
         "-- Engine source: " + os.path.relpath(src_path, PROJECTS),
         "",
     ]
-    alias_lines, added, skipped = aliases(handler_names(out) | handler_names(over))
-    text = "\n".join(header + out + ["", ""] + over + ["", ""] + alias_lines).rstrip("\n") + "\n"
+    alias_lines, added, skipped = aliases(handler_names(out) | handler_names(over) | handler_names(calls))
+    text = "\n".join(header + out + ["", ""] + over + ["", ""] + calls + ["", ""] + alias_lines).rstrip("\n") + "\n"
     with open(OUT, "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
     print("wrote", os.path.relpath(OUT, HERE), "from", os.path.relpath(src_path, PROJECTS))

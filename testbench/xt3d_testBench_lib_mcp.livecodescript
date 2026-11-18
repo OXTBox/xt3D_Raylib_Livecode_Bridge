@@ -1051,6 +1051,10 @@ command xbPlayGame pName
    end if
    put pName into sGameName
    xbGameNotes
+   -- the engine contract: Engine.Info("edition") and Engine.Has() answer from these
+   global gV3DEdition, gV3DHas
+   put "xRay" into gV3DEdition
+   put empty into gV3DHas
    try
       Vibe.Begin the rect of image "view"
       dispatch "Game.OnStart" to this card
