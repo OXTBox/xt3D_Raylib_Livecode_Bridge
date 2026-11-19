@@ -185,7 +185,8 @@ local sEscMS = 0 -- when Escape last acted (escapekeyDown)
 local sHudTemplate -- LiveCode's template properties per control type (HUD storage)
 global gSceneObjects -- draw list, one "MeshName GraphicName" per line (Phase 2)
 global gMeshCache -- cached meshes, see Mesh.Build
-global gCullMode -- hiding (off unless a game turns it on in Game.OnStart): 0 off, 1 back faces, 2 back faces + whole objects behind a solid, 3 and hidden lines (the part of a line behind a solid's face is cut away)
+global gCullMode -- hiding NOW: 0 off, 1 back faces, 2 back faces + whole objects behind a solid, 3 and hidden lines (the part of a line behind a solid's face is cut away). Every game starts with gCullDefault; a game may change it (Cull.SetMode)
+global gCullDefault -- hiding the player chose in Settings (Options, HIDING tab): 0 unless they pick one; the engine and the games never turn it on
 local sCullSolids, sCullLinesReady -- mode 3: this frame's solids, and whether their faces are laid out on screen yet (Cull.PrepareLines)
 local sLH = 0, sLHKey, sLHF0, sLHF1, sLHX0, sLHY0, sLHX1, sLHY1, sLHNear, sLHConvex -- mode 3: the hiders
 local sLFX0, sLFY0, sLFX1, sLFY1, sLFA, sLFB, sLFC, sLFS0, sLFS1, sLFId -- their front faces: screen box, depth plane, sides, face number
@@ -265,7 +266,7 @@ on init.game.engine
 end init.game.engine
 
 on Vibe.Orig.init.globals
-   put 0 into gCullMode -- hiding is off until a game asks for it
+   Cull.Reset -- hiding: the player's choice in Settings (off unless they chose one)
 	put false into bKeyDown
    put empty  into gCurrentGame
    put false into bDeveloper  -- game updates while in developer mode kill script editing
@@ -1925,6 +1926,7 @@ on Game.Prepare.Card pGame
    HUD.ApplyToCard Game.Current()
    put false into bPaused
    put false into bDeveloper
+   Cull.Reset -- each game starts with the Settings choice; its Game.OnStart may change it
    dispatch "Game.OnStart" to this card
    game.render
    if there is a group "User" then set the layer of group "User" to top
@@ -1993,7 +1995,7 @@ end Game.PlayDemo
 ## Stop the loop and go back to the "Developer" card (if there is one).
 on Vibe.Orig.Game.Exit
    dispatch "Game.OnStop" to this card
-   put 0 into gCullMode -- the next game starts without hiding
+   Cull.Reset -- the next game starts with the Settings choice again
    Audio.StopMusic
    game.loop.stop
    put empty into sPreparedGame
@@ -3191,9 +3193,57 @@ command Mesh.PushEdge @pMesh,@pSeen,@pE,pA,pB
 end Mesh.PushEdge
 
 ######################################################################################
+## HIDING SWITCHES (11 19 2026): the one place every script turns hiding on or off.
+##   gCullMode   what is drawn now          gCullDefault   what the player chose in Settings
+##   Cull.SetMode n      this game, now (a game calls it in Game.OnStart or on a key)
+##   Cull.SetDefault n   the player's choice (Settings, HIDING tab); sets the mode now too
+##   Cull.Reset          back to the player's choice (at every game start and end)
+##   Cull.Mode()  Cull.Default()  Cull.ModeName(n)  Cull.ModeNames()  Cull.Clean(n)
+## n: 0 off (the engine as it always was), 1 back faces, 2 and whole objects, 3 and hidden
+## lines. Off by default everywhere: nothing turns it on but the player or a game's own code.
+## (xRay, the raylib bench, reads the same gCullMode: 1 2 3 all give hidden lines there.)
+######################################################################################
+
+## A mode 0 to 3; anything else is 0 (off).
+function Cull.Clean pMode
+   if pMode is an integer and pMode >= 0 and pMode <= 3 then return pMode + 0
+   return 0
+end Cull.Clean
+
+command Cull.SetMode pMode
+   put Cull.Clean(pMode) into gCullMode
+end Cull.SetMode
+
+command Cull.SetDefault pMode
+   put Cull.Clean(pMode) into gCullDefault
+   put gCullDefault into gCullMode
+end Cull.SetDefault
+
+command Cull.Reset
+   put Cull.Clean(gCullDefault) into gCullDefault
+   put gCullDefault into gCullMode
+end Cull.Reset
+
+function Cull.Mode
+   return Cull.Clean(gCullMode)
+end Cull.Mode
+
+function Cull.Default
+   return Cull.Clean(gCullDefault)
+end Cull.Default
+
+function Cull.ModeNames
+   return "Off,Back Faces,Whole Objects,Hidden Lines"
+end Cull.ModeNames
+
+function Cull.ModeName pMode
+   return item (Cull.Clean(pMode) + 1) of Cull.ModeNames()
+end Cull.ModeName
+
+######################################################################################
 ## HIDING: BACK FACES, WHOLE OBJECTS, HIDDEN LINES  (11 18 2026, gCullMode; 3 = hidden lines, 11 19 2026)
-## Off by default: a game turns it on in Game.OnStart ("global gCullMode" in its script, then
-## put 1 or 2 into gCullMode). Pure math, no fills: lines that cannot be seen are not drawn.
+## Off by default: the player turns it on in Settings, or a game in Game.OnStart (Cull.SetMode n,
+## see HIDING SWITCHES above). Pure math, no fills: lines that cannot be seen are not drawn.
 ##
 ## Mesh.CullTables adds to a finalized mesh (once, the first time a culling mode draws it):
 ##   ["cullBuilt"]       true: the tables below are made
@@ -5786,7 +5836,9 @@ function Vibe.Orig.Engine.Info pKey
       case "edges"
          return sEdgesDrawn
       case "cullMode"
-         return gCullMode + 0
+         return Cull.Mode()
+      case "cullDefault"
+         return Cull.Default()
       case "hidden"
          return sCullHiddenCount
       case "sceneMS"
@@ -6352,6 +6404,11 @@ on OptionsGroupSetUp
    if there is a button "UseEffectsToggle" then set the hilite of button "UseEffectsToggle" to (sView["glow"] is true)
    if there is a button "BackMountainsToggle" then set the hilite of button "BackMountainsToggle" to (sViewBands > 1)
    if there is a button "BackMountainsFXToggle" then set the hilite of button "BackMountainsFXToggle" to (sView["fade"] >= 70)
+   -- Hiding (HIDING tab): the player's choice; Apply changes it only if another is picked.
+   set the customPropertySet of stack (the mainStack of this stack) to empty
+   set the OptionsNewCullMode of stack (the mainStack of this stack) to Cull.Default()
+   Options.ShowCull Cull.Default()
+   Options.ShowTab "General"
    set the layer of group "OptionsGroup" to top
    set the loc of group "OptionsGroup" to CenterScreen()
    LoadingScreen
@@ -6400,6 +6457,9 @@ on OptionsApplied
       put 50 into sView["fade"]
    end if
    View.Apply
+   -- Hiding: only when the player picked another mode (a game that chose its own keeps it otherwise).
+   put the OptionsNewCullMode of stack (the mainStack of this stack) into tCull
+   if tCull is an integer and Cull.Clean(tCull) is not Cull.Default() then Cull.SetDefault tCull
    -- Back to where we were.
    if the short name of this card is "Title" then
       TitleCardOpened
@@ -6407,6 +6467,59 @@ on OptionsApplied
       ResumeGame
    end if
 end OptionsApplied
+
+## SETTINGS TABS (11 19 2026): "fake" tabs, graphics drawn to look like tabs (the engine's tab
+## panels are ugly). In the Options group, a tab graphic carries uOptionsTab = its page and
+## uOptionsTabButton = true; a page is any top-level control carrying uOptionsTab = that page.
+## Clicking a tab shows its page and hides the others. pGroup: the Options group (empty = the
+## group "OptionsGroup" on this card; the template card passes its own).
+on Options.ShowTab pTab, pGroup
+   if pGroup is empty then
+      if there is not a group "OptionsGroup" then exit Options.ShowTab
+      put the long id of group "OptionsGroup" into pGroup
+   end if
+   if pTab is empty then put "General" into pTab
+   lock screen
+   repeat with i = 1 to the number of controls of pGroup
+      put the long id of control i of pGroup into tCtl
+      if the long id of the owner of tCtl is not pGroup then next repeat -- only the group's own controls
+      put the uOptionsTab of tCtl into tPage
+      if tPage is empty then next repeat
+      if the uOptionsTabButton of tCtl is true then
+         Options.TabLook tCtl, (tPage is pTab)
+      else
+         set the visible of tCtl to (tPage is pTab)
+      end if
+   end repeat
+   unlock screen
+end Options.ShowTab
+
+## A tab's look: the open tab is solid green with dark letters, the others green outlines.
+on Options.TabLook pTab, pOpen
+   if pOpen then
+      set the backColor of pTab to "128,255,128"
+      set the foreColor of pTab to "0,40,0"
+      set the borderColor of pTab to "128,255,128"
+   else
+      set the backColor of pTab to "0,40,0"
+      set the foreColor of pTab to "128,255,128"
+      set the borderColor of pTab to "64,160,64"
+   end if
+end Options.TabLook
+
+## HIDING tab: a box (or its label) was clicked. Remembered for Apply, like the other options.
+on Options.PickCull pMode
+   set the customPropertySet of stack (the mainStack of this stack) to empty
+   set the OptionsNewCullMode of stack (the mainStack of this stack) to Cull.Clean(pMode)
+   Options.ShowCull Cull.Clean(pMode)
+end Options.PickCull
+
+## Ticks the one box of pMode (buttons "CullToggle0" .. "CullToggle3").
+on Options.ShowCull pMode
+   repeat with tMode = 0 to 3
+      if there is a button ("CullToggle" & tMode) then set the hilite of button ("CullToggle" & tMode) to (tMode = pMode)
+   end repeat
+end Options.ShowCull
 
 
 ## Floating: the object bobs around its current Y and rocks gently.
@@ -9216,6 +9329,7 @@ end Vibe.Playing
 ## Leaving a game: no cards to go back to here, just stop.
 on Game.Exit
    dispatch "Game.OnStop" to this card
+   Cull.Reset -- hiding back to the player's choice in Settings (off unless chosen)
    game.loop.stop
    put false into sLoopActive
    put false into bMissile

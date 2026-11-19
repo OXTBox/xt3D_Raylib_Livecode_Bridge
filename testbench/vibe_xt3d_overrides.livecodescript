@@ -147,6 +147,7 @@ end Vibe.Playing
 ## Leaving a game: no cards to go back to here, just stop.
 on Game.Exit
    dispatch "Game.OnStop" to this card
+   Cull.Reset -- hiding back to the player's choice in Settings (off unless chosen)
    game.loop.stop
    put false into sLoopActive
    put false into bMissile
