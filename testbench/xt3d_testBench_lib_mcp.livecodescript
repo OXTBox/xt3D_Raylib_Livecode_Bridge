@@ -1037,22 +1037,30 @@ command xbGameNotes
 end xbGameNotes
 
 command xbPlayGame pName
-   local tFile, tScript, tErr, tHeader, tLine
+   if sGamesFolder is empty then put xbFindAbove(kGamesRel) into sGamesFolder
+   xbPlayFile sGamesFolder & "/Vibecode3D_Play_" & pName & ".livecodescript", pName
+end xbPlayGame
+
+-- any game card script file (a LIB_HOWTO step, a game in the making) played like a game;
+-- pName is what the info field and the game notes call it. Writes nothing into LIB_GAMES.
+command xbPlayFile pFile, pName
+   local tScript, tErr, tHeader, tLine
    xbStopGame
-   put sGamesFolder & "/Vibecode3D_Play_" & pName & ".livecodescript" into tFile
-   if there is not a file tFile then
-      put "Games: no file" && tFile into field "info"
-      exit xbPlayGame
+   if there is not a file pFile then
+      put "Games: no file" && pFile into field "info"
+      return "no file" && pFile
    end if
-   if not xbVibeReady() then exit xbPlayGame
+   if not xbVibeReady() then return "no engine"
    if sRunning is not true then xbStartView
    xbUnloadModel
-   put URL ("file:" & tFile) into tScript
+   put textDecode(URL ("binfile:" & pFile), "UTF-8") into tScript
+   replace numToChar(13) with empty in tScript
    set the script of this card to tScript
    if the result is not empty then
-      put "Games:" && pName && "does not compile:" & return & the result into field "info"
+      put the result into tErr
+      put "Games:" && pName && "does not compile:" & return & tErr into field "info"
       set the script of this card to empty
-      exit xbPlayGame
+      return "does not compile:" && tErr
    end if
    put pName into sGameName
    xbGameNotes
@@ -1066,7 +1074,7 @@ command xbPlayGame pName
       Vibe.Go
    catch tErr
       xbGameError tErr, "starting"
-      exit xbPlayGame
+      return "error while starting"
    end try
    -- the header comment (title, controls) into the info field
    repeat for each line tLine in line 1 to 14 of tScript
@@ -1086,7 +1094,8 @@ command xbPlayGame pName
    if sFrameMsg is not empty then cancel sFrameMsg
    put empty into sFrameMsg
    xbGameTick
-end xbPlayGame
+   return empty
+end xbPlayFile
 
 command xbGameTick
    local tErr, tFrame, tNow, tT0, tT1, tT2
