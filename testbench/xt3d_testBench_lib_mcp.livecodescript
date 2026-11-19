@@ -74,8 +74,8 @@ local sGameFills, sGameFillSig, sGameFillCount
 -- timing, summed over each second: simulation, scene (Vibe.Frame), drawing (raylib + copy)
 local sGameStepMS, sGameSceneMS, sGameDrawMS, sGameStats
 -- view only (19 Nov 2026, for LIB_HOWTO): when gXbViewRect holds a screen rect as this stack
--- opens, it is only the 3D view, borderless, on that rect (no panel, no dev server); another
--- stack (the HOWTO stack) places it and calls xbPlayFile. Empty = the whole bench.
+-- opens, it is only the 3D view, a window of its own on that rect (no panel, no dev server);
+-- another stack (the HOWTO stack) calls xbPlayFile. Its cViewOnly is true. Empty = the whole bench.
 global gXbViewRect
 local sViewOnly
 
@@ -127,7 +127,7 @@ command xbViewOnlyOpen
    put 1 into sScale
    set the scaleFactor of me to 1
    set the destroyStack of me to true
-   set the decorations of me to empty
+   set the cViewOnly of me to true
    set the resizable of me to false
    put item 3 of gXbViewRect - item 1 of gXbViewRect into tW
    put item 4 of gXbViewRect - item 2 of gXbViewRect into tH
@@ -153,14 +153,6 @@ command xbViewOnlyOpen
    set the backgroundColor of me to black
    unlock screen
 end xbViewOnlyOpen
-
--- view only: move it (the HOWTO stack keeps it on its viewport)
-command xbViewOnlyPlace pRect
-   if sViewOnly is not true then exit xbViewOnlyPlace
-   if item 3 of pRect - item 1 of pRect is sViewW and item 4 of pRect - item 2 of pRect is sViewH then
-      set the rect of me to pRect
-   end if
-end xbViewOnlyPlace
 
 on openStack
    local tError
@@ -213,6 +205,7 @@ on closeStack
    end if
    set the scaleFactor of me to 1
    put false into sViewOnly
+   set the cViewOnly of me to empty
 end closeStack
 
 -- cancel every message this stack still has queued (frame timers, redraws), so closing
