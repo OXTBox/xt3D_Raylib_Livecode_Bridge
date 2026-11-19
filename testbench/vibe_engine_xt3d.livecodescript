@@ -185,6 +185,10 @@ local sEscMS = 0 -- when Escape last acted (escapekeyDown)
 local sHudTemplate -- LiveCode's template properties per control type (HUD storage)
 global gSceneObjects -- draw list, one "MeshName GraphicName" per line (Phase 2)
 global gMeshCache -- cached meshes, see Mesh.Build
+global gCullMode -- hiding (off unless a game turns it on in Game.OnStart): 0 off, 1 back faces, 2 back faces + whole objects behind a solid
+local sCullReady, sCullXf, sCullHidden, sCullHiddenCount = 0 -- this frame's whole-object test (Cull.PrepareFrame)
+local sCullT0 = 0, sSceneMS = 0 -- when this frame's line work began, and how long the last one took
+constant kCullOccluders = 6 -- at most this many solid objects (the biggest on screen) are tried as hiders
 global gLogSelection -- set true to log UpdateSelectionMarker diagnostics into gSelectionHistory
 global bKeyDown -- have to stop repeated activations of key called scripts
 
@@ -253,6 +257,7 @@ on init.game.engine
 end init.game.engine
 
 on Vibe.Orig.init.globals
+   put 0 into gCullMode -- hiding is off until a game asks for it
 	put false into bKeyDown
    put empty  into gCurrentGame
    put false into bDeveloper  -- game updates while in developer mode kill script editing
@@ -1980,6 +1985,7 @@ end Game.PlayDemo
 ## Stop the loop and go back to the "Developer" card (if there is one).
 on Vibe.Orig.Game.Exit
    dispatch "Game.OnStop" to this card
+   put 0 into gCullMode -- the next game starts without hiding
    Audio.StopMusic
    game.loop.stop
    put empty into sPreparedGame
@@ -2550,6 +2556,9 @@ on Render.BeginFrame
    put CenterX + MOVEX into sProjOffX
    put CenterY + MOVEY into sProjOffY
    put 0 into sEdgesDrawn
+   put false into sCullReady
+   put 0 into sCullHiddenCount
+   put the milliseconds into sCullT0
 end Render.BeginFrame
 
 ## Mesh-local -> camera space for one object, as 12 comma items:
@@ -2576,7 +2585,7 @@ end RenderMeshFast
 ## One object's screen lines, as graphic points, without depth bands.
 function RenderMeshPoints pGeo,pKey
    put empty into tBuf
-   RenderMeshInto pGeo,pKey,"_",tBuf,true
+   RenderMeshInto pGeo,pKey,"_",tBuf,true,true
    return tBuf["_"]
 end RenderMeshPoints
 
@@ -2584,14 +2593,28 @@ end RenderMeshPoints
 ## Several objects share one graphic (colour batching). With depth bands on (Phase 4),
 ## farther edges go to faded copies of the graphic: pGraphic_d2, _d3, _d4.
 ## pGeo = mesh name ("Rock"), pKey = transform key ("Rock_3"), pGraphic = target graphic.
-command RenderMeshInto pGeo,pKey,pGraphic,@pBuf,pNoBands
+## Hiding (gCullMode, off by default; pNoCull true = never for this call):
+##   1  back faces: an edge of a closed shape is drawn only when one of its two faces looks at
+##      the camera (tables from Mesh.CullTables, built the first time they are needed)
+##   2  and whole objects: an object wholly behind one face of a nearer solid object is skipped
+##      (Cull.PrepareFrame, once per frame)
+command RenderMeshInto pGeo,pKey,pGraphic,@pBuf,pNoBands,pNoCull
    put Mesh.Get(pGeo) into tMesh
    put tMesh["count"] into tCount
    if tCount < 1 then exit RenderMeshInto
    
+   put 0 into tCull
+   if gCullMode >= 1 and pNoCull is not true then put gCullMode into tCull
+   put empty into tXf
+   if tCull >= 2 then
+      if sCullReady is not true then Cull.PrepareFrame
+      if sCullHidden[pKey] is true then exit RenderMeshInto
+      put sCullXf[pKey] into tXf -- worked out once for the whole-object test
+   end if
+   
    -- Object transform -> one matrix and one translation.
    set itemDel to comma
-   put Xform.Object(pKey) into tXf
+   if tXf is empty then put Xform.Object(pKey) into tXf
    put item 1 of tXf into m1
    put item 2 of tXf into m2
    put item 3 of tXf into m3
@@ -2612,6 +2635,39 @@ command RenderMeshInto pGeo,pKey,pGraphic,@pBuf,pNoBands
    put sProjOffX into tOffX
    put sProjOffY into tOffY
    put gNearPlane into tNear
+   
+   -- Back faces: which faces of the closed parts look at the camera.
+   put false into tUseFaces
+   if tCull >= 1 then
+      if tMesh["cullBuilt"] is not true then
+         Mesh.CullBuild pGeo
+         put gMeshCache[pGeo] into tMesh
+      end if
+      if tMesh["cull"] is true then
+         put true into tUseFaces
+         -- The camera in the mesh's own space: -(M transposed) * T.
+         put -(m1*t1 + m4*t2 + m7*t3) into tCamX
+         put -(m2*t1 + m5*t2 + m8*t3) into tCamY
+         put -(m3*t1 + m6*t2 + m9*t3) into tCamZ
+         put tMesh["cnx"] into tNX
+         put tMesh["cny"] into tNY
+         put tMesh["cnz"] into tNZ
+         put tMesh["cd"] into tND
+         put tMesh["cc"] into tFC
+         put tMesh["ef1"] into tEF1
+         put tMesh["ef2"] into tEF2
+         put tMesh["ec"] into tEC
+         repeat with f = 1 to tMesh["cfCount"]
+            if tNX[f]*tCamX + tNY[f]*tCamY + tNZ[f]*tCamZ > tND[f] then
+               put true into tFront[f]
+               -- A closed part with no front face has the camera inside it: it draws whole.
+               add 1 to tPartFront[tFC[f]]
+            else
+               put false into tFront[f]
+            end if
+         end repeat
+      end if
+   end if
    
    -- PASS 1: every vertex to camera space, and to screen if in front of the near plane.
    repeat with i = 1 to tCount
@@ -2647,6 +2703,17 @@ command RenderMeshInto pGeo,pKey,pGraphic,@pBuf,pNoBands
    put tMesh["eb"] into tEB
    put 0 into tDrawn
    repeat with e = 1 to tMesh["edgeCount"]
+      if tUseFaces then
+         -- An edge between two faces that both look away is on the far side: not drawn.
+         put tEF1[e] into f
+         if f > 0 then
+            if not tFront[f] then
+               if not tFront[tEF2[e]] then
+                  if tPartFront[tEC[e]] > 0 then next repeat
+               end if
+            end if
+         end if
+      end if
       put tEA[e] into a
       put tEB[e] into b
       
@@ -2884,6 +2951,472 @@ command Mesh.PushEdge @pMesh,@pSeen,@pE,pA,pB
    put pA into pMesh["ea"][pE]
    put pB into pMesh["eb"][pE]
 end Mesh.PushEdge
+
+######################################################################################
+## HIDING: BACK FACES AND WHOLE OBJECTS  (11 18 2026, gCullMode)
+## Off by default: a game turns it on in Game.OnStart ("global gCullMode" in its script, then
+## put 1 or 2 into gCullMode). Pure math, no fills: lines that cannot be seen are not drawn.
+##
+## Mesh.CullTables adds to a finalized mesh (once, the first time a culling mode draws it):
+##   ["cullBuilt"]       true: the tables below are made
+##   ["closed"]          true when every face belongs to a closed part: each of its edges is
+##                       shared by exactly two faces, and the part holds a volume. Only such a
+##                       mesh hides other objects. The faces may be wound either way round, and
+##                       differently from their neighbours (the makers' caps are): each part is
+##                       put in order here, from face to face across the shared edges.
+##   ["cull"]            true when at least one face can be tested (has a row below)
+##   ["cfCount"]         number of testable faces: flat faces of closed parts
+##   ["cnx"][c] ["cny"][c] ["cnz"][c] ["cd"][c]   face c's plane, normal pointing OUT of the
+##                       solid (whichever way the face was wound: decided by the part's volume)
+##   ["cnl"][c]          length of that normal;  ["cc"][c] the closed part face c belongs to
+##   ["ef1"][k] ["ef2"][k]   the two testable faces of edge k (0 0 = always drawn);  ["ec"][k] its part
+##   ["ofCount"], ["ofc"][j] ["ofv"][j] ["ofx"][j] ["ofy"][j] ["ofz"][j]   the faces that can
+##                       hide other objects (convex, the 24 biggest): row c above, vertex
+##                       numbers, middle point. Empty unless ["closed"].
+## Drawn as always (never tested): meshes with hand-made edge lists (Mesh.Build), open
+## shapes (a plane, a grid, a single face), wire lines (Mesh.AddLine), faces that are not flat.
+######################################################################################
+
+on Mesh.CullBuild pGeo
+   global gMeshCache
+   local tMesh
+   put gMeshCache[pGeo] into tMesh
+   Mesh.CullTables tMesh
+   put tMesh into gMeshCache[pGeo]
+end Mesh.CullBuild
+
+## Faces joined by shared edges are one part. Returns "top,turn": the top face of pF's part,
+## and turn = 1 when pF is wound the other way round than that top face (0 when the same way).
+## pParent[f] is the face above f, pFlip[f] its turn against that one.
+function Mesh.CullRoot @pParent,@pFlip,pF
+   local tRoot, tSum, tMine, tNext, tOld
+   put pF into tRoot
+   put 0 into tSum
+   repeat while pParent[tRoot] is not tRoot
+      put (tSum + pFlip[tRoot]) mod 2 into tSum
+      put pParent[tRoot] into tRoot
+   end repeat
+   put tSum into tMine
+   -- Shorten the way up for next time.
+   repeat while pF is not tRoot
+      put pParent[pF] into tNext
+      put pFlip[pF] into tOld
+      put tRoot into pParent[pF]
+      put tSum into pFlip[pF]
+      put (tSum + tOld) mod 2 into tSum
+      put tNext into pF
+   end repeat
+   return tRoot & comma & tMine
+end Mesh.CullRoot
+
+command Mesh.CullTables @pMesh
+   local tCount, tEdges, tEdgeNo, tF1, tF2, tDir1, k, a, b, f, i, j, tN, tFace, tFaceCount
+   local tParent, tBad, tPX, tPY, tPZ, tOK, tW, nx, ny, nz, cx, cy, cz, tNN, tD, tTol, tFlat
+   local tFNX, tFNY, tFNZ, tFD, tFL, tUsable, tConvex, tVol, tKey, tR1, tR2, tRootBad, tRootVol
+   local tCX, tCY, tCZ, tFaceText, tFaceN, tRadius, tAllClosed, tPartNo, tParts, tCF, c, tSign
+   local e1x, e1y, e1z, e2x, e2y, e2z, tTurn, tOccList, tLine, tRoot, tFlip, tWay, tA, tB
+   set the itemDel to comma
+   put true into pMesh["cullBuilt"]
+   put false into pMesh["cull"]
+   put false into pMesh["closed"]
+   put 0 into pMesh["cfCount"]
+   put 0 into pMesh["ofCount"]
+   repeat for each item tKey in "cnx,cny,cnz,cd,cnl,cc,ef1,ef2,ec,ofc,ofv,ofx,ofy,ofz"
+      delete variable pMesh[tKey]
+   end repeat
+   -- Hand-made edge lists (the old stack meshes) do not come from the faces: as always.
+   if pMesh["edgesFromFaces"] is false then exit Mesh.CullTables
+   put pMesh["count"] + 0 into tCount
+   put pMesh["edgeCount"] + 0 into tEdges
+   put pMesh["radius"] + 0 into tRadius
+   if tEdges < 1 or tRadius <= 0 or pMesh["faces"] is empty then exit Mesh.CullTables
+   put max(0.01, 0.002 * tRadius) into tTol
+   
+   -- Edge number from its two ends.
+   repeat with k = 1 to tEdges
+      put pMesh["ea"][k] into a
+      put pMesh["eb"][k] into b
+      if a < b then
+         put k into tEdgeNo[a & "_" & b]
+      else
+         put k into tEdgeNo[b & "_" & a]
+      end if
+      put 0 into tF1[k]
+      put 0 into tF2[k]
+   end repeat
+   
+   -- Every face: its plane (Newell's normal, any n-gon), and which edges it runs along.
+   put 0 into tFaceCount
+   repeat for each line tFace in pMesh["faces"]
+      put the number of words of tFace into tN
+      if tN < 3 then next repeat -- two points are a line: always drawn
+      add 1 to tFaceCount
+      put tFaceCount into f
+      put f into tParent[f]
+      put 0 into tFlip[f]
+      put false into tBad[f]
+      put tFace into tFaceText[f]
+      put tN into tFaceN[f]
+      put true into tOK
+      put 0 into i
+      put 0 into cx
+      put 0 into cy
+      put 0 into cz
+      repeat for each word tW in tFace
+         add 1 to i
+         if tW is not an integer or tW < 1 or tW > tCount then
+            put false into tOK
+            exit repeat
+         end if
+         put tW + 0 into tKey[i]
+         put pMesh["vx"][tW] into tPX[i]
+         put pMesh["vy"][tW] into tPY[i]
+         put pMesh["vz"][tW] into tPZ[i]
+         add tPX[i] to cx
+         add tPY[i] to cy
+         add tPZ[i] to cz
+      end repeat
+      put false into tUsable[f]
+      put false into tConvex[f]
+      put 0 into tVol[f]
+      if not tOK then
+         put true into tBad[f] -- a vertex number that does not exist: leave this shape alone
+         next repeat
+      end if
+      put cx / tN into cx
+      put cy / tN into cy
+      put cz / tN into cz
+      put 0 into nx
+      put 0 into ny
+      put 0 into nz
+      repeat with i = 1 to tN
+         put (i mod tN) + 1 into j
+         add (tPY[i] - tPY[j]) * (tPZ[i] + tPZ[j]) to nx
+         add (tPZ[i] - tPZ[j]) * (tPX[i] + tPX[j]) to ny
+         add (tPX[i] - tPX[j]) * (tPY[i] + tPY[j]) to nz
+         -- The edge i -> j of this face.
+         put tKey[i] into a
+         put tKey[j] into b
+         if a < b then
+            put tEdgeNo[a & "_" & b] into k
+         else
+            put tEdgeNo[b & "_" & a] into k
+         end if
+         if k is empty then
+            put true into tBad[f]
+         else if tF1[k] = 0 then
+            put f into tF1[k]
+            put (a < b) into tDir1[k]
+         else
+            -- Two faces wound the same way round run along their shared edge in opposite
+            -- directions. Running the same direction: one of the two is turned over (tWay 1).
+            put 0 into tWay
+            if tF2[k] = 0 and tF1[k] <> f then
+               put f into tF2[k]
+               if (a < b) is tDir1[k] then
+                  put 1 into tWay
+               end if
+            else
+               put true into tBad[f] -- three faces on one edge, or one face twice
+            end if
+            put Mesh.CullRoot(tParent,tFlip,f) into tA
+            put Mesh.CullRoot(tParent,tFlip,tF1[k]) into tB
+            put item 1 of tA into tR1
+            put item 1 of tB into tR2
+            if tR1 <> tR2 then
+               put tR1 into tParent[tR2]
+               put (item 2 of tA + item 2 of tB + tWay) mod 2 into tFlip[tR2]
+            else if (item 2 of tA + item 2 of tB) mod 2 <> tWay then
+               put true into tBad[f] -- no way to give this part an inside and an outside
+            end if
+         end if
+      end repeat
+      put nx*nx + ny*ny + nz*nz into tNN
+      put nx*cx + ny*cy + nz*cz into tD
+      put tD into tVol[f]
+      put nx into tFNX[f]
+      put ny into tFNY[f]
+      put nz into tFNZ[f]
+      put tD into tFD[f]
+      put cx into tCX[f]
+      put cy into tCY[f]
+      put cz into tCZ[f]
+      if tNN <= 0 then next repeat -- no area: never tested
+      put sqrt(tNN) into tFL[f]
+      -- Flat? Every corner on the plane. A twisted face is never tested (it draws whole).
+      put true into tFlat
+      repeat with i = 1 to tN
+         if abs(nx*tPX[i] + ny*tPY[i] + nz*tPZ[i] - tD) > tTol * tFL[f] then
+            put false into tFlat
+            exit repeat
+         end if
+      end repeat
+      put tFlat into tUsable[f]
+      -- Convex? Every corner turns the same way round the normal. Only a convex face hides objects.
+      if tFlat then
+         put true into tConvex[f]
+         repeat with i = 1 to tN
+            put (i mod tN) + 1 into j
+            put (j mod tN) + 1 into k
+            put tPX[j] - tPX[i] into e1x
+            put tPY[j] - tPY[i] into e1y
+            put tPZ[j] - tPZ[i] into e1z
+            put tPX[k] - tPX[j] into e2x
+            put tPY[k] - tPY[j] into e2y
+            put tPZ[k] - tPZ[j] into e2z
+            put (e1y*e2z - e1z*e2y)*nx + (e1z*e2x - e1x*e2z)*ny + (e1x*e2y - e1y*e2x)*nz into tTurn
+            if tTurn < -0.000001 * tNN then
+               put false into tConvex[f]
+               exit repeat
+            end if
+         end repeat
+      end if
+   end repeat
+   if tFaceCount < 1 then exit Mesh.CullTables
+   
+   -- An edge with one face only: that face's part is open.
+   repeat with k = 1 to tEdges
+      if tF1[k] > 0 and tF2[k] = 0 then put true into tBad[tF1[k]]
+   end repeat
+   -- Parts: closed or not, and the volume (its sign says which way the normals point).
+   repeat with f = 1 to tFaceCount
+      put Mesh.CullRoot(tParent,tFlip,f) into tA
+      put item 1 of tA into tRoot[f]
+      put 1 - 2 * (item 2 of tA) into tWay[f] -- 1, or -1 for a face turned over against its part
+      if tBad[f] then put true into tRootBad[tRoot[f]]
+      add tWay[f] * tVol[f] to tRootVol[tRoot[f]]
+   end repeat
+   put true into tAllClosed
+   put 0 into tParts
+   put 0 into c
+   repeat with f = 1 to tFaceCount
+      put tRoot[f] into tR1
+      -- No volume (two sheets back to back): not a solid.
+      if abs(tRootVol[tR1]) <= 0.000001 * tRadius * tRadius * tRadius then put true into tRootBad[tR1]
+      put 0 into tCF[f]
+      if tRootBad[tR1] is true then
+         put false into tAllClosed
+         next repeat
+      end if
+      if not tUsable[f] then next repeat
+      if tPartNo[tR1] is empty then
+         add 1 to tParts
+         put tParts into tPartNo[tR1]
+      end if
+      add 1 to c
+      put c into tCF[f]
+      put tWay[f] into tSign
+      if tRootVol[tR1] < 0 then put -tSign into tSign
+      put tSign * tFNX[f] into pMesh["cnx"][c]
+      put tSign * tFNY[f] into pMesh["cny"][c]
+      put tSign * tFNZ[f] into pMesh["cnz"][c]
+      put tSign * tFD[f] into pMesh["cd"][c]
+      put tFL[f] into pMesh["cnl"][c]
+      put tPartNo[tR1] into pMesh["cc"][c]
+      if tConvex[f] and tFaceN[f] <= 12 then put tFL[f] & comma & f & cr after tOccList
+   end repeat
+   put c into pMesh["cfCount"]
+   put (c > 0) into pMesh["cull"]
+   put tAllClosed into pMesh["closed"]
+   
+   -- Edges: tested only when both faces are.
+   repeat with k = 1 to tEdges
+      put 0 into pMesh["ef1"][k]
+      put 0 into pMesh["ef2"][k]
+      put 0 into pMesh["ec"][k]
+      if tF1[k] > 0 and tF2[k] > 0 then
+         if tCF[tF1[k]] > 0 and tCF[tF2[k]] > 0 then
+            put tCF[tF1[k]] into pMesh["ef1"][k]
+            put tCF[tF2[k]] into pMesh["ef2"][k]
+            put pMesh["cc"][tCF[tF1[k]]] into pMesh["ec"][k]
+         end if
+      end if
+   end repeat
+   
+   -- The faces that can hide other objects: a wholly closed mesh only, its 24 biggest convex faces.
+   if tAllClosed and tOccList is not empty then
+      set the itemDel to comma
+      sort lines of tOccList descending numeric by item 1 of each
+      put 0 into j
+      repeat for each line tLine in line 1 to 24 of tOccList
+         put item 2 of tLine into f
+         add 1 to j
+         put tCF[f] into pMesh["ofc"][j]
+         put tFaceText[f] into pMesh["ofv"][j]
+         put tCX[f] into pMesh["ofx"][j]
+         put tCY[f] into pMesh["ofy"][j]
+         put tCZ[f] into pMesh["ofz"][j]
+      end repeat
+      put j into pMesh["ofCount"]
+   end if
+end Mesh.CullTables
+
+## gCullMode 2, once per frame (the first RenderMeshInto after Render.BeginFrame asks for it):
+## which objects are wholly hidden. An object is a ball (its mesh radius round its place). It is
+## hidden when the whole ball is behind ONE front face of a solid (closed) object: beyond the
+## face's plane, and inside the pyramid from the eye through the face's sides. Worked out in the
+## hiding object's own space, so nothing is projected. When unsure, the object is drawn.
+## Only the kCullOccluders biggest-looking solids are tried as hiders.
+## Leaves: sCullHidden[key] = true, sCullHiddenCount, sCullXf[key] (the transform, reused by the draw).
+on Cull.PrepareFrame
+   global gSceneObjects, gMeshCache
+   local tEntry, tGeo, tKey, tMesh, tXf, n, tKeyOf, tX, tY, tZ, tR, tLen2, tOccList, tOcc, o, p
+   local m1, m2, m3, m4, m5, m6, m7, m8, m9, t1, t2, t3, ex, ey, ez, j, c, nx, ny, nz, tD, tL
+   local tFaces, tPNX, tPNY, tPNZ, tPD, tS0, tS1, q, tSX, tSY, tSZ, tVerts, tN, i, k, tW
+   local ax, ay, az, sx, sy, sz, tLen, tGood, tPX, tPY, tPZ, tConeK, tDot
+   local dx, dy, dz, lx, ly, lz, r, f, tInside, tHid, tReady, tNear2
+   put true into sCullReady
+   put empty into sCullXf
+   put empty into sCullHidden
+   put 0 into sCullHiddenCount
+   set the itemDel to comma
+   put 0 into n
+   repeat for each line tEntry in gSceneObjects
+      put word 1 of tEntry into tGeo
+      put word 2 of tEntry into tKey
+      put Mesh.Get(tGeo) into tMesh
+      if tMesh["count"] < 1 then next repeat
+      if tMesh["cullBuilt"] is not true then
+         Mesh.CullBuild tGeo
+         put gMeshCache[tGeo] into tMesh
+      end if
+      put Xform.Object(tKey) into tXf
+      put tXf into sCullXf[tKey]
+      add 1 to n
+      put tKey into tKeyOf[n]
+      put item 10 of tXf into tX[n]
+      put item 11 of tXf into tY[n]
+      put item 12 of tXf into tZ[n]
+      put tMesh["radius"] into tR[n]
+      put tX[n]*tX[n] + tY[n]*tY[n] + tZ[n]*tZ[n] into tLen2[n]
+      -- A hider: solid, in front of the camera, and not tiny on screen.
+      if tMesh["ofCount"] > 0 and tZ[n] > 0 then
+         if tR[n] > 0.1 * tZ[n] then put (tR[n] / tZ[n]) & comma & n & comma & tGeo & cr after tOccList
+      end if
+   end repeat
+   if tOccList is empty or n < 2 then exit Cull.PrepareFrame
+   sort lines of tOccList descending numeric by item 1 of each
+   
+   repeat for each line tOcc in line 1 to kCullOccluders of tOccList
+      put item 2 of tOcc into o
+      if tHid[o] is true then next repeat -- itself hidden: what it hides, its hider hides too
+      put gMeshCache[item 3 of tOcc] into tMesh
+      put sCullXf[tKeyOf[o]] into tXf
+      put item 1 of tXf into m1
+      put item 2 of tXf into m2
+      put item 3 of tXf into m3
+      put item 4 of tXf into m4
+      put item 5 of tXf into m5
+      put item 6 of tXf into m6
+      put item 7 of tXf into m7
+      put item 8 of tXf into m8
+      put item 9 of tXf into m9
+      put item 10 of tXf into t1
+      put item 11 of tXf into t2
+      put item 12 of tXf into t3
+      -- The eye in the hider's own space.
+      put -(m1*t1 + m4*t2 + m7*t3) into ex
+      put -(m2*t1 + m5*t2 + m8*t3) into ey
+      put -(m3*t1 + m6*t2 + m9*t3) into ez
+      -- The cone from the eye that just holds the hider's ball: anything hidden has its middle in it.
+      put tLen2[o] - tR[o]*tR[o] into tConeK
+      -- And it is further from the eye than the hider's nearest point.
+      put 0 into tNear2
+      if tConeK > 0 then put (sqrt(tLen2[o]) - tR[o]) ^ 2 into tNear2
+      
+      put false into tReady -- its faces are worked out only when something may be behind it
+      repeat with p = 1 to n
+         if p = o then next repeat
+         if tHid[p] is true then next repeat
+         put tX[p]*t1 + tY[p]*t2 + tZ[p]*t3 into tDot
+         if tDot <= 0 then next repeat
+         if tLen2[p] < tNear2 then next repeat
+         if tDot*tDot < tLen2[p] * tConeK then next repeat
+         if not tReady then
+            put true into tReady
+            -- Its faces that look at the eye: the plane, and one plane through the eye and each side.
+            put 0 into tFaces
+            put 0 into q
+            repeat with j = 1 to tMesh["ofCount"]
+               put tMesh["ofc"][j] into c
+               put tMesh["cnx"][c] into nx
+               put tMesh["cny"][c] into ny
+               put tMesh["cnz"][c] into nz
+               put tMesh["cd"][c] into tD
+               put tMesh["cnl"][c] into tL
+               if nx*ex + ny*ey + nz*ez <= tD + 0.001 * tL then next repeat -- looks away (or edge-on)
+               put tMesh["ofv"][j] into tVerts
+               put the number of words of tVerts into tN
+               put 0 into i
+               repeat for each word tW in tVerts
+                  add 1 to i
+                  put tMesh["vx"][tW] - ex into tPX[i]
+                  put tMesh["vy"][tW] - ey into tPY[i]
+                  put tMesh["vz"][tW] - ez into tPZ[i]
+               end repeat
+               -- From the eye to the face's middle: the inside of every side plane.
+               put tMesh["ofx"][j] - ex into ax
+               put tMesh["ofy"][j] - ey into ay
+               put tMesh["ofz"][j] - ez into az
+               put true into tGood
+               put q into k
+               repeat with i = 1 to tN
+                  put (i mod tN) + 1 into f
+                  put tPY[i]*tPZ[f] - tPZ[i]*tPY[f] into sx
+                  put tPZ[i]*tPX[f] - tPX[i]*tPZ[f] into sy
+                  put tPX[i]*tPY[f] - tPY[i]*tPX[f] into sz
+                  put sqrt(sx*sx + sy*sy + sz*sz) into tLen
+                  if tLen <= 0 then
+                     put false into tGood
+                     exit repeat
+                  end if
+                  if sx*ax + sy*ay + sz*az < 0 then put -tLen into tLen
+                  add 1 to k
+                  put sx / tLen into tSX[k]
+                  put sy / tLen into tSY[k]
+                  put sz / tLen into tSZ[k]
+               end repeat
+               if not tGood then next repeat
+               add 1 to tFaces
+               put nx / tL into tPNX[tFaces]
+               put ny / tL into tPNY[tFaces]
+               put nz / tL into tPNZ[tFaces]
+               put tD / tL into tPD[tFaces]
+               put q + 1 into tS0[tFaces]
+               put k into tS1[tFaces]
+               put k into q
+            end repeat
+         end if
+         if tFaces < 1 then exit repeat -- the camera is inside it, or it has no usable face
+         -- Its middle in the hider's own space.
+         put tX[p] - t1 into dx
+         put tY[p] - t2 into dy
+         put tZ[p] - t3 into dz
+         put m1*dx + m4*dy + m7*dz into lx
+         put m2*dx + m5*dy + m8*dz into ly
+         put m3*dx + m6*dy + m9*dz into lz
+         put tR[p] into r
+         repeat with f = 1 to tFaces
+            -- The whole ball beyond the face's plane?
+            if tPNX[f]*lx + tPNY[f]*ly + tPNZ[f]*lz - tPD[f] > -r then next repeat
+            -- And inside every side plane by its radius?
+            put true into tInside
+            repeat with k = tS0[f] to tS1[f]
+               if tSX[k]*(lx-ex) + tSY[k]*(ly-ey) + tSZ[k]*(lz-ez) < r then
+                  put false into tInside
+                  exit repeat
+               end if
+            end repeat
+            if tInside then
+               put true into tHid[p]
+               put true into sCullHidden[tKeyOf[p]]
+               add 1 to sCullHiddenCount
+               exit repeat
+            end if
+         end repeat
+      end repeat
+   end repeat
+end Cull.PrepareFrame
 
 ## Accept "a,b|c,d" or one point per line.
 function Mesh.Points pText
@@ -4155,6 +4688,8 @@ on HUD.Refresh
 end HUD.Refresh
 
 on HUD.Render @pBuf
+   -- The scene's lines are done when the HUD is asked for: the time they took (Engine.Info("sceneMS")).
+   put the milliseconds - sCullT0 into sSceneMS
    if not sLoopActive or sView["hud"] is not true then exit HUD.Render
    if sHUD is not an array then exit HUD.Render
    put Scene.ColorGraphic(sView["hudColor"]) into tGraphic
@@ -4747,6 +5282,12 @@ function Vibe.Orig.Engine.Info pKey
          return sFPS
       case "edges"
          return sEdgesDrawn
+      case "cullMode"
+         return gCullMode + 0
+      case "hidden"
+         return sCullHiddenCount
+      case "sceneMS"
+         return sSceneMS
       case "playing"
          return sLoopActive
       case "paused"
