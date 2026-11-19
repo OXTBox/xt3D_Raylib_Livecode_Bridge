@@ -68,6 +68,11 @@ local sFolder, sSettingSlider, sReport
 -- per engine mesh name (rebuilt when the mesh changes)
 local sListMode, sGamesFolder, sGameOn, sGameMsg, sGameName, sGameModels, sGameSig
 local sGameFrames, sGameFPSTick, sGameFPS
+-- hidden lines in xRay (19 Nov 2026): per engine mesh a second model of its closed faces,
+-- drawn in the background colour so raylib's depth buffer hides the lines behind them
+local sGameFills, sGameFillSig, sGameFillCount
+-- timing, summed over each second: simulation, scene (Vibe.Frame), drawing (raylib + copy)
+local sGameStepMS, sGameSceneMS, sGameDrawMS, sGameStats
 
 -------------------------------------------------------------------- open / close
 
@@ -1074,13 +1079,17 @@ command xbPlayGame pName
    put 0 into sGameFrames
    put the milliseconds into sGameFPSTick
    put 0 into sGameFPS
+   put 0 into sGameStepMS
+   put 0 into sGameSceneMS
+   put 0 into sGameDrawMS
+   put empty into sGameStats
    if sFrameMsg is not empty then cancel sFrameMsg
    put empty into sFrameMsg
    xbGameTick
 end xbPlayGame
 
 command xbGameTick
-   local tErr, tFrame, tNow
+   local tErr, tFrame, tNow, tT0, tT1, tT2
    put empty into sGameMsg
    if sGameOn is not true then exit xbGameTick
    try
@@ -1088,13 +1097,19 @@ command xbGameTick
          xbGameEnded
          exit xbGameTick
       end if
+      put the milliseconds into tT0
       Vibe.Step
       if not Vibe.Playing() then
          xbGameEnded
          exit xbGameTick
       end if
+      put the milliseconds into tT1
       put Vibe.Frame() into tFrame
+      put the milliseconds into tT2
       xbDrawGame tFrame
+      add tT1 - tT0 to sGameStepMS
+      add tT2 - tT1 to sGameSceneMS
+      add the milliseconds - tT2 to sGameDrawMS
    catch tErr
       xbGameError tErr, "playing"
       exit xbGameTick
@@ -1103,6 +1118,16 @@ command xbGameTick
    put the milliseconds into tNow
    if tNow - sGameFPSTick >= 1000 then
       put round(sGameFrames * 1000 / (tNow - sGameFPSTick)) into sGameFPS
+      -- one line a second: what xbGameStats() answers and the view's bottom line shows
+      put "mode" && xbCullMode() && "fps" && sGameFPS && \
+            "step" && round(sGameStepMS / sGameFrames, 1) && \
+            "scene" && round(sGameSceneMS / sGameFrames, 1) && \
+            "draw" && round(sGameDrawMS / sGameFrames, 1) && \
+            "objects" && the number of lines of tFrame["objects"] && \
+            "solids" && sGameFillCount into sGameStats
+      put 0 into sGameStepMS
+      put 0 into sGameSceneMS
+      put 0 into sGameDrawMS
       put 0 into sGameFrames
       put tNow into sGameFPSTick
    end if
@@ -1146,6 +1171,11 @@ command xbStopGame
    end repeat
    put empty into sGameModels
    put empty into sGameSig
+   repeat for each key tName in sGameFills
+      if sGameFills[tName] > 0 then xt3d_UnloadModel sGameFills[tName]
+   end repeat
+   put empty into sGameFills
+   put empty into sGameFillSig
    if the script of this card is not empty then set the script of this card to empty
 end xbStopGame
 
@@ -1168,27 +1198,142 @@ function xbGameModel pMesh
    return sGameModels[pMesh]
 end xbGameModel
 
+-- the engine's hiding switch (0 when the engine has none)
+function xbCullMode
+   global gCullMode
+   if gCullMode is a number then return gCullMode
+   return 0
+end xbCullMode
+
+-- the last second's timing: "mode m fps f step s scene c draw d objects n solids k" (ms a frame)
+function xbGameStats
+   return sGameStats
+end xbGameStats
+
+-- an engine mesh's closed faces as one filled xt3d model (0 when it has none), made again
+-- when the mesh changes. Faces joined by shared edges make a part; a part is filled only when
+-- it is closed (every edge has a face on both sides), so open sheets (a floor grid, a single
+-- plane) hide nothing, as in the pure xTalk engine.
+-- Faces are cut into fans of triangles from their first corner (fine for convex faces).
+function xbGameFill pMesh
+   local tM, tSig, tUse, tEdgeFaces, tFaceText, tFaceN, tFace, tN, f, k, tA, tB, tKey
+   local tSeen, tQueue, tPart, tOpen, g, tNext, tVerts, tMesh, tCount
+   put Vibe.Mesh(pMesh) into tM
+   if tM["count"] is empty or tM["faces"] is empty then return 0
+   put tM["count"] & "," & tM["edgeCount"] & "," & tM["radius"] & "," & tM["vx"][1] & "," & tM["vy"][1] & "," & tM["vz"][1] into tSig
+   if sGameFillSig[pMesh] is tSig then return sGameFills[pMesh]
+   if sGameFills[pMesh] > 0 then xt3d_UnloadModel sGameFills[pMesh]
+   put 0 into sGameFills[pMesh]
+   put tSig into sGameFillSig[pMesh]
+   if tM["edgesFromFaces"] is false then return 0
+   -- every face of 3 or more corners; how many faces run along each edge, and which
+   put 0 into f
+   repeat for each line tFace in tM["faces"]
+      put the number of words of tFace into tN
+      if tN < 3 then next repeat
+      add 1 to f
+      put tFace into tFaceText[f]
+      put tN into tFaceN[f]
+      repeat with k = 1 to tN
+         put word k of tFace into tA
+         put word (k mod tN) + 1 of tFace into tB
+         put min(tA, tB) & "_" & max(tA, tB) into tKey
+         add 1 to tUse[tKey]
+         put f & comma after tEdgeFaces[tKey]
+      end repeat
+   end repeat
+   -- parts: faces reached from each other across shared edges
+   put 0 into tCount
+   repeat with g = 1 to f
+      if tSeen[g] is true then next repeat
+      put true into tSeen[g]
+      put g into tQueue
+      put empty into tPart
+      put false into tOpen
+      repeat until tQueue is empty
+         put item 1 of tQueue into tNext
+         delete item 1 of tQueue
+         put tNext & comma after tPart
+         put tFaceText[tNext] into tFace
+         put tFaceN[tNext] into tN
+         repeat with k = 1 to tN
+            put word k of tFace into tA
+            put word (k mod tN) + 1 of tFace into tB
+            put min(tA, tB) & "_" & max(tA, tB) into tKey
+            if tUse[tKey] < 2 then put true into tOpen
+            repeat for each item tA in tEdgeFaces[tKey]
+               if tSeen[tA] is not true then
+                  put true into tSeen[tA]
+                  put tA & comma after tQueue
+               end if
+            end repeat
+         end repeat
+      end repeat
+      if tOpen then next repeat
+      -- a closed part: its faces as fans of triangles from their first corner
+      repeat for each item tNext in tPart
+         put tFaceText[tNext] into tFace
+         put word 1 of tFace into tA
+         repeat with k = 2 to tFaceN[tNext] - 1
+            put word k of tFace into tB
+            put tM["vx"][tA] & "," & tM["vy"][tA] & "," & tM["vz"][tA] & return & \
+                  tM["vx"][tB] & "," & tM["vy"][tB] & "," & tM["vz"][tB] & return after tVerts
+            put word k + 1 of tFace into tB
+            put tM["vx"][tB] & "," & tM["vy"][tB] & "," & tM["vz"][tB] & return after tVerts
+         end repeat
+         add 1 to tCount
+      end repeat
+   end repeat
+   if tCount is 0 then return 0
+   delete the last char of tVerts
+   put xt3d_MeshFromText(tVerts, "", "") into tMesh
+   if tMesh is not a number or tMesh <= 0 then return 0
+   put xt3d_LoadModelFromMesh(tMesh) into sGameFills[pMesh]
+   return sGameFills[pMesh]
+end xbGameFill
+
 -- one frame from Vibe.Frame(): objects come in the engine's camera space (+X right,
 -- +Y down, +Z ahead), so the raylib camera sits at 0,0,0, looks along +Z with up -Y,
 -- and its field of view matches the engine's projection (focal length / scale)
 command xbDrawGame @pFrame
    local tProj, tFov, tLine, tModel, tXf, tCol, tS, tName, tPts, tPt, tPrev, tL, tT, tK
+   local tHide, tFill, tBack, tF
    put Vibe.Projection() into tProj
    put 2 * atan((the height of image "view" / 2) * (item 2 of tProj) / (item 1 of tProj)) * 180 / pi into tFov
    xt3d_CameraSet sCamera, 0,0,0, 0,0,1, 0,-1,0, tFov, 0
    put kGameScale into tS
    put pFrame["background"] into tCol
+   put tCol into tBack
+   -- hiding on (gCullMode 1 2 3): closed solids are filled in the background colour first
+   put xbCullMode() >= 1 into tHide
+   put 0 into sGameFillCount
    xt3d_BeginTextureMode sBig
    xt3d_ClearBackground item 1 of tCol, item 2 of tCol, item 3 of tCol, 255
    xt3d_BeginMode3D sCamera
    xt3d_SetBackfaceCulling false
    repeat for each line tLine in pFrame["objects"]
       set the itemDel to tab
-      put xbGameModel(item 1 of tLine) into tModel
+      put item 1 of tLine into tName
+      put xbGameModel(tName) into tModel
       if tModel is not a number or tModel <= 0 then next repeat
       put item 3 of tLine into tCol
       put item 4 of tLine into tXf
       set the itemDel to comma
+      if tHide then
+         put xbGameFill(tName) into tFill
+         if tFill is a number and tFill > 0 then
+            -- the fill is pushed a little away from the eye (scaled about the camera, so it
+            -- covers the same pixels) and lines lying on its faces stay in front of it
+            put tS * 1.003 into tF
+            xt3d_ModelSetTransform tFill, \
+                  item 1 of tXf * tF, item 4 of tXf * tF, item 7 of tXf * tF, 0, \
+                  item 2 of tXf * tF, item 5 of tXf * tF, item 8 of tXf * tF, 0, \
+                  item 3 of tXf * tF, item 6 of tXf * tF, item 9 of tXf * tF, 0, \
+                  item 10 of tXf * tF, item 11 of tXf * tF, item 12 of tXf * tF, 1
+            xt3d_DrawModel tFill, 0,0,0, 1, item 1 of tBack, item 2 of tBack, item 3 of tBack, 255
+            add 1 to sGameFillCount
+         end if
+      end if
       -- raylib matrices list columns: m0..m3 is column 1
       xt3d_ModelSetTransform tModel, \
             item 1 of tXf * tS, item 4 of tXf * tS, item 7 of tXf * tS, 0, \
@@ -1220,7 +1365,7 @@ command xbDrawGame @pFrame
          put tPt into tPrev
       end repeat
    end repeat
-   xt3d_DrawText sGameFPS & " fps", 10 * kSample, (sViewH - 28) * kSample, 16 * kSample, 120,120,120,255
+   xt3d_DrawText sGameFPS & " fps   hiding" && xbCullMode() & "   " & sGameStats, 10 * kSample, (sViewH - 28) * kSample, 16 * kSample, 120,120,120,255
    xt3d_EndTextureMode
    xt3d_BeginTextureMode sTarget
    xt3d_DrawTexturePro sBigTexture, 0,0,sViewW * kSample,-(sViewH * kSample), 0,0,sViewW,sViewH, 0,0, 0, 255,255,255,255
