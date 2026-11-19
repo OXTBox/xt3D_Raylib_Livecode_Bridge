@@ -188,6 +188,7 @@ global gMeshCache -- cached meshes, see Mesh.Build
 global gCullMode -- hiding (off unless a game turns it on in Game.OnStart): 0 off, 1 back faces, 2 back faces + whole objects behind a solid
 local sCullReady, sCullXf, sCullHidden, sCullHiddenCount = 0 -- this frame's whole-object test (Cull.PrepareFrame)
 local sCullT0 = 0, sSceneMS = 0 -- when this frame's line work began, and how long the last one took
+constant kCullCorners = 200 -- a mesh with more corners than this is hidden as a ball, not corner by corner
 constant kCullOccluders = 6 -- at most this many solid objects (the biggest on screen) are tried as hiders
 global gLogSelection -- set true to log UpdateSelectionMarker diagnostics into gSelectionHistory
 global bKeyDown -- have to stop repeated activations of key called scripts
@@ -2973,6 +2974,8 @@ end Mesh.PushEdge
 ##   ["ofCount"], ["ofc"][j] ["ofv"][j] ["ofx"][j] ["ofy"][j] ["ofz"][j]   the faces that can
 ##                       hide other objects (convex, the 24 biggest): row c above, vertex
 ##                       numbers, middle point. Empty unless ["closed"].
+##   ["convex"]          true when the mesh is one convex solid (a box, a prism, a ball): then
+##                       an object is hidden when EACH of its corners is behind SOME face of it
 ## Drawn as always (never tested): meshes with hand-made edge lists (Mesh.Build), open
 ## shapes (a plane, a grid, a single face), wire lines (Mesh.AddLine), faces that are not flat.
 ######################################################################################
@@ -3014,7 +3017,7 @@ command Mesh.CullTables @pMesh
    local tParent, tBad, tPX, tPY, tPZ, tOK, tW, nx, ny, nz, cx, cy, cz, tNN, tD, tTol, tFlat
    local tFNX, tFNY, tFNZ, tFD, tFL, tUsable, tConvex, tVol, tKey, tR1, tR2, tRootBad, tRootVol
    local tCX, tCY, tCZ, tFaceText, tFaceN, tRadius, tAllClosed, tPartNo, tParts, tCF, c, tSign
-   local e1x, e1y, e1z, e2x, e2y, e2z, tTurn, tOccList, tLine, tRoot, tFlip, tWay, tA, tB
+   local e1x, e1y, e1z, e2x, e2y, e2z, tTurn, tOccList, tLine, tRoot, tFlip, tWay, tA, tB, tSX, tSY, tSZ, tSD, tIsConvex
    set the itemDel to comma
    put true into pMesh["cullBuilt"]
    put false into pMesh["cull"]
@@ -3249,13 +3252,40 @@ command Mesh.CullTables @pMesh
       end repeat
       put j into pMesh["ofCount"]
    end if
+   
+   -- One closed part, every face flat, and no corner outside any face's plane: a convex solid.
+   -- Behind such a solid an object's corners may be hidden by different faces (Cull.PrepareFrame).
+   put false into pMesh["convex"]
+   if tAllClosed and tParts = 1 and c = tFaceCount and c * pMesh["count"] <= 20000 then
+      put true into tIsConvex
+      repeat with f = 1 to c
+         put pMesh["cnx"][f] into tSX
+         put pMesh["cny"][f] into tSY
+         put pMesh["cnz"][f] into tSZ
+         put pMesh["cd"][f] + 0.0001 * pMesh["cnl"][f] * tRadius into tSD
+         repeat with k = 1 to pMesh["count"]
+            if tSX * pMesh["vx"][k] + tSY * pMesh["vy"][k] + tSZ * pMesh["vz"][k] > tSD then
+               put false into tIsConvex
+               exit repeat
+            end if
+         end repeat
+         if not tIsConvex then exit repeat
+      end repeat
+      put tIsConvex into pMesh["convex"]
+   end if
 end Mesh.CullTables
 
 ## gCullMode 2, once per frame (the first RenderMeshInto after Render.BeginFrame asks for it):
-## which objects are wholly hidden. An object is a ball (its mesh radius round its place). It is
-## hidden when the whole ball is behind ONE front face of a solid (closed) object: beyond the
-## face's plane, and inside the pyramid from the eye through the face's sides. Worked out in the
-## hiding object's own space, so nothing is projected. When unsure, the object is drawn.
+## which objects are wholly hidden. A corner of an object is behind a face of a solid (closed)
+## object when it is beyond the face's plane and inside the pyramid from the eye through the
+## face's sides. An object is hidden when
+##   - the hider is one convex solid (a box, a column, a ball) and EVERY corner is behind SOME
+##     front face of it: exact, so a thing goes as its last corner slips behind the hider's
+##     outline and comes back as its first corner leaves it, also across the hider's own corners
+##   - any other solid: every corner is behind the SAME front face
+##   - a mesh of more than kCullCorners corners is judged as a ball (its radius round its place)
+##     that must be wholly behind one face.
+## Worked out in the hiding object's own space, so nothing is projected. When unsure, the object is drawn.
 ## Only the kCullOccluders biggest-looking solids are tried as hiders.
 ## Leaves: sCullHidden[key] = true, sCullHiddenCount, sCullXf[key] (the transform, reused by the draw).
 on Cull.PrepareFrame
@@ -3264,7 +3294,9 @@ on Cull.PrepareFrame
    local m1, m2, m3, m4, m5, m6, m7, m8, m9, t1, t2, t3, ex, ey, ez, j, c, nx, ny, nz, tD, tL
    local tFaces, tPNX, tPNY, tPNZ, tPD, tS0, tS1, q, tSX, tSY, tSZ, tVerts, tN, i, k, tW
    local ax, ay, az, sx, sy, sz, tLen, tGood, tPX, tPY, tPZ, tConeK, tDot
-   local dx, dy, dz, lx, ly, lz, r, f, tInside, tHid, tReady, tNear2
+   local dx, dy, dz, lx, ly, lz, r, f, tInside, tHid, tReady, tNear2, tGeoOf
+   local tPMesh, tPCount, tVX, tVY, tVZ, tB1, tB2, tB3, tB4, tB5, tB6, tB7, tB8, tB9
+   local r1, r2, r3, r4, r5, r6, r7, r8, r9, v, x, y, z, wx, wy, wz, tLast, tOrder, tAll, tIsConvex, tGone
    put true into sCullReady
    put empty into sCullXf
    put empty into sCullHidden
@@ -3284,6 +3316,7 @@ on Cull.PrepareFrame
       put tXf into sCullXf[tKey]
       add 1 to n
       put tKey into tKeyOf[n]
+      put tGeo into tGeoOf[n]
       put item 10 of tXf into tX[n]
       put item 11 of tXf into tY[n]
       put item 12 of tXf into tZ[n]
@@ -3324,6 +3357,7 @@ on Cull.PrepareFrame
       put 0 into tNear2
       if tConeK > 0 then put (sqrt(tLen2[o]) - tR[o]) ^ 2 into tNear2
       
+      put (tMesh["convex"] is true) into tIsConvex
       put false into tReady -- its faces are worked out only when something may be behind it
       repeat with p = 1 to n
          if p = o then next repeat
@@ -3396,10 +3430,10 @@ on Cull.PrepareFrame
          put m2*dx + m5*dy + m8*dz into ly
          put m3*dx + m6*dy + m9*dz into lz
          put tR[p] into r
+         put false into tGone
+         -- Quick: the whole ball behind one face.
          repeat with f = 1 to tFaces
-            -- The whole ball beyond the face's plane?
             if tPNX[f]*lx + tPNY[f]*ly + tPNZ[f]*lz - tPD[f] > -r then next repeat
-            -- And inside every side plane by its radius?
             put true into tInside
             repeat with k = tS0[f] to tS1[f]
                if tSX[k]*(lx-ex) + tSY[k]*(ly-ey) + tSZ[k]*(lz-ez) < r then
@@ -3408,12 +3442,107 @@ on Cull.PrepareFrame
                end if
             end repeat
             if tInside then
-               put true into tHid[p]
-               put true into sCullHidden[tKeyOf[p]]
-               add 1 to sCullHiddenCount
+               put true into tGone
                exit repeat
             end if
          end repeat
+         put gMeshCache[tGeoOf[p]] into tPMesh
+         put tPMesh["count"] into tPCount
+         if not tGone and tPCount <= kCullCorners then
+            -- Exact: corner by corner. The object's corners into the hider's own space, from the eye:
+            -- w = (Mh transposed * Mp) * v + (its middle there) - eye.
+            put sCullXf[tKeyOf[p]] into tXf
+            put item 1 of tXf into tB1
+            put item 2 of tXf into tB2
+            put item 3 of tXf into tB3
+            put item 4 of tXf into tB4
+            put item 5 of tXf into tB5
+            put item 6 of tXf into tB6
+            put item 7 of tXf into tB7
+            put item 8 of tXf into tB8
+            put item 9 of tXf into tB9
+            put m1*tB1 + m4*tB4 + m7*tB7 into r1
+            put m1*tB2 + m4*tB5 + m7*tB8 into r2
+            put m1*tB3 + m4*tB6 + m7*tB9 into r3
+            put m2*tB1 + m5*tB4 + m8*tB7 into r4
+            put m2*tB2 + m5*tB5 + m8*tB8 into r5
+            put m2*tB3 + m5*tB6 + m8*tB9 into r6
+            put m3*tB1 + m6*tB4 + m9*tB7 into r7
+            put m3*tB2 + m6*tB5 + m9*tB8 into r8
+            put m3*tB3 + m6*tB6 + m9*tB9 into r9
+            put tPMesh["vx"] into tVX
+            put tPMesh["vy"] into tVY
+            put tPMesh["vz"] into tVZ
+            if tIsConvex then
+               -- Every corner behind some face; the face that hid the last corner is tried first.
+               put 1 into tLast
+               put true into tGone
+               repeat with v = 1 to tPCount
+                  put tVX[v] into x
+                  put tVY[v] into y
+                  put tVZ[v] into z
+                  put r1*x + r2*y + r3*z + lx into wx
+                  put r4*x + r5*y + r6*z + ly into wy
+                  put r7*x + r8*y + r9*z + lz into wz
+                  put false into tAll
+                  put tLast into f
+                  repeat tFaces
+                     if tPNX[f]*wx + tPNY[f]*wy + tPNZ[f]*wz <= tPD[f] then
+                        put true into tInside
+                        repeat with k = tS0[f] to tS1[f]
+                           if tSX[k]*(wx-ex) + tSY[k]*(wy-ey) + tSZ[k]*(wz-ez) < -0.0001 then
+                              put false into tInside
+                              exit repeat
+                           end if
+                        end repeat
+                        if tInside then
+                           put true into tAll
+                           put f into tLast
+                           exit repeat
+                        end if
+                     end if
+                     put (f mod tFaces) + 1 into f
+                  end repeat
+                  if not tAll then
+                     put false into tGone
+                     exit repeat
+                  end if
+               end repeat
+            else
+               -- Every corner behind the same face.
+               repeat with f = 1 to tFaces
+                  put true into tAll
+                  repeat with v = 1 to tPCount
+                     put tVX[v] into x
+                     put tVY[v] into y
+                     put tVZ[v] into z
+                     put r1*x + r2*y + r3*z + lx into wx
+                     put r4*x + r5*y + r6*z + ly into wy
+                     put r7*x + r8*y + r9*z + lz into wz
+                     if tPNX[f]*wx + tPNY[f]*wy + tPNZ[f]*wz > tPD[f] then
+                        put false into tAll
+                        exit repeat
+                     end if
+                     repeat with k = tS0[f] to tS1[f]
+                        if tSX[k]*(wx-ex) + tSY[k]*(wy-ey) + tSZ[k]*(wz-ez) < 0 then
+                           put false into tAll
+                           exit repeat
+                        end if
+                     end repeat
+                     if not tAll then exit repeat
+                  end repeat
+                  if tAll then
+                     put true into tGone
+                     exit repeat
+                  end if
+               end repeat
+            end if
+         end if
+         if tGone then
+            put true into tHid[p]
+            put true into sCullHidden[tKeyOf[p]]
+            add 1 to sCullHiddenCount
+         end if
       end repeat
    end repeat
 end Cull.PrepareFrame
