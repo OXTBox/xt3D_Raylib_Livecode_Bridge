@@ -12,3 +12,5 @@ standalone/xt3d_Bench/
 /org.xtalk.xtbridge.lci
 standalone/xt3d_Bench_LibMCP/
 *.lnk
+__pycache__/
+*.pyc
