@@ -73,11 +73,21 @@ local sGameFrames, sGameFPSTick, sGameFPS
 local sGameFills, sGameFillSig, sGameFillCount
 -- timing, summed over each second: simulation, scene (Vibe.Frame), drawing (raylib + copy)
 local sGameStepMS, sGameSceneMS, sGameDrawMS, sGameStats
+-- view only (19 Nov 2026, for LIB_HOWTO): when gXbViewRect holds a screen rect as this stack
+-- opens, it is only the 3D view, borderless, on that rect (no panel, no dev server); another
+-- stack (the HOWTO stack) places it and calls xbPlayFile. Empty = the whole bench.
+global gXbViewRect
+local sViewOnly
 
 -------------------------------------------------------------------- open / close
 
 on preOpenStack
    set the defaultStack to the short name of me
+   if gXbViewRect is not empty then
+      xbViewOnlyOpen
+      exit preOpenStack
+   end if
+   put false into sViewOnly
    put the screenPixelScale into sScale
    if sScale is empty or sScale <= 0 then put 1 into sScale
    -- one stack unit = one screen pixel, so the 3D image is never stretched
@@ -109,9 +119,66 @@ command xbPlaceWindow
    if the left of me < 0 then set the left of me to 0
 end xbPlaceWindow
 
+-- the stack as only a 3D view on gXbViewRect (screen pixels): one image and a hidden
+-- info and log field (the game code writes there); 1 stack unit = 1 screen point
+command xbViewOnlyOpen
+   local i, tW, tH
+   put true into sViewOnly
+   put 1 into sScale
+   set the scaleFactor of me to 1
+   set the destroyStack of me to true
+   set the decorations of me to empty
+   set the resizable of me to false
+   put item 3 of gXbViewRect - item 1 of gXbViewRect into tW
+   put item 4 of gXbViewRect - item 2 of gXbViewRect into tH
+   set the rect of me to gXbViewRect
+   put tW into sViewW
+   put tH into sViewH
+   put 0 into sModel
+   put 0 into sAnimCount
+   put 0 into sAnimFrames
+   put 0 into sLift
+   put 1 into sFit
+   lock screen
+   repeat with i = the number of controls of this card down to 1
+      delete control i of this card
+   end repeat
+   create image "view"
+   set the rect of image "view" to 0, 0, tW, tH
+   set the lockLoc of image "view" to true
+   create field "info"
+   hide field "info"
+   create field "log"
+   hide field "log"
+   set the backgroundColor of me to black
+   unlock screen
+end xbViewOnlyOpen
+
+-- view only: move it (the HOWTO stack keeps it on its viewport)
+command xbViewOnlyPlace pRect
+   if sViewOnly is not true then exit xbViewOnlyPlace
+   if item 3 of pRect - item 1 of pRect is sViewW and item 4 of pRect - item 2 of pRect is sViewH then
+      set the rect of me to pRect
+   end if
+end xbViewOnlyPlace
+
 on openStack
    local tError
    xbLoadXt3d
+   if sViewOnly is true then
+      try
+         get xt3d_Version()
+      catch tError
+         put "The xt3d extension is not loaded (C:/xt3d/extension)." into field "info"
+         exit openStack
+      end try
+      put 45 into sYaw
+      put 25 into sPitch
+      put 5 into sDist
+      xbStartView
+      put "Ready." && xt3d_Version() into field "info"
+      exit openStack
+   end if
    try
       get xt3d_Version()
    catch tError
@@ -145,6 +212,7 @@ on closeStack
       delete stack "VibeEngineXt3d"
    end if
    set the scaleFactor of me to 1
+   put false into sViewOnly
 end closeStack
 
 -- cancel every message this stack still has queued (frame timers, redraws), so closing
@@ -163,7 +231,7 @@ end xbCancelPending
 -- In the IDE the Extension Builder loads it, so nothing happens here.
 command xbLoadXt3d
    local tErr
-   if the environment is "development" then exit xbLoadXt3d
+   if the environment is "development" and sViewOnly is not true then exit xbLoadXt3d
    if the loadedExtensions contains "org.xtalk.xtbridge" then exit xbLoadXt3d
    try
       set the revLibraryMapping["xt3d"] to "C:/xt3d/extension/code/x86_64-win32/xt3d.dll"
@@ -562,6 +630,7 @@ command xbFrame
    local tNow, tSeconds, tYaw, tPitch, tEX, tEY, tEZ, tTint, tWire, tText, tMoving
    put empty into sFrameMsg
    if sRunning is not true or sGameOn is true then exit xbFrame
+   if sViewOnly is true then exit xbFrame      -- only games draw in the view-only mode
    -- at rest with nothing changed: draw nothing and sleep until xbRedraw
    put xbMoving() into tMoving
    if not tMoving and sDirty is not true then exit xbFrame
@@ -1045,6 +1114,9 @@ end xbPlayGame
 -- pName is what the info field and the game notes call it. Writes nothing into LIB_GAMES.
 command xbPlayFile pFile, pName
    local tScript, tErr, tHeader, tLine
+   -- "this card" (the engine's game card) is the default stack's: here, even when another
+   -- stack (the HOWTO stack) is the one calling
+   set the defaultStack to the short name of me
    xbStopGame
    if there is not a file pFile then
       put "Games: no file" && pFile into field "info"
@@ -1098,19 +1170,29 @@ command xbPlayFile pFile, pName
 end xbPlayFile
 
 command xbGameTick
-   local tErr, tFrame, tNow, tT0, tT1, tT2
+   local tErr, tFrame, tNow, tT0, tT1, tT2, tOld
    put empty into sGameMsg
    if sGameOn is not true then exit xbGameTick
+   -- the engine sends Game.OnUpdate to "this card": make it ours for this tick, and give the
+   -- default stack back after (in an IDE other stacks are open beside this one)
+   put the defaultStack into tOld
+   set the defaultStack to the short name of me
+   xbGameTickBody
+   if there is a stack tOld then set the defaultStack to tOld
+end xbGameTick
+
+command xbGameTickBody
+   local tErr, tFrame, tNow, tT0, tT1, tT2
    try
       if not Vibe.Playing() then
          xbGameEnded
-         exit xbGameTick
+         exit xbGameTickBody
       end if
       put the milliseconds into tT0
       Vibe.Step
       if not Vibe.Playing() then
          xbGameEnded
-         exit xbGameTick
+         exit xbGameTickBody
       end if
       put the milliseconds into tT1
       put Vibe.Frame() into tFrame
@@ -1121,7 +1203,7 @@ command xbGameTick
       add the milliseconds - tT2 to sGameDrawMS
    catch tErr
       xbGameError tErr, "playing"
-      exit xbGameTick
+      exit xbGameTickBody
    end try
    add 1 to sGameFrames
    put the milliseconds into tNow
@@ -1142,7 +1224,7 @@ command xbGameTick
    end if
    send "xbGameTick" to me in kGameMS milliseconds
    put the result into sGameMsg
-end xbGameTick
+end xbGameTickBody
 
 -- the game stopped itself (Escape, Game.Exit, game.loop.stop): keep its last frame
 command xbGameEnded
@@ -1165,6 +1247,7 @@ end xbGameError
 -- end the game (if any): stop its timer, tell the engine, free its models, clear the card
 command xbStopGame
    local tName, tErr
+   set the defaultStack to the short name of me
    if sGameMsg is not empty then cancel sGameMsg
    put empty into sGameMsg
    if sGameOn is true then
@@ -1374,7 +1457,7 @@ command xbDrawGame @pFrame
          put tPt into tPrev
       end repeat
    end repeat
-   xt3d_DrawText sGameFPS & " fps   hiding" && xbCullMode() & "   " & sGameStats, 10 * kSample, (sViewH - 28) * kSample, 16 * kSample, 120,120,120,255
+   if sViewOnly is not true then xt3d_DrawText sGameFPS & " fps   hiding" && xbCullMode() & "   " & sGameStats, 10 * kSample, (sViewH - 28) * kSample, 16 * kSample, 120,120,120,255
    xt3d_EndTextureMode
    xt3d_BeginTextureMode sTarget
    xt3d_DrawTexturePro sBigTexture, 0,0,sViewW * kSample,-(sViewH * kSample), 0,0,sViewW,sViewH, 0,0, 0, 255,255,255,255
