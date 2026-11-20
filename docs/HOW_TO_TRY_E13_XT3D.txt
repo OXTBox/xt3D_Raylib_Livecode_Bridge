@@ -1,0 +1,28 @@
+HOW TO TRY: E13 Walk The Map in the xt3d games bench (19 Nov 2026, night)
+
+What it is: LIB_EDITOR's example E13 (walk a cellmap level with Amazing Couple's hero)
+now plays in the xt3d games bench too, drawn by raylib. The bench got a new button,
+"Editor", beside "Games": it lists LIB_EDITOR's example cards (E01 .. E13).
+
+1. Open the games bench: the shortcut "2 E13 walk the map xt3d - games bench"
+   (standalone\xt3d_Bench_LibMCP\xt3d_Bench_LibMCP.exe). Or in the IDE open
+   testbench\xt3d_testBench_lib_mcp.livecodescript from the WSL folder.
+2. Click "Editor", then click "E13_WalkTheMap" in the list.
+3. Click into the 3D view once so it has the keys, then:
+     W S or Up Down: walk     A D or Left Right: turn     Shift: run
+     R: glyph relief on/off   M: next map (wizard_pool, amazing_couple, two_rooms)
+     E: take the door or ladder you stand on (two_rooms)
+   Escape or "Stop game" ends it.
+
+Things to look at:
+- two_rooms (press M twice) is a map pack (CELLMAP_V3): stairs up through a hole,
+  a sloped ramp to the goal, a ladder (E). Slopes and stacked maps already walk.
+- Claude ran it once on the real bench: about 26 frames a second on wizard_pool
+  (1562 lines). Claude did not look at the picture: please say how it looks.
+- It is on its own (branch e13-xt3d-bench in xt3D_Raylib_Livecode_Bridge); the old
+  bench is unchanged until you say "merge".
+
+Not done (needs LIB_GAMES, which another helper was using): E13 is not in the
+Game Player / Game Browser game lists. If you want it there, it needs a
+Vibecode3D_Play_E13_WalkTheMap entry in LIB_GAMES (or the Browser to read
+LIB_EDITOR/examples the way the bench now does).
