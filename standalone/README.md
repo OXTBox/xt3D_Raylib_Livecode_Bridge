@@ -33,7 +33,8 @@ Close its small status window to quit it.
 
 The bench with games (`testbench/xt3d_testBench_lib_mcp.livecodescript`): everything the
 bench does, plus a **Games** button that lists the Vibecode3D game card scripts in
-`../LIB_GAMES/Vibecode3D_Games` and plays them in the 3D view. LIB_MCP runs on port **8770**.
+`../LIB_GAMES/Vibecode3D_Games` and plays them in the 3D view. An **Editor** button lists LIB_EDITOR's
+example cards (`../LIB_EDITOR/examples`, E01..E13, e.g. E13 Walk The Map) and plays them the same way. LIB_MCP runs on port **8770**.
 
 ## Build
 

@@ -6,6 +6,9 @@ script "xt3dTestBenchLibMCP"
 --                           in the 3D view, on the Vibecode3D engine's xt3d edition
 --                           (testbench/vibe_engine_xt3d.livecodescript, made by
 --                           tools/make_vibe_xt3d.py from the owner's engine script)
+--   Editor ................ lists LIB_EDITOR's example cards (../LIB_EDITOR/examples, E01..E13);
+--                           click one to play it the same way (E13 Walk The Map: walk a
+--                           cellmap level with Amazing Couple's hero)
 --   Stop game ............. ends it (Escape does too); Folder... goes back to models
 -- LIB_MCP: the dev server starts with the bench (port 8766 in the IDE); in the standalone
 -- (standalone/launcher_lib_mcp.livecodescript) it is already running, on port 8770.
@@ -47,6 +50,7 @@ constant kFrameMS = 16     -- milliseconds between frames while something moves
 constant kGameMS = 16      -- a game's frame timer (the engine simulates at its own 33 ms steps)
 constant kGameScale = 0.01 -- engine units to raylib units: keeps big scenes inside raylib's far plane
 constant kGamesRel = "LIB_GAMES/Vibecode3D_Games"
+constant kExamplesRel = "LIB_EDITOR/examples"
 constant kEngineFile = "vibe_engine_xt3d.livecodescript"
 
 -- view and GPU resources
@@ -64,8 +68,9 @@ local sYaw, sPitch, sDist, sAngle, sLastTick, sDragging, sDragX, sDragY
 local sFrames, sFPSTick, sFPS
 -- browsing and checks
 local sFolder, sSettingSlider, sReport
--- games: sListMode is "models" or "games"; sGameOn while a game runs; its xt3d models
+-- games: sListMode is "models", "games" or "examples" (LIB_EDITOR's cards, sExamplesFolder); sGameOn while a game runs; its xt3d models
 -- per engine mesh name (rebuilt when the mesh changes)
+local sExamplesFolder
 local sListMode, sGamesFolder, sGameOn, sGameMsg, sGameName, sGameModels, sGameSig
 local sGameFrames, sGameFPSTick, sGameFPS
 -- hidden lines in xRay (19 Nov 2026): per engine mesh a second model of its closed faces,
@@ -287,8 +292,9 @@ command xbBuildControls
    xbMake "button", "faceBtn", tX + 110, tY, 64, 24, "Face"
    xbMake "button", "unloadBtn", tX + 180, tY, 70, 24, "Unload"
    add 30 to tY
-   xbMake "button", "gamesBtn", tX, tY, 120, 24, "Games"
-   xbMake "button", "stopGameBtn", tX + 130, tY, 120, 24, "Stop game"
+   xbMake "button", "gamesBtn", tX, tY, 78, 24, "Games"
+   xbMake "button", "examplesBtn", tX + 86, tY, 78, 24, "Editor"
+   xbMake "button", "stopGameBtn", tX + 172, tY, 78, 24, "Stop game"
    add 30 to tY
    xbMake "checkbox", "devChk", tX, tY, kPanelW, 20, "Dev server (lets Claude drive this bench)"
    set the hilite of button "devChk" to xbDevRunning()
@@ -386,12 +392,17 @@ on mouseUp pButton
          if the selectedText of field "fileList" is empty then break
          if sListMode is "games" then
             xbPlayGame the selectedText of field "fileList"
+         else if sListMode is "examples" then
+            xbPlayExample the selectedText of field "fileList"
          else
             xbLoadModel sFolder & "/" & the selectedText of field "fileList"
          end if
          break
       case "gamesBtn"
          xbListGames
+         break
+      case "examplesBtn"
+         xbListExamples
          break
       case "stopGameBtn"
          xbStopGame
@@ -1097,6 +1108,39 @@ command xbGameNotes
    end try
    return "notes on"
 end xbGameNotes
+
+-- LIB_EDITOR's example cards (E01_Blocks .. E13_WalkTheMap): each one is a game card script
+-- too, played by xbPlayFile; they find LIB_BIT and LIB_MOCAP above this bench by themselves
+command xbListExamples
+   local tOld, tFiles, tFile, tList
+   xbStopGame
+   put xbFindAbove(kExamplesRel) into sExamplesFolder
+   if sExamplesFolder is empty then
+      put "Editor: no" && kExamplesRel && "folder found above" && the effective filename of me into field "info"
+      exit xbListExamples
+   end if
+   put the defaultFolder into tOld
+   set the defaultFolder to sExamplesFolder
+   put the files into tFiles
+   set the defaultFolder to tOld
+   repeat for each line tFile in tFiles
+      if char 1 of tFile is "E" and tFile ends with ".livecodescript" then
+         put char 1 to -16 of tFile & return after tList
+      end if
+   end repeat
+   delete the last char of tList
+   sort lines of tList
+   put "examples" into sListMode
+   put sExamplesFolder into field "folder"
+   put tList into field "fileList"
+   put "LIB_EDITOR example cards from" && sExamplesFolder & return & \
+         "Click one to play it in the 3D view (E13_WalkTheMap: walk a map with Amazing Couple's hero). Escape or Stop game ends it." into field "info"
+end xbListExamples
+
+command xbPlayExample pName
+   if sExamplesFolder is empty then put xbFindAbove(kExamplesRel) into sExamplesFolder
+   xbPlayFile sExamplesFolder & "/" & pName & ".livecodescript", pName
+end xbPlayExample
 
 command xbPlayGame pName
    if sGamesFolder is empty then put xbFindAbove(kGamesRel) into sGamesFolder

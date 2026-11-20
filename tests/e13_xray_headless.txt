@@ -1,0 +1,92 @@
+-- E13 Walk The Map on the xt3d edition of the engine (xRay), with no window: what the games bench
+-- does when it plays LIB_EDITOR/examples/E13_WalkTheMap.livecodescript (xbPlayFile), minus raylib.
+-- The card sits where the bench sits (testbench/), so E13.FindFile finds LIB_BIT and LIB_MOCAP the
+-- same way. Steps go through the engine's own game.update (as Vibe.Step does), and Vibe.Frame()
+-- must hand the bench the level's meshes, the hero and the HUD lines. Run under the lock:
+--   cd ~/projects/OXT-BEYOND/tests && flock /tmp/oxt_headless.lock python3 -I oxt_headless.py ~/projects/xt3D_Raylib_Livecode_Bridge/tests/e13_xray_headless.txt
+local tS, tState, tFrame, tMesh, tT, tObjects, tHud
+put "/home/igame3d/projects/xt3D_Raylib_Livecode_Bridge/testbench/" into tT
+start using stack (tT & "vibe_engine_xt3d.livecodescript")
+put ck("the xt3d edition of the engine is in use", "VibeEngineXt3d" is among the lines of the stacksInUse, true) & return after tLog
+create stack "BenchLike"
+set the fileName of stack "BenchLike" to tT & "x.livecode"
+set the script of card 1 of stack "BenchLike" to textDecode(url ("binfile:/home/igame3d/projects/LIB_EDITOR/examples/E13_WalkTheMap.livecodescript"), "UTF-8")
+put ck("E13 compiles as the bench's card script", the result, empty) & return after tLog
+put the long id of card 1 of stack "BenchLike" into tS
+set the defaultStack to "BenchLike"
+dispatch "E13.TestKeys" to tS with "0"
+Vibe.Begin "0,0,720,540"
+dispatch "Game.OnStart" to tS
+Vibe.Go
+dispatch function "E13.State" to tS
+put the result into tState
+put "INFO start: " & tState & return after tLog
+put ckStart("starts on wizard_pool's start cell", tState, "12,10|y 1|") & return after tLog
+put ck("  ...the level drawn with its glyph relief: 1562 lines, no error", tState contains "wizard_pool 1562 lines" and tState contains "||tick", true) & return after tLog
+put ck("the engine still plays after Game.OnStart", Vibe.Playing(), true) & return after tLog
+-- one tick (the HUD is written in Game.OnUpdate), then what the bench draws: one xt3d model of lines per mesh
+game.update
+put Vibe.Frame() into tFrame
+put tFrame["objects"] into tObjects
+put ck("frame: the wall mesh is drawn", tObjects contains ("E13.wall" & tab), true) & return after tLog
+put ck("frame: the hero is drawn", tObjects contains "E13.Animazoo_hands_on_hips.", true) & return after tLog
+put Vibe.Mesh("E13.wall") into tMesh
+put ck("Vibe.Mesh gives the bench the wall's lines", tMesh["edgeCount"] > 50, true) & return after tLog
+put empty into tHud
+repeat for each key tT in tFrame["lines2d"]
+   if tFrame["lines2d"][tT] is not empty then put tT & " " after tHud
+end repeat
+put ck("frame: HUD text comes as 2D lines", tHud is not empty, true) & return after tLog
+-- walking through the engine's own tick (Vibe.Step runs game.update every 33 ms)
+dispatch "E13.TestPlace" to tS with 10, 13, 270
+dispatch "E13.TestKeys" to tS with "119,65505"
+repeat 200 times
+   game.update
+end repeat
+dispatch function "E13.State" to tS
+put the result into tState
+put ckStart("west down the pool steps to the bottom", tState, "7,13|y -59|swim") & return after tLog
+dispatch "E13.TestPlace" to tS with 12, 13, 90
+repeat 105 times
+   game.update
+end repeat
+dispatch function "E13.State" to tS
+put the result into tState
+put ckStart("east up the dais to the goal", tState, "15,13|y 47|goal") & return after tLog
+put Vibe.Frame() into tFrame
+put ck("frame: the hero runs (the run clip's mesh swapped in)", tFrame["objects"] contains "E13.Animazoo_Running_-_Jog.", true) & return after tLog
+-- M three times: amazing_couple, then the pack two_rooms (CELLMAP_V3.md: stairs, a ramp, a ladder)
+dispatch "E13.TestKeys" to tS with "109"
+game.update
+dispatch "E13.TestKeys" to tS with "0"
+game.update
+dispatch "E13.TestKeys" to tS with "109"
+game.update
+dispatch "E13.TestKeys" to tS with "0"
+game.update
+dispatch function "E13.State" to tS
+put the result into tState
+put "INFO pack: " & tState & return after tLog
+put ck("M, M: the pack two_rooms with 248 lines", tState contains "two_rooms_cellar 248 lines", true) & return after tLog
+dispatch "E13.TestPlace" to tS with 2, 6, 90, false, "cellar"
+dispatch "E13.TestKeys" to tS with "119,65505"
+repeat 260 times
+   game.update
+end repeat
+dispatch function "E13.State" to tS
+put the result into tState
+put ckStart("pack: east up the stairs onto the loft", tState, "8,6|y 121|path|") & return after tLog
+put ck("the engine still plays at the end", Vibe.Playing(), true) & return after tLog
+put the milliseconds into tT
+repeat 30 times
+   game.update
+   get Vibe.Frame()
+end repeat
+put "INFO one tick + frame: " & round((the milliseconds - tT) / 30, 1) & " ms" & return after tLog
+delete stack "BenchLike"
+return tLog
+--HANDLERS--
+function ckStart pName, pState, pWant
+  if pState begins with pWant then return "PASS " & pName & "   " & pState
+  return "FAIL " & pName & " got [" & pState & "] want [" & pWant & "...]"
+end ckStart
