@@ -93,3 +93,9 @@ Stop one demo before starting another.
 - Make every call from LiveCode's main thread (normal script execution does).
 - A handle is only valid until it is unloaded or the window is closed.
 - On displays scaled above 100%, set the stack's `scaleFactor` to `1 / the screenPixelScale` and size the view in real pixels, as the view demo does. Otherwise LiveCode stretches the image and edges look rough.
+
+## Licence
+
+GPL-3.0 (see `LICENSE`), because the xTalk work here is built on the GPL-licensed LiveCode Community 9 engine. Copyright (c) 2026 xAction.
+
+The Python files (`.py`) and other material that is not xTalk are also offered under the MIT licence, Copyright (c) 2026 xAction: you may use them under either licence.
