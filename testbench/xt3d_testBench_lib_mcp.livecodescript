@@ -10,6 +10,8 @@ script "xt3dTestBenchLibMCP"
 --                           click one to play it the same way (E13 Walk The Map: walk a
 --                           cellmap level with Amazing Couple's hero)
 --   Stop game ............. ends it (Escape does too); Folder... goes back to models
+--   Console ............... always under the view (LIB_ig3d lib_console): type engine calls,
+--                           Tab = a menu of the words, Return runs; a game waits while you type
 -- LIB_MCP: the dev server starts with the bench (port 8766 in the IDE); in the standalone
 -- (standalone/launcher_lib_mcp.livecodescript) it is already running, on port 8770.
 --
@@ -239,6 +241,7 @@ command xbLoadXt3d
 end xbLoadXt3d
 
 function px pLogical
+   if sScale is not a number or sScale <= 0 then return round(pLogical)   -- before preOpenStack (a test with no window)
    return round(pLogical * sScale)
 end px
 
@@ -253,9 +256,13 @@ command xbBuildControls
 
    xbMake "image", "view", 0, 0, kViewW, kViewH
    set the lockLoc of image "view" to true
-   xbMake "field", "log", 0, kViewH + 6, kViewW, 118
+   -- under the view: the console, always there (owner 22 Nov): its answers (and raylib's log) above, the line below
+   xbMake "field", "log", 0, kViewH + 6, kViewW, 92
    set the vScrollbar of field "log" to true
    set the textSize of field "log" to px(11)
+   xbMake "field", "conIn", 0, kViewH + 100, kViewW, 22
+   set the textSize of field "conIn" to px(12)
+   xbConsoleSetup
 
    put kPanelX into tX
    put 8 into tY
@@ -409,6 +416,8 @@ on mouseUp pButton
          put "Game stopped." into field "info"
          break
       case "view"
+         -- a click in the view gives the keys back from the console line to the view (and the game)
+         focus on nothing
          -- a click in the view while a game runs is the game's click
          if sGameOn is true then dispatch "Game.OnClick" to this card with the mouseH, the mouseV, pButton
          break
@@ -494,6 +503,68 @@ on scrollbarDrag pValue
       xbRedraw
    end if
 end scrollbarDrag
+
+-------------------------------------------------------------------- the console (owner, 22 Nov 2026)
+-- Always there under the view: LIB_ig3d's lib_console (the same as iGame3D XT's Window > Console).
+-- Typing fills in an engine name, Tab = a menu of what fits ("Entity." + Tab), Return runs the line
+-- here (Con.DoHere: the engine's calls, and the bench's own xb... handlers), Up/Down the lines before,
+-- help, clear. While the line has the keyboard a game waits; a click on the view gives the keys back.
+
+command xbConsoleSetup
+   local tLib, tErr
+   if there is not a field "conIn" then exit xbConsoleSetup
+   put xbFindAbove("LIB_ig3d/livecode/lib_console.livecodescript") into tLib
+   if tLib is empty then
+      put "No console: LIB_ig3d/livecode/lib_console.livecodescript not found above this stack." into field "log"
+      set the lockText of field "conIn" to true
+      exit xbConsoleSetup
+   end if
+   try
+      if not ("LibConsole" is among the lines of the stacksInUse) then start using stack tLib
+      Con.Load
+      if the result is not empty then put "Console: " & the result into field "log"
+      Con.Attach the long id of field "conIn", the long id of field "log", the long id of me
+      set the cConHint of field "conIn" to "the engine runs only while a game plays (Games, pick one)"
+   catch tErr
+      put "No console:" && line 1 of tErr into field "log"
+      exit xbConsoleSetup
+   end try
+   if field "log" is empty then put "Console: type Entity. and press Tab; Return runs the line; help lists the groups. A click on the view gives the keys back." into field "log"
+end xbConsoleSetup
+
+-- Tab anywhere in the bench (the line lost the keyboard: a click, a redraw) is the console's Tab
+on tabKey
+   if there is a field "conIn" and the cConOut of field "conIn" is not empty and the short name of the target is not "conIn" then
+      focus on field "conIn"
+      select after char (the number of chars of the text of field "conIn") of field "conIn"
+      Con.Tab the long id of field "conIn"
+   else
+      pass tabKey
+   end if
+end tabKey
+
+function xbConsoleTyping
+   local tErr
+   if not ("LibConsole" is among the lines of the stacksInUse) then return false
+   try
+      return Con.Typing()
+   catch tErr
+      return false
+   end try
+end xbConsoleTyping
+
+-- a console line runs here (the bench's stack script): the engine's calls and the xb... handlers
+on Con.DoHere pGlobals, pCode, pIsValue
+   local tAnswer
+   if pIsValue then
+      do pGlobals & cr & "put (" & pCode & ") into tAnswer"
+   else
+      do pGlobals & cr & pCode
+      put the result into tAnswer
+   end if
+   xbRedraw
+   return tAnswer
+end Con.DoHere
 
 -------------------------------------------------------------------- dev server
 
@@ -1226,7 +1297,9 @@ command xbGameTickBody
          exit xbGameTickBody
       end if
       put the milliseconds into tT0
-      Vibe.Step
+      -- while the console line has the keyboard the game waits (games read the keysDown themselves);
+      -- it is still drawn, so what a console line changes shows at once
+      if not xbConsoleTyping() then Vibe.Step
       if not Vibe.Playing() then
          xbGameEnded
          exit xbGameTickBody
