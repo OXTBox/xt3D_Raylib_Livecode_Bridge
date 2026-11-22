@@ -1,0 +1,57 @@
+-- The console under the Games bench's view (owner 22 Nov: "the area under the viewport can be a
+-- constant console"), with no window and no raylib: the bench's stack script builds its controls
+-- (xbBuildControls), the console line sits under the view, LIB_ig3d's lib_console runs its lines at the
+-- bench (Con.DoHere): the engine's calls (xt3d edition) and the bench's own xb... handlers. Run:
+--   cd ~/projects/OXT-BEYOND/tests && flock /tmp/oxt_headless.lock python3 -I oxt_headless.py ~/projects/xt3D_Raylib_Livecode_Bridge/tests/console_bench_headless.txt
+local tT, tB, tIn, tOut, tR
+put "/home/igame3d/projects/xt3D_Raylib_Livecode_Bridge/testbench/" into tT
+start using stack (tT & "vibe_engine_xt3d.livecodescript")
+create invisible stack "BenchCon"
+set the fileName of stack "BenchCon" to tT & "x.livecode"
+set the script of stack "BenchCon" to textDecode(url ("binfile:" & tT & "xt3d_testBench_lib_mcp.livecodescript"), "UTF-8")
+put ck("the bench compiles", the result, empty) & return after tLog
+put the long id of stack "BenchCon" into tB
+set the defaultStack to "BenchCon"
+-- (preOpenStack sets the window's scaleFactor, which crashes an engine with no screen: build the controls directly)
+set the width of stack "BenchCon" to 990
+set the height of stack "BenchCon" to 670
+dispatch "xbBuildControls" to card 1 of stack "BenchCon"
+put the long id of field "conIn" of card 1 of stack "BenchCon" into tIn
+put the long id of field "log" of card 1 of stack "BenchCon" into tOut
+put ck("the console line is under the view, the answers above it", (the top of tOut > the bottom of image "view" of stack "BenchCon") & "/" & (the top of tIn > the bottom of tOut) & "/" & (the bottom of tIn <= 670) & "/" & (the width of tIn is the width of image "view" of stack "BenchCon"), "true/true/true/true") & return after tLog
+put ck("always there: shown when the bench opens", the visible of tIn & "/" & the lockText of tIn, "true/false") & return after tLog
+put ck("lib_console is in use and the line is attached", ("LibConsole" is among the lines of the stacksInUse) & "/" & (the cConOut of tIn is tOut), "true/true") & return after tLog
+put ck("it says how to use it", the text of tOut contains "Tab", true) & return after tLog
+-- autofill and Tab
+repeat for each char tR in "Entity.Se"
+   send "keyDown" && quote & tR & quote to tIn
+end repeat
+put ck("typing Entity.Se fills Entity.SetBob", the text of tIn, "Entity.SetBob") & return after tLog
+set the text of tIn to "Entity."
+dispatch "Con.NoFill" to tB with tIn
+send "tabKey" to tIn
+put the text of button "ConsolePop" of card 1 of stack "BenchCon" into tR
+put ck("Entity. + Tab: the menu of Entity calls", (line 1 of tR begins with "Entity.Spawn(") & "/" & (the number of lines of tR >= 18), "true/true") & return after tLog
+-- lines run at the bench: the engine (a scene as a game would make it) and the bench's own handlers
+Vibe.Begin "0,0,720,540"
+set the text of tIn to "Mesh.Define " & quote & "Box" & quote & ", Mesh.Box(10, 10, 10)"
+send "returnInField" to tIn
+put ck("a command line runs", line -1 of the text of tOut, "ok") & return after tLog
+set the text of tIn to "Entity.Spawn " & quote & "Box" & quote & ", 0, 0, 0, " & quote & "red" & quote
+send "returnInField" to tIn
+put ck("Entity.Spawn typed as a command gives its id", line -1 of the text of tOut is not empty and not (line -1 of the text of tOut begins with "could"), true) & return after tLog
+set the text of tIn to "Entity.Count(" & quote & "Box" & quote & ")"
+send "returnInField" to tIn
+put ck("Entity.Count: 1", line -1 of the text of tOut, 1) & return after tLog
+set the text of tIn to "xbConsoleTyping()"
+send "returnInField" to tIn
+put ck("the bench's own handlers can be called (xbConsoleTyping)", line -1 of the text of tOut, false) & return after tLog
+set the text of tIn to "Entity.Nope 1"
+send "returnInField" to tIn
+put ck("an error is said, not thrown", line -1 of the text of tOut begins with "could not run that", true) & return after tLog
+send "arrowKey up" to tIn
+put ck("Up: the last line again", the text of tIn, "Entity.Nope 1") & return after tLog
+stop using stack "LibConsole"
+stop using stack "VibeEngineXt3d"
+delete stack "BenchCon"
+return tLog
