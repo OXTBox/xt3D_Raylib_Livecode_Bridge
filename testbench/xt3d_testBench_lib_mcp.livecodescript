@@ -524,12 +524,24 @@ command xbConsoleSetup
       Con.Load
       if the result is not empty then put "Console: " & the result into field "log"
       Con.Attach the long id of field "conIn", the long id of field "log", the long id of me
+      set the cConHint of field "conIn" to "the engine runs only while a game plays (Games, pick one)"
    catch tErr
       put "No console:" && line 1 of tErr into field "log"
       exit xbConsoleSetup
    end try
    if field "log" is empty then put "Console: type Entity. and press Tab; Return runs the line; help lists the groups. A click on the view gives the keys back." into field "log"
 end xbConsoleSetup
+
+-- Tab anywhere in the bench (the line lost the keyboard: a click, a redraw) is the console's Tab
+on tabKey
+   if there is a field "conIn" and the cConOut of field "conIn" is not empty and the short name of the target is not "conIn" then
+      focus on field "conIn"
+      select after char (the number of chars of the text of field "conIn") of field "conIn"
+      Con.Tab the long id of field "conIn"
+   else
+      pass tabKey
+   end if
+end tabKey
 
 function xbConsoleTyping
    local tErr
