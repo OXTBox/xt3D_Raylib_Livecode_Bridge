@@ -85,6 +85,7 @@ local sGameStepMS, sGameSceneMS, sGameDrawMS, sGameStats
 -- another stack (the HOWTO stack) calls xbPlayFile. Its cViewOnly is true. Empty = the whole bench.
 global gXbViewRect
 local sViewOnly
+local sLoadOn      -- true when LIB_LOADING_SCREEN's lib_loading is in use (xbLoadingStart)
 
 -------------------------------------------------------------------- open / close
 
@@ -419,7 +420,7 @@ on mouseUp pButton
          -- a click in the view gives the keys back from the console line to the view (and the game)
          focus on nothing
          -- a click in the view while a game runs is the game's click
-         if sGameOn is true then dispatch "Game.OnClick" to this card with the mouseH, the mouseV, pButton
+         if sGameOn is true and not xbLoadingBusy() then dispatch "Game.OnClick" to this card with the mouseH, the mouseV, pButton
          break
       case "loadBtn"
          answer file "Choose a model file (glb, gltf, obj, iqm, m3d, vox)"
@@ -1281,9 +1282,44 @@ command xbPlayFile pFile, pName
    put empty into sGameStats
    if sFrameMsg is not empty then cancel sFrameMsg
    put empty into sFrameMsg
+   xbLoadingStart tScript, pName
    xbGameTick
    return empty
 end xbPlayFile
+
+-- the loading screen (LIB_LOADING_SCREEN, 22 Nov 2026): the first level behind it, and every
+-- Loading.Go of the game; no library found: everything as before
+command xbLoadingStart pScript, pName
+   local tLib, tPrefix, tErr
+   put false into sLoadOn
+   put xbFindAbove("LIB_LOADING_SCREEN/livecode/lib_loading.livecodescript") into tLib
+   if tLib is empty then exit xbLoadingStart
+   get matchText(pScript, "(?m)^\s*on\s+([A-Za-z0-9_]+)\.StartLevel\b", tPrefix)
+   try
+      start using stack tLib
+      Loading.Host the long id of this card, tPrefix, the rect of image "view", pName
+      Loading.Begin 1, "start", false
+      put true into sLoadOn
+   catch tErr
+      put false into sLoadOn
+   end try
+end xbLoadingStart
+
+function xbLoadingBusy
+   if sLoadOn is true then return Loading.Busy()
+   return false
+end xbLoadingBusy
+
+-- the game ended (pEvent end) or was stopped (quit): one line in the play record, the screen down
+command xbLoadingEnd pEvent
+   local tErr
+   if sLoadOn is not true then exit xbLoadingEnd
+   try
+      Loading.Record pEvent
+      Loading.Stop
+   catch tErr
+   end try
+end xbLoadingEnd
 
 command xbGameTick
    local tErr, tFrame, tNow, tT0, tT1, tT2, tOld
@@ -1298,7 +1334,7 @@ command xbGameTick
 end xbGameTick
 
 command xbGameTickBody
-   local tErr, tFrame, tNow, tT0, tT1, tT2
+   local tErr, tFrame, tNow, tT0, tT1, tT2, tWasLoading
    try
       if not Vibe.Playing() then
          xbGameEnded
@@ -1307,7 +1343,13 @@ command xbGameTickBody
       put the milliseconds into tT0
       -- while the console line has the keyboard the game waits (games read the keysDown themselves);
       -- it is still drawn, so what a console line changes shows at once
-      if not xbConsoleTyping() then Vibe.Step
+      -- the loading screen: stepped every frame; while it is up the game waits (still drawn)
+      if sLoadOn is true then
+         put Loading.Busy() into tWasLoading
+         Loading.Tick
+         if tWasLoading and not Loading.Busy() then Vibe.Go      -- a fresh clock: no catch-up burst of game steps
+      end if
+      if not xbConsoleTyping() and not xbLoadingBusy() then Vibe.Step
       if not Vibe.Playing() then
          xbGameEnded
          exit xbGameTickBody
@@ -1346,6 +1388,7 @@ end xbGameTickBody
 
 -- the game stopped itself (Escape, Game.Exit, game.loop.stop): keep its last frame
 command xbGameEnded
+   xbLoadingEnd "end"
    put sGameName && "ended." & return & "Pick it again to restart, or Folder... for models." into field "info"
    xbStopGame
 end xbGameEnded
@@ -1369,6 +1412,7 @@ command xbStopGame
    if sGameMsg is not empty then cancel sGameMsg
    put empty into sGameMsg
    if sGameOn is true then
+      xbLoadingEnd "quit"
       put false into sGameOn
       try
          if Vibe.Playing() then Game.Exit
