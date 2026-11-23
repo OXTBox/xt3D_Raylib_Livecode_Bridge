@@ -9478,6 +9478,7 @@ end Vibe.ApplyRect
 ## The fixed-step part of game.loop.tick, without its drawing or its timer.
 on Vibe.Step
    local tNow
+   global gLoadingBusy -- LIB_LOADING_SCREEN: no more steps once its screen is up (a level bonus counted once)
    Vibe.ApplyRect
    put the milliseconds into tNow
    if sLastMS is empty then put tNow into sLastMS
@@ -9485,7 +9486,7 @@ on Vibe.Step
       put 0 into sAccumMS
    else
       add min(250, tNow - sLastMS) to sAccumMS
-      repeat while sAccumMS >= kStepMS and bPlaying
+      repeat while sAccumMS >= kStepMS and bPlaying and gLoadingBusy is not true
          game.update
          subtract kStepMS from sAccumMS
       end repeat
