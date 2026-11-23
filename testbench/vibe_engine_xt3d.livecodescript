@@ -198,6 +198,10 @@ local sCullReady, sCullXf, sCullHidden, sCullHiddenCount = 0 -- this frame's who
 local sCullT0 = 0, sSceneMS = 0 -- when this frame's line work began, and how long the last one took
 constant kCullCorners = 200 -- a mesh with more corners than this is hidden as a ball, not corner by corner
 constant kCullOccluders = 6 -- at most this many solid objects (the biggest on screen) are tried as hiders
+local sRevOn = false, sRevAt, sRevR = 0, sRevKeep, sRevStyle = "grow", sRevBand = 1 -- the level reveal (Scene.SetReveal)
+local sRevCX = 0, sRevCY = 0, sRevCZ = 0 -- the reveal point in camera space, this frame
+constant kRevealDashBand = 0.35 -- reveal style dash: the front band, as a share of the radius
+constant kRevealDashPieces = 24 -- reveal style dash: at most this many pieces an edge
 global gLogSelection -- set true to log UpdateSelectionMarker diagnostics into gSelectionHistory
 global bKeyDown -- have to stop repeated activations of key called scripts
 
@@ -1996,6 +2000,7 @@ end Game.PlayDemo
 on Vibe.Orig.Game.Exit
    dispatch "Game.OnStop" to this card
    Cull.Reset -- the next game starts with the Settings choice again
+   Scene.SetReveal -- the level reveal off
    Audio.StopMusic
    game.loop.stop
    put empty into sPreparedGame
@@ -2571,6 +2576,7 @@ on Render.BeginFrame
    put 0 into sLH
    put 0 into sCullHiddenCount
    put the milliseconds into sCullT0
+   if sRevOn is true then Reveal.PrepareFrame
 end Render.BeginFrame
 
 ## Mesh-local -> camera space for one object, as 12 comma items:
@@ -2641,6 +2647,14 @@ command RenderMeshInto pGeo,pKey,pGraphic,@pBuf,pNoBands,pNoCull
    put item 10 of tXf into t1
    put item 11 of tXf into t2
    put item 12 of tXf into t3
+   
+   -- The level reveal (Scene.SetReveal): wholly outside the ball, not drawn; across its edge, edge by edge.
+   put false into tRevCut
+   if sRevOn is true then
+      put Reveal.Test(pKey, tMesh["radius"] + 0, t1, t2, t3) into tRevCut
+      if tRevCut is 0 then exit RenderMeshInto
+      put (tRevCut is 2) into tRevCut
+   end if
    
    put tMesh["vx"] into tVX
    put tMesh["vy"] into tVY
@@ -2802,6 +2816,18 @@ command RenderMeshInto pGeo,pKey,pGraphic,@pBuf,pNoBands,pNoCull
       end if
       put tEA[e] into a
       put tEB[e] into b
+      
+      if tRevCut then
+         -- across the reveal's edge: the part inside the ball only (no bands, no hidden lines)
+         put Reveal.Edge(tCX[a],tCY[a],tCZ[a],tCX[b],tCY[b],tCZ[b]) into tSeg
+         if tSeg is not "all" then
+            if tSeg is not empty then
+               put tSeg after pBuf[pGraphic]
+               add 1 to tDrawn
+            end if
+            next repeat
+         end if
+      end if
       
       if tIn[a] and tIn[b] then
          put tSX[a] into x1
@@ -3191,6 +3217,215 @@ command Mesh.PushEdge @pMesh,@pSeen,@pE,pA,pB
    put pA into pMesh["ea"][pE]
    put pB into pMesh["eb"][pE]
 end Mesh.PushEdge
+
+######################################################################################
+## LEVEL REVEAL (11 23 2026, p1-12, LIB_LOADING_SCREEN): the player first, the level draws in.
+## Off unless switched on (the loading screen does it for about a second after each level is built).
+##   Scene.SetReveal pX, pY, pZ, pRadius, pKeep, pStyle
+##     only what lies within pRadius of the point is drawn; an edge that crosses the edge of the
+##     ball is cut there, so the lines grow outward as the radius grows. pX empty: the point is
+##     the object pKeep (or, with no pKeep, the middle of the objects in front of the camera).
+##     pKeep: an object drawn whole all the time (the player). pStyle: grow (default) or dash
+##     (near the front the lines are dashes, dotted at the front, solid further in).
+##   Scene.SetReveal           (no parameters) off: everything drawn as always
+##   Scene.Reveal()            "x,y,z,radius,keep,style" now (empty when off)
+##   Scene.RevealReach()       the radius that takes in every object (from the reveal point)
+##   Reveal.Share(pKey, pMesh, pXf)  0..1: how much of one object is in (xRay draws by object)
+## Distances are in the engine's camera space (the same units as object positions).
+## (xRay, the raylib bench, has no LiveCode lines: it draws an object or not, faded by its share.)
+######################################################################################
+
+command Scene.SetReveal pX, pY, pZ, pRadius, pKeep, pStyle
+   if pRadius is not a number then
+      put false into sRevOn
+      put empty into sRevKeep
+      exit Scene.SetReveal
+   end if
+   put true into sRevOn
+   if pX is a number and pY is a number and pZ is a number then
+      put pX & comma & pY & comma & pZ into sRevAt
+   else
+      put empty into sRevAt
+   end if
+   put max(0, pRadius) into sRevR
+   put pKeep into sRevKeep
+   if pStyle is "dash" then
+      put "dash" into sRevStyle
+   else
+      put "grow" into sRevStyle
+   end if
+end Scene.SetReveal
+
+function Scene.Reveal
+   if sRevOn is not true then return empty
+   if sRevAt is empty then return ",,," & sRevR & comma & sRevKeep & comma & sRevStyle
+   return sRevAt & comma & sRevR & comma & sRevKeep & comma & sRevStyle
+end Scene.Reveal
+
+function Scene.RevealReach
+   global gSceneObjects, gMeshCache
+   local tLine, tXf, tD, tMax
+   Render.FrameMatrices
+   Reveal.PrepareFrame
+   put 0 into tMax
+   set itemDel to comma
+   repeat for each line tLine in gSceneObjects
+      put Xform.Object(word 2 of tLine) into tXf
+      put sqrt((item 10 of tXf - sRevCX)^2 + (item 11 of tXf - sRevCY)^2 + (item 12 of tXf - sRevCZ)^2) \
+            + gMeshCache[word 1 of tLine]["radius"] into tD
+      if tD > tMax then put tD into tMax
+   end repeat
+   return tMax
+end Scene.RevealReach
+
+## Once a frame (Render.BeginFrame): the reveal point in camera space.
+on Reveal.PrepareFrame
+   global gSceneObjects
+   local tXf, tW, tN, tLine
+   if sRevOn is not true then exit Reveal.PrepareFrame
+   set itemDel to comma
+   if sRevAt is not empty then
+      -- a world point goes to camera space as an object's origin does (Xform.Object)
+      put Mat3.Apply(sCamM, item 1 of sRevAt, item 2 of sRevAt, item 3 of sRevAt) into tW
+      put (word 1 of sFrameT) + (word 1 of tW) into sRevCX
+      put (word 2 of sFrameT) + (word 2 of tW) into sRevCY
+      put (word 3 of sFrameT) + (word 3 of tW) into sRevCZ
+   else if sRevKeep is not empty and Scene.Has(sRevKeep) then
+      put Xform.Object(sRevKeep) into tXf
+      put item 10 of tXf into sRevCX
+      put item 11 of tXf into sRevCY
+      put item 12 of tXf into sRevCZ
+   else
+      -- the middle of what is in front of the camera
+      put 0 into tN
+      put 0 into sRevCX
+      put 0 into sRevCY
+      put 0 into sRevCZ
+      repeat for each line tLine in gSceneObjects
+         put Xform.Object(word 2 of tLine) into tXf
+         if item 12 of tXf < gNearPlane then next repeat
+         add 1 to tN
+         add item 10 of tXf to sRevCX
+         add item 11 of tXf to sRevCY
+         add item 12 of tXf to sRevCZ
+      end repeat
+      if tN > 0 then
+         divide sRevCX by tN
+         divide sRevCY by tN
+         divide sRevCZ by tN
+      end if
+   end if
+   put max(1, sRevR * kRevealDashBand) into sRevBand
+end Reveal.PrepareFrame
+
+## One object: 0 none of it in the ball, 1 all of it, between: part (pXf = Xform.Object).
+## pKey empty: no keep test.
+function Reveal.Share pKey, pMesh, pXf
+   global gMeshCache
+   local tD, tRad
+   if sRevOn is not true then return 1
+   if pKey is not empty and pKey is sRevKeep then return 1
+   set itemDel to comma
+   put gMeshCache[pMesh]["radius"] + 0 into tRad
+   put sqrt((item 10 of pXf - sRevCX)^2 + (item 11 of pXf - sRevCY)^2 + (item 12 of pXf - sRevCZ)^2) into tD
+   if tD - tRad >= sRevR then return 0
+   if tD + tRad <= sRevR then return 1
+   return max(0, min(1, (sRevR - (tD - tRad)) / max(0.001, 2 * tRad)))
+end Reveal.Share
+
+## RenderMeshInto, per object: 0 not drawn, 1 drawn as always, 2 each edge goes through Reveal.Edge.
+function Reveal.Test pKey, pRad, pT1, pT2, pT3
+   local tD, tIn
+   if sRevOn is not true then return 1
+   if pKey is sRevKeep then return 1
+   put sqrt((pT1 - sRevCX)^2 + (pT2 - sRevCY)^2 + (pT3 - sRevCZ)^2) into tD
+   if tD - pRad >= sRevR then return 0
+   put sRevR into tIn
+   if sRevStyle is "dash" then put sRevR - sRevBand into tIn
+   if tD + pRad <= tIn then return 1
+   return 2
+end Reveal.Test
+
+## One edge in camera space against the ball: "all" (draw it as always), empty (none of it),
+## or graphic points (cr x,y cr x,y cr cr, one pair a piece) for the part that is in.
+function Reveal.Edge pAX, pAY, pAZ, pBX, pBY, pBZ
+   local tDX, tDY, tDZ, tFX, tFY, tFZ, tA, tB, tC, tDisc, tS, tU0, tU1, tOut, tInR
+   local tLen, tN, k, tS0, tS1, tMX, tMY, tMZ, tD, tF, tDuty
+   put pBX - pAX into tDX
+   put pBY - pAY into tDY
+   put pBZ - pAZ into tDZ
+   put pAX - sRevCX into tFX
+   put pAY - sRevCY into tFY
+   put pAZ - sRevCZ into tFZ
+   put tDX*tDX + tDY*tDY + tDZ*tDZ into tA
+   put 2 * (tFX*tDX + tFY*tDY + tFZ*tDZ) into tB
+   put tFX*tFX + tFY*tFY + tFZ*tFZ - sRevR*sRevR into tC
+   if tA < 0.000001 then
+      if tC <= 0 then return "all"
+      return empty
+   end if
+   put tB*tB - 4*tA*tC into tDisc
+   if tDisc <= 0 then return empty
+   put sqrt(tDisc) into tS
+   put max(0, (-tB - tS) / (2*tA)) into tU0
+   put min(1, (-tB + tS) / (2*tA)) into tU1
+   if tU1 - tU0 < 0.000001 then return empty
+   if sRevStyle is not "dash" then
+      if tU0 = 0 and tU1 = 1 then return "all"
+      return Reveal.Piece(pAX + tU0*tDX, pAY + tU0*tDY, pAZ + tU0*tDZ, pAX + tU1*tDX, pAY + tU1*tDY, pAZ + tU1*tDZ)
+   end if
+   -- dash: pieces a quarter of the front band long; near the front only the first part of each
+   put sRevR - sRevBand into tInR
+   put sqrt(tA) * (tU1 - tU0) into tLen
+   put max(1, min(kRevealDashPieces, ceiling(tLen / (sRevBand / 4)))) into tN
+   repeat with k = 0 to tN - 1
+      put tU0 + (tU1 - tU0) * k / tN into tS0
+      put tU0 + (tU1 - tU0) * (k + 1) / tN into tS1
+      put pAX + (tS0 + tS1) / 2 * tDX - sRevCX into tMX
+      put pAY + (tS0 + tS1) / 2 * tDY - sRevCY into tMY
+      put pAZ + (tS0 + tS1) / 2 * tDZ - sRevCZ into tMZ
+      put sqrt(tMX*tMX + tMY*tMY + tMZ*tMZ) into tD
+      if tD <= tInR then
+         put 1 into tDuty
+      else
+         put min(1, (tD - tInR) / sRevBand) into tF
+         put 1 - 0.85 * tF into tDuty
+         put tS0 + (tS1 - tS0) * tDuty into tS1
+      end if
+      put Reveal.Piece(pAX + tS0*tDX, pAY + tS0*tDY, pAZ + tS0*tDZ, pAX + tS1*tDX, pAY + tS1*tDY, pAZ + tS1*tDZ) after tOut
+   end repeat
+   return tOut
+end Reveal.Edge
+
+## A camera-space line to graphic points: cut at the near plane and the view, as RenderMeshInto does.
+function Reveal.Piece pAX, pAY, pAZ, pBX, pBY, pBZ
+   local tClip, x1, y1, x2, y2
+   if pAZ < gNearPlane or pBZ < gNearPlane then
+      if pAZ < gNearPlane and pBZ < gNearPlane then return empty
+      put ClipLineToNearPlane(pAX, pAY, pAZ, pBX, pBY, pBZ) into tClip
+      if tClip is empty then return empty
+      put word 1 of tClip into pAX
+      put word 2 of tClip into pAY
+      put word 3 of tClip into pAZ
+      put word 4 of tClip into pBX
+      put word 5 of tClip into pBY
+      put word 6 of tClip into pBZ
+   end if
+   put pAX * sProjK / pAZ + sProjOffX into x1
+   put pAY * sProjK / pAZ + sProjOffY into y1
+   put pBX * sProjK / pBZ + sProjOffX into x2
+   put pBY * sProjK / pBZ + sProjOffY into y2
+   if x1 < gViewLeft or x1 > gViewRight or y1 < gViewTop or y1 > gViewBottom \
+         or x2 < gViewLeft or x2 > gViewRight or y2 < gViewTop or y2 > gViewBottom then
+      put ClipLineToViewport(x1, y1, x2, y2) into tClip
+      if tClip is empty then return empty
+      put word 1 of tClip into x1
+      put word 2 of tClip into y1
+      put word 3 of tClip into x2
+      put word 4 of tClip into y2
+   end if
+   return cr & round(x1) & comma & round(y1) & cr & round(x2) & comma & round(y2) & cr & cr
+end Reveal.Piece
 
 ######################################################################################
 ## HIDING SWITCHES (11 19 2026): the one place every script turns hiding on or off.
@@ -9265,7 +9500,7 @@ end Vibe.Step
 ##                  weapon and HUD, and ["colors2d"][n] their r,g,b
 ##   ["background"] r,g,b of the view preset's background
 function Vibe.Frame
-   local tOut, tEntry, tGraphic, tKey, tXf, tBuf, tName
+   local tOut, tEntry, tGraphic, tKey, tXf, tBuf, tName, tCol, tShare
    Vibe.ApplyRect
    Render.BeginFrame
    repeat for each line tEntry in gSceneObjects
@@ -9273,7 +9508,13 @@ function Vibe.Frame
       put word 3 of tEntry into tGraphic
       if tGraphic is empty then put tKey into tGraphic
       put Xform.Object(tKey) into tXf
-      put word 1 of tEntry & tab & tKey & tab & Vibe.Color(tGraphic, item 12 of tXf) & tab & tXf & cr after tOut["objects"]
+      put Vibe.Color(tGraphic, item 12 of tXf) into tCol
+      -- the level reveal (Scene.SetReveal): an object out of the ball is left out, one across
+      -- its edge fades in (raylib has no LiveCode lines to cut, so it goes object by object)
+      put Reveal.Share(tKey, word 1 of tEntry, tXf) into tShare
+      if tShare <= 0 then next repeat
+      if tShare < 1 then put round((item 4 of tCol) * tShare) into item 4 of tCol
+      put word 1 of tEntry & tab & tKey & tab & tCol & tab & tXf & cr after tOut["objects"]
    end repeat
    Particles.Render tBuf
    Weapon.Render tBuf
