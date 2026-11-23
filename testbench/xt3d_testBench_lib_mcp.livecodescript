@@ -532,16 +532,24 @@ command xbConsoleSetup
    if field "log" is empty then put "Console: type Entity. and press Tab; Return runs the line; help lists the groups. A click on the view gives the keys back." into field "log"
 end xbConsoleSetup
 
--- Tab anywhere in the bench (the line lost the keyboard: a click, a redraw) is the console's Tab
+-- Tab anywhere in the bench (the line lost the keyboard: a click, a redraw) is the console's Tab,
+-- EXCEPT while a game plays (ISSUES 0015, the cheap guard): then Tab is the game's (it reads the
+-- keysDown, Thrmnlra's card tabKey comes first) and nothing happens here. Tab in the line is always
+-- the console's (the line's own tabKey).
 on tabKey
    if there is a field "conIn" and the cConOut of field "conIn" is not empty and the short name of the target is not "conIn" then
-      focus on field "conIn"
-      select after char (the number of chars of the text of field "conIn") of field "conIn"
-      Con.Tab the long id of field "conIn"
+      if Con.TabIsMine(sGameOn) then
+         Con.TabFromHost the long id of field "conIn"
+      end if
    else
       pass tabKey
    end if
 end tabKey
+
+-- for a test with no window: true while a game runs in the bench
+function xbGameOn
+   return sGameOn is true
+end xbGameOn
 
 function xbConsoleTyping
    local tErr
