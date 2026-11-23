@@ -42,6 +42,10 @@ put ck("Tab still makes the menu after that", the number of lines of the text of
 set the text of button "ConsolePop" of card 1 of stack "BenchCon" to empty
 send "tabKey" to image "view" of stack "BenchCon"
 put ck("Tab with the keyboard elsewhere (the view) is the console's Tab", the number of lines of the text of button "ConsolePop" of card 1 of stack "BenchCon" >= 18, true) & return after tLog
+-- ISSUES 0015 (22 Nov): while a game plays, Tab with the keyboard elsewhere is the game's (the bench does nothing)
+put ck("no game: the bench says so (xbGameOn)", value("xbGameOn()", card 1 of stack "BenchCon"), false) & return after tLog
+put ck("lib: a game plays, the line without the keyboard: Tab is the game's", value("Con.TabIsMine(true)", card 1 of stack "BenchCon"), false) & return after tLog
+put ck("lib: no game: Tab is the console's", value("Con.TabIsMine(false)", card 1 of stack "BenchCon"), true) & return after tLog
 start using stack (tT & "vibe_engine_xt3d.livecodescript")
 Vibe.Begin "0,0,720,540"
 set the text of tIn to "Mesh.Define " & quote & "Box" & quote & ", Mesh.Box(10, 10, 10)"
