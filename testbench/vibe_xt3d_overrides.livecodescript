@@ -83,7 +83,7 @@ end Vibe.Step
 ##                  weapon and HUD, and ["colors2d"][n] their r,g,b
 ##   ["background"] r,g,b of the view preset's background
 function Vibe.Frame
-   local tOut, tEntry, tGraphic, tKey, tXf, tBuf, tName
+   local tOut, tEntry, tGraphic, tKey, tXf, tBuf, tName, tCol, tShare
    Vibe.ApplyRect
    Render.BeginFrame
    repeat for each line tEntry in gSceneObjects
@@ -91,7 +91,13 @@ function Vibe.Frame
       put word 3 of tEntry into tGraphic
       if tGraphic is empty then put tKey into tGraphic
       put Xform.Object(tKey) into tXf
-      put word 1 of tEntry & tab & tKey & tab & Vibe.Color(tGraphic, item 12 of tXf) & tab & tXf & cr after tOut["objects"]
+      put Vibe.Color(tGraphic, item 12 of tXf) into tCol
+      -- the level reveal (Scene.SetReveal): an object out of the ball is left out, one across
+      -- its edge fades in (raylib has no LiveCode lines to cut, so it goes object by object)
+      put Reveal.Share(tKey, word 1 of tEntry, tXf) into tShare
+      if tShare <= 0 then next repeat
+      if tShare < 1 then put round((item 4 of tCol) * tShare) into item 4 of tCol
+      put word 1 of tEntry & tab & tKey & tab & tCol & tab & tXf & cr after tOut["objects"]
    end repeat
    Particles.Render tBuf
    Weapon.Render tBuf
