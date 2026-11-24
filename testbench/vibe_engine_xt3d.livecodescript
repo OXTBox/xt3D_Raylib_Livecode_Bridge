@@ -6307,8 +6307,14 @@ function FilteredMusicFiles tFolder
 end FilteredMusicFiles
 
 ## Load everything once (Game.Play calls this the first time).
+## LIB_AUDIO's hidden AUDIO stack is in use: it holds the players, and sound and music go there.
+function Audio.Hosted
+   return "lib_audio" is among the lines of the stacksInUse and there is a stack "AUDIO"
+end Audio.Hosted
+
 on Audio.Init
    local tRoots, tRoot, tTypes, tDone, tMusicFolder, tSongs, tSoundsFolder, tOldFolder
+   if Audio.Hosted() then exit Audio.Init
    put Audio.Roots() into tRoots
    -- Again for a new window (the Game Player makes one per game) or other roots.
    put tRoots & cr & the short name of this stack into tRoot
@@ -6464,10 +6470,18 @@ end Audio.CurrentSong
 
 ## Pause keeps the song where it is; Resume goes on from there.
 on Audio.PauseMusic
+   if Audio.Hosted() then
+      Audio.Music "pause"
+      exit Audio.PauseMusic
+   end if
    if sCurrentSong is not empty and there is a player sCurrentSong then stop player sCurrentSong
 end Audio.PauseMusic
 
 on Audio.ResumeMusic
+   if Audio.Hosted() then
+      Audio.Music "resume"
+      exit Audio.ResumeMusic
+   end if
    if sCurrentSong is empty then
       Audio.StartMusic
    else if there is a player sCurrentSong then
@@ -6491,6 +6505,10 @@ end Audio.MakePlayer
 ## Plays the next player of a type (round robin). Silent when there are none.
 on Sound.Play pType
    if sSoundOff is true then exit Sound.Play
+   if Audio.Hosted() then
+      Audio.Play pType
+      exit Sound.Play
+   end if
    if sSoundList[pType] is empty then
       -- Not loaded by Audio.Init: look for players with that name on the card.
       put empty into tList
@@ -6520,6 +6538,10 @@ end Sound.Reset
 
 ## Music: a random song, then the next when it ends (checked from game.update).
 on Audio.StartMusic
+   if Audio.Hosted() then
+      Audio.Music "start"
+      exit Audio.StartMusic
+   end if
    if sMusicPlayers is empty then exit Audio.StartMusic
    Audio.StopMusic
    put line random(the number of lines of sMusicPlayers) of sMusicPlayers into sCurrentSong
@@ -6531,13 +6553,17 @@ on Audio.StartMusic
 end Audio.StartMusic
 
 on Audio.StopMusic
+   if Audio.Hosted() then
+      Audio.Music "stop"
+      exit Audio.StopMusic
+   end if
    if sCurrentSong is not empty and there is a player sCurrentSong then stop player sCurrentSong
    put empty into sCurrentSong
 end Audio.StopMusic
 
 on Audio.UpdateMusic
    global bPaused
-   if bPaused is true then exit Audio.UpdateMusic
+   if bPaused is true or Audio.Hosted() then exit Audio.UpdateMusic
    if sCurrentSong is empty or sSimTick mod 90 is not 0 then exit Audio.UpdateMusic
    if there is not a player sCurrentSong then exit Audio.UpdateMusic
    if the paused of player sCurrentSong then Audio.StartMusic
