@@ -175,7 +175,7 @@ local sFont, sHUD, sScore = 0 -- vector font, HUD items, demo score
 constant kDerezSlots = 8 -- how many derez effects can run at once
 constant kDerezFrames = 14 -- how long one lasts
 local sDerezNext = 0, sDerezAge, sDerezRect
-local sAudioReady = false, sMusicPlayers, sCurrentSong
+local sAudioReady = false, sMusicPlayers, sCurrentSong, sAudioKey
 local sSoundList, sSoundNext, sSoundOff = false
 local currentMusicVolume = 75, currentFXVolume = 75
 local bFullScreen = false, bAntiAlias = true
@@ -6262,8 +6262,12 @@ end FX.ClearDerez
 ## Sound files are loaded ONCE into player objects (LiveCode is slow reading files
 ## on demand). Players live in one background group, "AudioPlayers", placed on the
 ## Title, Developer and Play* cards.
-##   <stack folder>/Data/Music/*           -> players Song1, Song2 ...
-##   <stack folder>/Data/Sounds/<Type>/*   -> players <Type>1, <Type>2 ...
+##   <root>/Music/*           -> players Song1, Song2 ...
+##   <root>/Sounds/<Type>/*   -> players <Type>1, <Type>2 ...
+## Roots, first one that has a type wins (Audio.Roots): the game's own
+## Vibecode3D_Games/Audio/<Game>/, <stack folder>/Data/, "Vibecode3D Common/" beside
+## the game, then the shared kit LIB_SFX/kit (sounds baked by LIB_SFX, chip music).
+## No "Viewport" group (the Game Player): the players' group goes on the card itself.
 ##     (PlayerLaser gets 10 players, Explode 3, everything else one per file)
 ## Sound.Play "Explode" plays the next player of that type.
 ## Volumes: currentMusicVolume / currentFXVolume (Options menu).
@@ -6304,7 +6308,12 @@ end FilteredMusicFiles
 
 ## Load everything once (Game.Play calls this the first time).
 on Audio.Init
-   if sAudioReady is true then exit Audio.Init
+   local tRoots, tRoot, tTypes, tDone, tMusicFolder, tSongs, tSoundsFolder, tOldFolder
+   put Audio.Roots() into tRoots
+   -- Again for a new window (the Game Player makes one per game) or other roots.
+   put tRoots & cr & the short name of this stack into tRoot
+   if sAudioReady is true and tRoot is sAudioKey and there is a group "AudioPlayers" then exit Audio.Init
+   put tRoot into sAudioKey
    LoadingScreen "LOADING SOUNDS"
    lock screen
    Audio.EnsureGroup
@@ -6312,26 +6321,33 @@ on Audio.Init
    put empty into sMusicPlayers
    Sound.Reset
    
-   -- Music.
-   put StackDirectory() & "/Data/Music" into tMusicFolder
-   if there is a folder tMusicFolder then
+   -- Music: all the songs of the first root that has any.
+   repeat for each line tRoot in tRoots
+      put tRoot & "/Music" into tMusicFolder
+      if there is not a folder tMusicFolder then next repeat
       put FilteredMusicFiles(tMusicFolder) into tSongs
+      filter tSongs without "*theme*"
+      if tSongs is empty then next repeat
       put 0 into n
       repeat for each line tSong in tSongs
          add 1 to n
          Audio.MakePlayer "Song" & n, tMusicFolder & "/" & tSong, currentMusicVolume
          put "Song" & n & cr after sMusicPlayers
       end repeat
-   end if
+      exit repeat
+   end repeat
    
-   -- Sound effects: one sub folder per type.
-   put SoundDirectory() into tSoundsFolder
-   if there is a folder tSoundsFolder then
+   -- Sound effects: one sub folder per type; a type comes from the first root that has it.
+   put empty into tDone
+   repeat for each line tRoot in tRoots
+      put tRoot & "/Sounds" into tSoundsFolder
+      if there is not a folder tSoundsFolder then next repeat
       set the folder to tSoundsFolder
       put folders() into tTypes
       filter tTypes without ".."
       filter tTypes without "."
       repeat for each line tType in tTypes
+         if tType is among the lines of tDone then next repeat
          put tSoundsFolder & "/" & tType into tDir
          put FilteredMusicFiles(tDir) into tFiles
          put the number of lines of tFiles into tCount
@@ -6353,8 +6369,9 @@ on Audio.Init
             put tType & k & cr after tList
          end repeat
          put tList into sSoundList[tType]
+         put tType & cr after tDone
       end repeat
-   end if
+   end repeat
    
    set the folder to tOldFolder
    put true into sAudioReady
@@ -6367,10 +6384,96 @@ end Audio.Init
 ## with every card that shows the Viewport. (A nested group can't be placed.)
 on Audio.EnsureGroup
    if there is a group "AudioPlayers" then exit Audio.EnsureGroup
-   if there is not a group "Viewport" then exit Audio.EnsureGroup
    reset the templateGroup
-   create group "AudioPlayers" in group "Viewport"
+   if there is a group "Viewport" then
+      create group "AudioPlayers" in group "Viewport"
+   else
+      -- No Viewport (the Game Player's window): on the card, out of sight.
+      create invisible group "AudioPlayers"
+   end if
 end Audio.EnsureGroup
+
+## The folders that may hold Sounds/ and Music/, best first, one a line.
+function Audio.Roots
+   global bNoWSL
+   local tList, tDir, tGame, tTry, tStart, tErr
+   set the itemDel to "/"
+   -- The game's own (Game Player: the game script's folder; uGame names the game).
+   put empty into tDir
+   try
+      put the uScriptFile of this stack into tDir
+      put the uGame of this stack into tGame
+   catch tErr
+   end try
+   replace "\" with "/" in tDir
+   if tDir contains "/" then
+      delete item -1 of tDir
+      if tGame is not empty then put tDir & "/Audio/" & tGame & cr after tList
+      put item 1 to -2 of tDir & "/Vibecode3D Common" & cr after tList
+   end if
+   if Game.Current() is not empty then put StackDirectory() & "/Audio/" & Game.Current() & cr after tList
+   put StackDirectory() & "/Data" & cr after tList
+   put StackDirectory() & "/Vibecode3D Common" & cr after tList
+   -- The shared kit, looked for upward from the stack and from this script.
+   repeat with tStart = 1 to 2
+      if tStart is 1 then
+         put the effective filename of this stack into tDir
+      else
+         put the effective filename of me into tDir
+      end if
+      replace "\" with "/" in tDir
+      repeat 6 times
+         delete item -1 of tDir
+         if tDir is empty then exit repeat
+         if there is a folder (tDir & "/LIB_SFX/kit") then
+            put tDir & "/LIB_SFX/kit" & cr after tList
+            exit repeat
+         end if
+      end repeat
+   end repeat
+   if bNoWSL is not true then
+      put "//wsl$/Ubuntu/home/igame3d/projects/LIB_SFX/kit" into tTry
+      if there is a folder tTry then put tTry & cr after tList
+   end if
+   -- Only the ones there, each once.
+   put empty into tDir
+   repeat for each line tTry in tList
+      if tTry is empty or tTry is among the lines of tDir then next repeat
+      if there is a folder tTry then put tTry & cr after tDir
+   end repeat
+   return line 1 to -1 of tDir
+end Audio.Roots
+
+## The sound types loaded (one a line), for tests and the console.
+function Audio.Types
+   local tList
+   repeat for each key tType in sSoundList
+      if sSoundList[tType] is not "none" then put tType & cr after tList
+   end repeat
+   sort tList
+   return line 1 to -1 of tList
+end Audio.Types
+
+function Audio.Songs
+   return line 1 to -1 of sMusicPlayers
+end Audio.Songs
+
+function Audio.CurrentSong
+   return sCurrentSong
+end Audio.CurrentSong
+
+## Pause keeps the song where it is; Resume goes on from there.
+on Audio.PauseMusic
+   if sCurrentSong is not empty and there is a player sCurrentSong then stop player sCurrentSong
+end Audio.PauseMusic
+
+on Audio.ResumeMusic
+   if sCurrentSong is empty then
+      Audio.StartMusic
+   else if there is a player sCurrentSong then
+      start player sCurrentSong
+   end if
+end Audio.ResumeMusic
 
 on Audio.MakePlayer pName,pFile,pVolume
    if there is not a player pName then
@@ -6433,6 +6536,8 @@ on Audio.StopMusic
 end Audio.StopMusic
 
 on Audio.UpdateMusic
+   global bPaused
+   if bPaused is true then exit Audio.UpdateMusic
    if sCurrentSong is empty or sSimTick mod 90 is not 0 then exit Audio.UpdateMusic
    if there is not a player sCurrentSong then exit Audio.UpdateMusic
    if the paused of player sCurrentSong then Audio.StartMusic
@@ -6462,10 +6567,14 @@ on ThemeSong
    if there is not a card "Title" then exit ThemeSong
    if there is not a player "themeSong" of card "Title" then exit ThemeSong
    put the folder into tOldFolder
-   put StackDirectory() & "/Data/Music" into tFolder
-   if there is not a folder tFolder then exit ThemeSong
-   put FilteredMusicFiles(tFolder) into tFiles
-   filter tFiles with "*theme*"
+   put empty into tFiles
+   repeat for each line tRoot in Audio.Roots()
+      put tRoot & "/Music" into tFolder
+      if there is not a folder tFolder then next repeat
+      put FilteredMusicFiles(tFolder) into tFiles
+      filter tFiles with "*theme*"
+      if tFiles is not empty then exit repeat
+   end repeat
    if tFiles is not empty then
       put line random(the number of lines of tFiles) of tFiles into tSong
       set the filename of player "themeSong" of card "Title" to tFolder & "/" & tSong
